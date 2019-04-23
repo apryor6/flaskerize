@@ -8,7 +8,7 @@ setup(name='flaskerize',
                   'with Flask APIs through a single, Flask app',
       author='Alan "AJ" Pryor',
       author_email='apryor6@gmail.com',
-      url='www.alanpryorjr.com',
+      url='http://alanpryorjr.com/',
       packages=find_packages(),
       scripts=['bin/flaskerize']
       )

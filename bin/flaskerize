@@ -1,2 +1,50 @@
 #!/usr/bin/env python
+import argparse
 print('Flaskerizing...')
+
+parser = argparse.ArgumentParser(description='Flaskerize')
+parser.add_argument('target', type=str,
+                    help='Target static site to host within Flask')
+parser.add_argument('--init-flask', type=str,
+                    help='Create a new Flask app to host build target')
+parser.add_argument('--force', action="store_true",
+                    help='Ignore safety checks, such as checking that '
+                         'target Flask app is a *.py')
+args = parser.parse_args()
+
+target = args.target
+if not target.endswith('/'):
+    print("WARNING: Provided path '{}' does not end with '/', adding for you.".format(target))
+    target += '/'
+# The routing for `send_from_directory` comes directly from https://stackoverflow.com/questions/44209978/serving-a-create-react-app-with-flask  # noqa
+DEFAULT_FLASK_APP = f"""import os
+from flask import Flask, send_from_directory
+
+
+app = Flask(__name__, static_folder='{args.target}')
+
+# Serve React App
+@app.route('/', defaults={{'path': ''}})
+@app.route('/<path:path>')
+def serve(path):
+    if path != "" and os.path.exists(app.static_folder + path):
+        return send_from_directory(app.static_folder, path)
+    else:
+        return send_from_directory(app.static_folder, 'index.html')
+
+if __name__ == '__main__':
+    app.run()
+
+"""
+
+if args.init_flask:
+    import os
+    target = args.init_flask
+
+    if os.path.isfile(target) and not args.force:
+        exit("ERROR: Target app '{}' already exists. "
+             "Add --force to override".format(target))
+    with open(target, 'w') as fid:
+        fid.write(DEFAULT_FLASK_APP)
+    print("Successfully created new app '{}'".format(target))
+print("Success!")
