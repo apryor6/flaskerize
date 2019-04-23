@@ -3,12 +3,12 @@
 from setuptools import setup, find_packages
 
 setup(name='flaskerize',
-      version='0.1.0',
+      version='0.1.1',
       description='Bundle and serve static web applications such as Angular or React '
                   'with Flask APIs through a single, Flask app',
       author='Alan "AJ" Pryor',
       author_email='apryor6@gmail.com',
-      url='www.alanpryorjr.com',
+      url='http://alanpryorjr.com/',
       packages=find_packages(),
       scripts=['bin/flaskerize']
       )
