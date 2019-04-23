@@ -11,8 +11,11 @@ Simple, `pip install flaskerize`
 ### Create new React app
 
 `create-react-app test`
+
 `cd test`
+
 `yarn build --prod`
+
 `cd ..`
 
 To view the production React app as-is (no Flask), you can use `serve` (you'll need to install it globally first `yarn global add serve`)
