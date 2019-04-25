@@ -31,3 +31,18 @@ Now, to serve this from a new Flask app with `flaskerize`, run the following
 This command will generate a file `app.py` containing the Flask app, which can then be run with `python app.py`
 
 The Flask-ready version of your React app can now be viewed at [http:localhost:5000/](http:localhost:5000/)!
+
+
+### Create new Angular app
+
+`ng new`
+
+`cd <project name>`
+
+`yarn build --prod`
+
+`flaskerize --init-flask=app.py ./dist/<project name>/`
+
+This command will generate a file `app.py` containing the Flask app, which can then be run with `python app.py`
+
+The Flask-ready version of your Angular app can now be viewed at [http:localhost:5000/](http:localhost:5000/)!
