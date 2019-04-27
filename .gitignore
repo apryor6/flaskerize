@@ -53,3 +53,6 @@ dist/
 *.egg-info*/
 site/
 test/
+
+app.py
+py3/
