@@ -8,6 +8,8 @@ arg_parser.add_argument('--generate', '-g', type=str, nargs='+',
 arg_parser.add_argument('--force', '-f', action="store_true",
                         help='Ignore safety checks, such as checking that '
                         'target Flask app is a *.py')
+arg_parser.add_argument('--dry-run', action="store_true",
+                        help="Dry run -- don't actually create any files.")
 
 
 def parse(args):

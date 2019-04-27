@@ -1,6 +1,12 @@
+
 def _generate(contents, file, mode='w'):
     with open(file, mode) as fid:
         fid.write(contents)
+    print(f"Successfully created {file}")
+
+
+def _dry_run(contents, file, mode='w'):
+    print(f"Successfully created {file}")
 
 
 def hello_world(filename):

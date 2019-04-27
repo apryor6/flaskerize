@@ -8,14 +8,17 @@ def handle_bundle(args):
 
 def handle_generate(args):
     from flaskerize import generate
+    if args.dry_run:
+        generate._generate = generate._dry_run
     import os
+    print('generate args = ', args.generate)
     if len(args.generate) != 2:
-        exit("ERROR: Invalid syntax found for generate. "
-             "Correct usage is `flaskerize --generate type [args]`")
+        raise SyntaxError("ERROR: Invalid syntax found for generate. "
+                          "Correct usage is `flaskerize --generate type [args]`")
 
     what, called = args.generate
 
     if os.path.isfile(called) and not args.force:
-        exit("ERROR: Target file '{}' already exists. "
-             "Add --force to override".format(called))
+        raise FileExistsError("ERROR: Target file '{}' already exists. "
+                              "Add --force to override".format(called))
     generate.a[what](called)
