@@ -26,7 +26,7 @@ The app will now be available on [http:localhost:5000/](http:localhost:5000/)
 
 Now, to serve this from a new Flask app with `flaskerize`, run the following
 
-`flaskerize --init-flask=app.py ./test/build/`
+`flaskerize --generate=app.py ./test/build/`
 
 This command will generate a file `app.py` containing the Flask app, which can then be run with `python app.py`
 
@@ -41,7 +41,7 @@ The Flask-ready version of your React app can now be viewed at [http:localhost:5
 
 `yarn build --prod`
 
-`flaskerize --init-flask=app.py ./dist/<project name>/`
+`flaskerize --generate=app.py ./dist/<project name>/`
 
 This command will generate a file `app.py` containing the Flask app, which can then be run with `python app.py`
 
