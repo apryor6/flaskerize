@@ -140,10 +140,35 @@ app = {func}()
 
 
 def dockerfile(args):
-    CONTENTS = """
+    print('args = ', args)
+    import os
+    if os.path.isfile('requirements.txt'):
+        req_txt = """COPY requirements.txt /requirements.txt
+RUN pip install --install-option="--prefix=/install" -r /requirements.txt"""
+    else:
+        req_txt = ""
+    CONTENTS = f"""FROM python:3.7-alpine as base
+
+FROM base as builder
+RUN mkdir /install
+WORKDIR /install
+{req_txt}
+RUN pip install --install-option="--prefix=/install" gunicorn
+RUN pip install --install-option="--prefix=/install" flask
+
+FROM base
+COPY --from=builder /install /usr/local
+COPY . /app
+WORKDIR /app
+
+EXPOSE 8080
+ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:8080", "--access-logfile", "-", "--error-logfile", "-", "{args.source}"]
+
     """
     _generate(CONTENTS, args.output_name, dry_run=args.dry_run)
     print("Successfully created new Dockerfile '{}'".format(args.output_name))
+    print('Next, run `docker build -t my_app_image .` to build the docker image and '
+          'then use `docker run my_app_image -p 127.0.0.1:80:8080` to launch')
 
 
 # Mapping of keywords to generation functions

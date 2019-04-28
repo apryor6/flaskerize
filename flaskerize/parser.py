@@ -72,6 +72,7 @@ class Flaskerize(object):
 
         DEFAULT_BP_NAME = '_fz_bp.py'
         DEFAULT_WSGI_NAME = 'wsgi.py'
+        DEFAULT_GUNICORN_ENTRY = f"{DEFAULT_WSGI_NAME.replace('.py', '')}:app"
         arg_parser = FzArgumentParser(description='bundle [b]')
         arg_parser.add_argument('-from', '--source', type=str,
                                 help='Path of input static site to bundle')
@@ -97,6 +98,10 @@ class Flaskerize(object):
                                 and not os.path.isfile(f"{DEFAULT_WSGI_NAME}")):
             self.generate(
                 f"wsgi -from {parsed.to} {DEFAULT_WSGI_NAME} {force}".split())
+
+        if parsed.with_dockerfile:
+            self.generate(
+                f"dockerfile Dockerfile {force} -from {DEFAULT_GUNICORN_ENTRY}".split())
 
     def generate(self, args):
         from flaskerize import generate

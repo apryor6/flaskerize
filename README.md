@@ -37,7 +37,6 @@ Run the resulting app:
 
 The app will now be available on [http:localhost:5000/](http:localhost:5000/)!
 
-
 ### Generate a basic Flask app
 
 Generating a basic Flask app is simple:
@@ -89,20 +88,19 @@ This command will generate a file `app.py` containing the Flask app, which can t
 
 The Flask-ready version of your Angular app can now be viewed at [http:localhost:5000/](http:localhost:5000/)!
 
-
 ### Attach site to an existing Flask app
 
 _Flaskerize uses the [factory pattern](http://flask.pocoo.org/docs/1.0/patterns/appfactories/) exclusively. If you're existing application does not follow this, see [Factory pattern](#factory-pattern)_
 
+#### Attach with one command and generate Dockerfile
 
-#### Attach with one command
-
-`fz b -from test/build -to app:create_app`
+`fz b -from test/build -to app:create_app --with-dockerfile`
 
 Or, longer
-`flaskerize bundle -from test/build -to app:create_app`
+`flaskerize bundle -from test/build -to app:create_app --with-dockerfile`
 
 #### Separate generation and attachment
+
 First, create a blueprint from the static site
 
 `fz g bp -from test/build/ _fz_blueprint.py`
@@ -117,13 +115,10 @@ You can also use the longer form of both of these commands:
 
 `flaskerize attach _fz_blueprint.py -to app:create_app`
 
-
-
 ### <a name="factory-pattern"></a>Factory Pattern
+
 WIP
 
 ### <a name="available-types"></a>Available application types
 
     - hello-world (hw): A basic hello world app. Args: [app_name -> name of the app]
-
-
