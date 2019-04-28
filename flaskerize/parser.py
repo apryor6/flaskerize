@@ -58,6 +58,8 @@ class Flaskerize(object):
         arg_parser = FzArgumentParser(description='attach [a]')
         arg_parser.add_argument('-to', type=str, required=True,
                                 help='Flask app factory function to attach blueprint')
+        arg_parser.add_argument('bp', type=str,
+                                help='Blueprint to attach')
         parse = arg_parser.parse_args(args)
         attach(parse)
 

@@ -69,17 +69,17 @@ _Flaskerize uses the [factory pattern](http://flask.pocoo.org/docs/1.0/patterns/
 
 First, create a blueprint from the static site
 
-`fz g bp -from test/build/ _fz_bp.py`
+`fz g bp -from test/build/ _fz_blueprint.py`
 
 Next, attach the blueprint to your existing Flask app
 
-`fz a _fz_bp.py -to demo:create_app`
+`fz a -to demo:create_app _fz_blueprint.py`
 
 You can also use the longer form of both of these commands:
 
-`flaskerize generate blueprint --static-dir-name test/build/ _fz_bp.py`
+`flaskerize generate blueprint --static-dir-name test/build/ _fz_blueprint.py`
 
-`flaskerize attach _fz_bp.py -to demo:create_app`
+`flaskerize attach _fz_blueprint.py -to demo:create_app`
 
 
 
