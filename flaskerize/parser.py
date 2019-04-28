@@ -54,7 +54,7 @@ class Flaskerize(object):
         exit(1)
 
     def bundle(self, args):
-        arg_parser = FzArgumentParser(description='bundle')
+        arg_parser = FzArgumentParser(description='bundle [b]')
         arg_parser.add_argument('target', type=str,
                                 help='Target static site to host within Flask')
 
@@ -70,7 +70,7 @@ class Flaskerize(object):
         from flaskerize import generate
         import os
 
-        arg_parser = FzArgumentParser(description='generate')
+        arg_parser = FzArgumentParser(description='generate [g]')
         arg_parser.add_argument('what', type=str,
                                 help='What to generate')
         arg_parser.add_argument('output_name', type=str,
@@ -85,3 +85,9 @@ class Flaskerize(object):
             raise FileExistsError("ERROR: Target file '{}' already exists. "
                                   "Add --force to override".format(output_name))
         generate.a[what](parsed)
+
+
+# Add shorthand aliases
+
+Flaskerize.b = Flaskerize.bundle
+Flaskerize.g = Flaskerize.generate
