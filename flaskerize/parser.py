@@ -53,16 +53,20 @@ class Flaskerize(object):
         parser.print_help()
         exit(1)
 
-    def attach(self):
-        print('Attaching...')
-        raise NotImplementedError
+    def attach(self, args):
+        from flaskerize.attach import attach
+        arg_parser = FzArgumentParser(description='attach [a]')
+        arg_parser.add_argument('-to', type=str, required=True,
+                                help='Flask app factory function to attach blueprint')
+        parse = arg_parser.parse_args(args)
+        attach(parse)
 
     def bundle(self, args):
         """
         Generate a new Blueprint from a source static site and attach it
         to an existing Flask application
         """
-        # arg_parser = FzArgumentParser(description='bundle [b]')
+        arg_parser = FzArgumentParser(description='bundle [b]')
         # arg_parser.add_argument('target', type=str,
         #                         help='Target static site to host within Flask')
 

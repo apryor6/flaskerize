@@ -67,7 +67,21 @@ The Flask-ready version of your Angular app can now be viewed at [http:localhost
 
 _Flaskerize uses the [factory pattern](http://flask.pocoo.org/docs/1.0/patterns/appfactories/) exclusively. If you're existing application does not follow this, see [Factory pattern](#factory-pattern)_
 
-`flaskerize generate blueprint -from
+First, create a blueprint from the static site
+
+`fz g bp -from test/build/ _fz_bp.py`
+
+Next, attach the blueprint to your existing Flask app
+
+`fz a _fz_bp.py -to demo:create_app`
+
+You can also use the longer form of both of these commands:
+
+`flaskerize generate blueprint --static-dir-name test/build/ _fz_bp.py`
+
+`flaskerize attach _fz_bp.py -to demo:create_app`
+
+
 
 ### <a name="factory-pattern"></a>Factory Pattern
 WIP
