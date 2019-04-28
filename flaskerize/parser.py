@@ -68,16 +68,35 @@ class Flaskerize(object):
         Generate a new Blueprint from a source static site and attach it
         to an existing Flask application
         """
+        import os
+
         DEFAULT_BP_NAME = '_fz_bp.py'
+        DEFAULT_WSGI_NAME = 'wsgi.py'
         arg_parser = FzArgumentParser(description='bundle [b]')
-        arg_parser.add_argument('-from', '--static-dir-name', type=str,
+        arg_parser.add_argument('-from', '--source', type=str,
                                 help='Path of input static site to bundle')
         arg_parser.add_argument('-to', type=str, required=True,
                                 help='Flask app factory function to attach blueprint')
+        arg_parser.add_argument('--with-wsgi', action='store_true',
+                                help='Also generate a wsgi.py for gunicorn')
+        arg_parser.add_argument('--with-dockerfile', action='store_true',
+                                help='Also generate a Dockerfile')
         parsed = arg_parser.parse_args(args)
+        if parsed.force:
+            force = '--force'
+        else:
+            force = ''
         self.generate(
-            f"blueprint -from {parsed.static_dir_name} {DEFAULT_BP_NAME}".split())
-        self.attach(f"-to {parsed.to} {DEFAULT_BP_NAME}".split())
+            f"blueprint -from {parsed.source} {DEFAULT_BP_NAME} {force}".split())
+        self.attach(f"-to {parsed.to} {DEFAULT_BP_NAME} {force}".split())
+
+        # Build a WSGI file if requested or needed. If user has requested a Dockerfile
+        # without adding --with-wsgi flaskerize will add one unless a wsgi.py exists
+        # already
+        if parsed.with_wsgi or (parsed.with_dockerfile
+                                and not os.path.isfile(f"{DEFAULT_WSGI_NAME}")):
+            self.generate(
+                f"wsgi -from {parsed.to} {DEFAULT_WSGI_NAME} {force}".split())
 
     def generate(self, args):
         from flaskerize import generate
@@ -88,8 +107,8 @@ class Flaskerize(object):
                                 help='What to generate')
         arg_parser.add_argument('output_name', type=str,
                                 help='Base name for outputted resource')
-        arg_parser.add_argument('-from', '--static-dir-name', type=str,
-                                help='Path of input static site to bundle')
+        arg_parser.add_argument('-from', '--source', type=str,
+                                help='Path of input resource')
         parsed = arg_parser.parse_args(args)
         print('generate args = ', parsed)
         what = parsed.what

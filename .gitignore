@@ -60,3 +60,4 @@ bundle.cmd
 demo/
 .pytest_cache/
 _flaskerize_blueprint.py
+wsgi.py
