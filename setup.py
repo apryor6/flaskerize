@@ -10,5 +10,5 @@ setup(name='flaskerize',
       author_email='apryor6@gmail.com',
       url='http://alanpryorjr.com/',
       packages=find_packages(),
-      scripts=['bin/flaskerize']
+      scripts=['bin/flaskerize', 'bin/fz']
       )
