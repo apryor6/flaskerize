@@ -1,6 +1,6 @@
 # flaskerize
 
-Add-on Command line interface (CLI) for Flask for tasks including:
+Build tool Command line interface (CLI) for Flask for tasks including:
 
     - Generate Flask resources such as Dockerfiles, blueprints, or even entire applications
     - Bundle and serve static web applications such as Angular or React with python APIs through a single, combined Flask app
@@ -15,13 +15,13 @@ Simple, `pip install flaskerize`
 
 Generating a basic Flask app is simple:
 
-`flaskerize --generate hello-world app.py`
+`flaskerize generate hello-world app.py`
 
 Or the shorthand:
 
 `flaskerize -g hw app.py`
 
-The first argument after the `--generate` flag is the type of application you want to
+The first argument after the `generate` flag is the type of application you want to
 create (see [available types](#available-types), and the following argument is the name of the application.
 
 ### Create new React app
@@ -42,12 +42,11 @@ The app will now be available on [http:localhost:5000/](http:localhost:5000/)
 
 Now, to serve this from a new Flask app with `flaskerize`, run the following
 
-`flaskerize --generate from_static_dir ./test/build/ app.py`
+`flaskerize generate from-static-dir ./test/build/ app.py`
 
 This command will generate a file `app.py` containing the Flask app, which can then be run with `python app.py`
 
 The Flask-ready version of your React app can now be viewed at [http:localhost:5000/](http:localhost:5000/)!
-
 
 ### Create new Angular app
 
@@ -57,14 +56,13 @@ The Flask-ready version of your React app can now be viewed at [http:localhost:5
 
 `yarn build --prod`
 
-`flaskerize --generate from_static_dir ./dist/<project name>/ app.py`
+`flaskerize generate from-static-dir ./dist/<project name>/ app.py`
 
 This command will generate a file `app.py` containing the Flask app, which can then be run with `python app.py`
 
 The Flask-ready version of your Angular app can now be viewed at [http:localhost:5000/](http:localhost:5000/)!
 
-
 ## <a name="available-types"></a>Available application types
 
     - hello-world (hw): A basic hello world app. Args: [app_name -> name of the app]
-    - from_static_dir (fsd): Serves an existing static site from Flask. Args: [static_dir_name -> name of the directory containing static site; app_name -> name of the app]
+    - from-static-dir (fsd): Serves an existing static site from Flask. Args: [static_dir_name -> name of the directory containing static site; app_name -> name of the app]

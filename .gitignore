@@ -57,3 +57,5 @@ test/
 app.py
 py3/
 bundle.cmd
+demo/
+.pytest_cache/
