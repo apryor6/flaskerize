@@ -30,7 +30,7 @@ class FzArgumentParser(argparse.ArgumentParser):
 
 
 class Flaskerize(object):
-    COMMANDS = ['bundle', 'generate']
+    COMMANDS = ['attach', 'bundle', 'generate']
 
     def __init__(self, args):
         parser = FzArgumentParser(
@@ -53,17 +53,25 @@ class Flaskerize(object):
         parser.print_help()
         exit(1)
 
-    def bundle(self, args):
-        arg_parser = FzArgumentParser(description='bundle [b]')
-        arg_parser.add_argument('target', type=str,
-                                help='Target static site to host within Flask')
+    def attach(self):
+        print('Attaching...')
+        raise NotImplementedError
 
-        args = arg_parser.parse_args(args)
-        target = args.target
-        if not target.endswith('/'):
-            print("WARNING: Provided path '{}' does not end with "
-                  "'/', adding for you.".format(target))
-            target += '/'
+    def bundle(self, args):
+        """
+        Generate a new Blueprint from a source static site and attach it
+        to an existing Flask application
+        """
+        # arg_parser = FzArgumentParser(description='bundle [b]')
+        # arg_parser.add_argument('target', type=str,
+        #                         help='Target static site to host within Flask')
+
+        # args = arg_parser.parse_args(args)
+        # target = args.target
+        # if not target.endswith('/'):
+        #     print("WARNING: Provided path '{}' does not end with "
+        #           "'/', adding for you.".format(target))
+        #     target += '/'
         raise NotImplementedError
 
     def generate(self, args):
@@ -75,8 +83,8 @@ class Flaskerize(object):
                                 help='What to generate')
         arg_parser.add_argument('output_name', type=str,
                                 help='Base name for outputted resource')
-        arg_parser.add_argument('-dir', '--static-dir-name', type=str,
-                                help='Base name for outputted resource')
+        arg_parser.add_argument('-from', '--static-dir-name', type=str,
+                                help='Path of input static site to bundle')
         parsed = arg_parser.parse_args(args)
         print('generate args = ', parsed)
         what = parsed.what
@@ -89,5 +97,7 @@ class Flaskerize(object):
 
 # Add shorthand aliases
 
+
 Flaskerize.b = Flaskerize.bundle
 Flaskerize.g = Flaskerize.generate
+Flaskerize.a = Flaskerize.attach
