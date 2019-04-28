@@ -68,17 +68,16 @@ class Flaskerize(object):
         Generate a new Blueprint from a source static site and attach it
         to an existing Flask application
         """
+        DEFAULT_BP_NAME = '_fz_bp.py'
         arg_parser = FzArgumentParser(description='bundle [b]')
-        # arg_parser.add_argument('target', type=str,
-        #                         help='Target static site to host within Flask')
-
-        # args = arg_parser.parse_args(args)
-        # target = args.target
-        # if not target.endswith('/'):
-        #     print("WARNING: Provided path '{}' does not end with "
-        #           "'/', adding for you.".format(target))
-        #     target += '/'
-        raise NotImplementedError
+        arg_parser.add_argument('-from', '--static-dir-name', type=str,
+                                help='Path of input static site to bundle')
+        arg_parser.add_argument('-to', type=str, required=True,
+                                help='Flask app factory function to attach blueprint')
+        parsed = arg_parser.parse_args(args)
+        self.generate(
+            f"blueprint -from {parsed.static_dir_name} {DEFAULT_BP_NAME}".split())
+        self.attach(f"-to {parsed.to} {DEFAULT_BP_NAME}".split())
 
     def generate(self, args):
         from flaskerize import generate

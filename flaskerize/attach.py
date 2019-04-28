@@ -79,6 +79,8 @@ def _split_file_factory(path, delim=':', default_func_name='create_app'):
     else:
         filename = path
         func = default_func_name
+    if os.path.isfile(f"{filename}.py"):
+        filename += '.py'
     if os.path.isdir(filename):
         if os.path.isfile(filename + '/__init__.py'):
             filename += '/__init__.py'

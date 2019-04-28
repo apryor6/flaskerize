@@ -32,7 +32,7 @@ if __name__ == '__main__':
     print("Successfully created new app '{}'".format(args.output_name))
 
 
-def app(args):
+def app_from_dir(args):
     """
     Serve files using `send_from_directory`. Note this is less secure than
     from_static_filesas anything within the directory can be served.
@@ -60,6 +60,28 @@ def create_app():
         else:
             return send_from_directory(app.static_folder, 'index.html')
     return app
+
+if __name__ == '__main__':
+    app = create_app()
+    app.run()
+
+    """
+    _generate(CONTENTS, args.output_name, dry_run=args.dry_run)
+    print("Successfully created new app '{}'".format(args.output_name))
+
+
+def app(args):
+    CONTENTS = """import os
+from flask import Flask
+
+
+def create_app():
+    app = Flask(__name__)
+    @app.route('/health')
+    def serve():
+        return 'Well hello there!'
+    return app
+
 
 if __name__ == '__main__':
     app = create_app()
@@ -104,5 +126,6 @@ def serve(path):
 a = {
     'hello-world': hello_world, 'hw': hello_world,
     'app': app,
+    'app_from_dir': app_from_dir,
     'blueprint': blueprint, 'bp': blueprint
 }
