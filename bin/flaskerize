@@ -1,21 +1,8 @@
 #!/usr/bin/env python
 import sys
 
-from flaskerize import parse, handlers
-
+from flaskerize.parser import Flaskerize
 
 print('Flaskerizing...')
-args = parse(sys.argv[1:])
-
-if args.dry_run:
-    print('Using dry run')
-
-if args.bundle:
-    handlers.handle_bundle(args)
-
-
-if args.generate:
-    handlers.handle_generate(args)
-
-
+Flaskerize(sys.argv)
 print("Success!")

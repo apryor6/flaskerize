@@ -1,18 +1,14 @@
 
-def _generate(contents, file, mode='w'):
-    with open(file, mode) as fid:
-        fid.write(contents)
+def _generate(contents, file, mode='w', dry_run=False):
+    if not dry_run:
+        with open(file, mode) as fid:
+            fid.write(contents)
     print(f"Successfully created {file}")
 
 
-def _dry_run(contents, file, mode='w'):
-    print(f"Successfully created {file}")
-
-
-def hello_world(appname):
+def hello_world(args):
     print('Generating a hello_world app')
 
-    # The routing for `send_from_directory` comes directly from https://stackoverflow.com/questions/44209978/serving-a-create-react-app-with-flask  # noqa
     CONTENTS = f"""import os
 from flask import Flask, send_from_directory
 
@@ -28,13 +24,12 @@ if __name__ == '__main__':
     app.run()
 
     """
-    _generate(CONTENTS, appname)
-    print("Successfully created new app '{}'".format(appname))
+    _generate(CONTENTS, args.output_name, dry_run=args.dry_run)
+    print("Successfully created new app '{}'".format(args.output_name))
 
 
-def from_static_dir(dirname, appname):
-    print('dirname = ', dirname)
-    print('appname = ', appname)
+def from_static_dir(args):
+    print('args = ', args)
     print('Generating a from_static_dir app')
 
     # The routing for `send_from_directory` comes directly from https://stackoverflow.com/questions/44209978/serving-a-create-react-app-with-flask  # noqa
@@ -42,7 +37,7 @@ def from_static_dir(dirname, appname):
 from flask import Flask, send_from_directory
 
 
-app = Flask(__name__, static_folder='{dirname}')
+app = Flask(__name__, static_folder='{args.static_dir_name}')
 
 # Serve React App
 @app.route('/', defaults={{'path': ''}})
@@ -57,8 +52,8 @@ if __name__ == '__main__':
     app.run()
 
     """
-    _generate(CONTENTS, appname)
-    print("Successfully created new app '{}'".format(appname))
+    _generate(CONTENTS, args.output_name, dry_run=args.dry_run)
+    print("Successfully created new app '{}'".format(args.output_name))
 
 
 a = {
