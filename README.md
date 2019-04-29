@@ -29,7 +29,7 @@ Generate a new Flask app with `flaskerize`
 
 Bundle the new React and Flask apps together:
 
-`fz b -from test/build -to app:create_app`
+`fz b -from test/build/ -to app:create_app`
 
 Run the resulting app:
 
@@ -68,7 +68,7 @@ The app will now be available on [http:localhost:5000/](http:localhost:5000/)
 
 Now, to serve this from a new Flask app with `flaskerize`, run the following
 
-`flaskerize generate app -from ./test/build/ app.py`
+`flaskerize generate app -from test/build/ app.py`
 
 This command will generate a file `app.py` containing the Flask app, which can then be run with `python app.py`
 
@@ -82,7 +82,7 @@ The Flask-ready version of your React app can now be viewed at [http:localhost:5
 
 `yarn build --prod`
 
-`flaskerize generate app -from ./dist/<project name>/ app.py`
+`flaskerize generate app -from dist/<project name>/ app.py`
 
 This command will generate a file `app.py` containing the Flask app, which can then be run with `python app.py`
 
@@ -94,10 +94,10 @@ _Flaskerize uses the [factory pattern](http://flask.pocoo.org/docs/1.0/patterns/
 
 #### Attach with one command and generate Dockerfile
 
-`fz b -from test/build -to app:create_app --with-dockerfile`
+`fz b -from test/build/ -to app:create_app --with-dockerfile`
 
 Or, longer
-`flaskerize bundle -from test/build -to app:create_app --with-dockerfile`
+`flaskerize bundle -from test/build/ -to app:create_app --with-dockerfile`
 
 #### Separate generation and attachment
 

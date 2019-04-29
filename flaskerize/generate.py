@@ -35,7 +35,7 @@ if __name__ == '__main__':
 def app_from_dir(args):
     """
     Serve files using `send_from_directory`. Note this is less secure than
-    from_static_filesas anything within the directory can be served.
+    from_static_files as anything within the directory can be served.
     """
     print('args = ', args)
     print('Generating an app from static site directory')

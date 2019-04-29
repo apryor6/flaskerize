@@ -87,6 +87,11 @@ class Flaskerize(object):
             force = '--force'
         else:
             force = ''
+
+        if not parsed.source.endswith('/'):
+            print(f"Input source {parsed.source} does not end with trailing /, adding "
+                  "for you")
+            parsed.source += '/'
         self.generate(
             f"blueprint -from {parsed.source} {DEFAULT_BP_NAME} {force}".split())
         self.attach(f"-to {parsed.to} {DEFAULT_BP_NAME} {force}".split())
@@ -115,9 +120,12 @@ class Flaskerize(object):
         arg_parser.add_argument('-from', '--source', type=str,
                                 help='Path of input resource')
         parsed = arg_parser.parse_args(args)
-        print('generate args = ', parsed)
         what = parsed.what
         output_name = parsed.output_name
+        if not parsed.source.endswith('/'):
+            print(f"Input source {parsed.source} does not end with trailing /, adding "
+                  "for you")
+            parsed.source += '/'
         if os.path.isfile(output_name) and not parsed.force:
             raise FileExistsError("ERROR: Target file '{}' already exists. "
                                   "Add --force to override".format(output_name))
