@@ -88,7 +88,7 @@ class Flaskerize(object):
         else:
             force = ''
 
-        if not parsed.source.endswith('/'):
+        if parsed.source and not parsed.source.endswith('/'):
             print(f"Input source {parsed.source} does not end with trailing /, adding "
                   "for you")
             parsed.source += '/'
@@ -122,7 +122,7 @@ class Flaskerize(object):
         parsed = arg_parser.parse_args(args)
         what = parsed.what
         output_name = parsed.output_name
-        if not parsed.source.endswith('/'):
+        if parsed.source and not parsed.source.endswith('/'):
             print(f"Input source {parsed.source} does not end with trailing /, adding "
                   "for you")
             parsed.source += '/'
