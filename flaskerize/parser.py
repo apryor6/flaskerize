@@ -122,15 +122,16 @@ class Flaskerize(object):
         arg_parser.add_argument('-from', '--source', type=str,
                                 help='Path of input resource')
         parsed = arg_parser.parse_args(args)
+        print('parsed = ', parsed)
         what = parsed.what
-        output_name = parsed.output_name
+        output_file = parsed.output_file
         if parsed.source and not parsed.source.endswith('/'):
             print(f"Input source {parsed.source} does not end with trailing /, adding "
                   "for you")
             parsed.source += '/'
-        if output_name is not None and os.path.isfile(output_name) and not parsed.force:
+        if output_file is not None and os.path.isfile(output_file) and not parsed.force:
             raise FileExistsError("ERROR: Target file '{}' already exists. "
-                                  "Add --force to override".format(output_name))
+                                  "Add --force to override".format(output_file))
         generate.a[what](parsed)
 
 

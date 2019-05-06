@@ -1,11 +1,14 @@
 
-def _generate(contents, file=None, mode='w', dry_run=False):
-    if dry_run or file is None:
+def _generate(contents, output_name, filename=None, mode='w', dry_run=False):
+    if dry_run:
         print(contents)
     else:
-        with open(file, mode) as fid:
+        if filename is None:
+            filename = f'{output_name.replace(".py", "")}.py'
+        with open(filename, mode) as fid:
             fid.write(contents)
-    print(f"Successfully created {file}")
+
+    print(f"Successfully created {filename}")
 
 
 def hello_world(args):
@@ -30,8 +33,9 @@ if __name__ == '__main__':
     app.run()
 
     """
-    _generate(CONTENTS, file=args.output_name, dry_run=args.dry_run)
-    print("Successfully created new app '{}'".format(args.output_name))
+    _generate(CONTENTS, output_name=args.output_name,
+              filename=args.output_file, dry_run=args.dry_run)
+    print("Successfully created new app")
 
 
 def app_from_dir(args):
@@ -68,8 +72,9 @@ if __name__ == '__main__':
     app.run()
 
     """
-    _generate(CONTENTS, file=args.output_name, dry_run=args.dry_run)
-    print("Successfully created new app '{}'".format(args.output_name))
+    _generate(CONTENTS, output_name=args.output_name,
+              filename=args.output_file, dry_run=args.dry_run)
+    print("Successfully created new app")
 
 
 def app(args):
@@ -91,8 +96,9 @@ if __name__ == '__main__':
     app.run()
 
     """
-    _generate(CONTENTS, file=args.output_name, dry_run=args.dry_run)
-    print("Successfully created new app '{}'".format(args.output_name))
+    _generate(CONTENTS, output_name=args.output_name,
+              filename=args.output_file, dry_run=args.dry_run)
+    print("Successfully created new app")
 
 
 def blueprint(args):
@@ -121,8 +127,9 @@ def serve(path):
         return send_from_directory(site.static_folder, 'index.html')
 
     """
-    _generate(CONTENTS, file=args.output_name, dry_run=args.dry_run)
-    print("Successfully created new blueprint '{}'".format(args.output_name))
+    _generate(CONTENTS, output_name=args.output_name,
+              filename=args.output_file, dry_run=args.dry_run)
+    print("Successfully created new blueprint")
 
 
 def wsgi(args):
@@ -137,8 +144,9 @@ def wsgi(args):
 from {filename} import {func}
 app = {func}()
     """
-    _generate(CONTENTS, file=args.output_name, dry_run=args.dry_run)
-    print("Successfully created new wsgi '{}'".format(args.output_name))
+    _generate(CONTENTS, output_name=args.output_name,
+              filename=args.output_file, dry_run=args.dry_run)
+    print("Successfully created new wsgi")
 
 
 def namespace(args):
@@ -198,7 +206,8 @@ class {args.output_name.title()}Resource(Resource):
 
     """
     print(args)
-    _generate(CONTENTS, file=args.output_name, dry_run=args.dry_run)
+    _generate(CONTENTS, output_name=args.output_name,
+              filename=args.output_file, dry_run=args.dry_run)
 
 
 def dockerfile(args):
@@ -227,8 +236,9 @@ EXPOSE 8080
 ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:8080", "--access-logfile", "-", "--error-logfile", "-", "{args.source}"]
 
     """
-    _generate(CONTENTS, file=args.output_name, dry_run=args.dry_run)
-    print("Successfully created new Dockerfile '{}'".format(args.output_name))
+    _generate(CONTENTS, output_name=args.output_name,
+              filename=args.output_file, dry_run=args.dry_run)
+    print("Successfully created new Dockerfile")
     print('Next, run `docker build -t my_app_image .` to build the docker image and '
           'then use `docker run my_app_image -p 127.0.0.1:80:8080` to launch')
 
