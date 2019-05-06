@@ -115,6 +115,10 @@ You can also use the longer form of both of these commands:
 
 `flaskerize attach _fz_blueprint.py -to app:create_app`
 
+### Generate a new namespace
+
+`fz g ns product --dry-run`
+
 ### <a name="factory-pattern"></a>Factory Pattern
 
 WIP
@@ -122,3 +126,4 @@ WIP
 ### <a name="available-types"></a>Available application types
 
     - hello-world (hw): A basic hello world app. Args: [app_name -> name of the app]
+
