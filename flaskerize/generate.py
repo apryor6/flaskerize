@@ -1,6 +1,8 @@
 
-def _generate(contents, file, mode='w', dry_run=False):
-    if not dry_run:
+def _generate(contents, file=None, mode='w', dry_run=False):
+    if dry_run or file is None:
+        print(contents)
+    else:
         with open(file, mode) as fid:
             fid.write(contents)
     print(f"Successfully created {file}")
@@ -28,7 +30,7 @@ if __name__ == '__main__':
     app.run()
 
     """
-    _generate(CONTENTS, args.output_name, dry_run=args.dry_run)
+    _generate(CONTENTS, file=args.output_name, dry_run=args.dry_run)
     print("Successfully created new app '{}'".format(args.output_name))
 
 
@@ -66,7 +68,7 @@ if __name__ == '__main__':
     app.run()
 
     """
-    _generate(CONTENTS, args.output_name, dry_run=args.dry_run)
+    _generate(CONTENTS, file=args.output_name, dry_run=args.dry_run)
     print("Successfully created new app '{}'".format(args.output_name))
 
 
@@ -89,7 +91,7 @@ if __name__ == '__main__':
     app.run()
 
     """
-    _generate(CONTENTS, args.output_name, dry_run=args.dry_run)
+    _generate(CONTENTS, file=args.output_name, dry_run=args.dry_run)
     print("Successfully created new app '{}'".format(args.output_name))
 
 
@@ -119,7 +121,7 @@ def serve(path):
         return send_from_directory(site.static_folder, 'index.html')
 
     """
-    _generate(CONTENTS, args.output_name, dry_run=args.dry_run)
+    _generate(CONTENTS, file=args.output_name, dry_run=args.dry_run)
     print("Successfully created new blueprint '{}'".format(args.output_name))
 
 
@@ -135,8 +137,68 @@ def wsgi(args):
 from {filename} import {func}
 app = {func}()
     """
-    _generate(CONTENTS, args.output_name, dry_run=args.dry_run)
+    _generate(CONTENTS, file=args.output_name, dry_run=args.dry_run)
     print("Successfully created new wsgi '{}'".format(args.output_name))
+
+
+def namespace(args):
+    """
+    Generate a new Flask-RESTplus API Namespace
+    """
+
+    CONTENTS = f"""from flask import request, jsonify
+from flask_restplus import Namespace, Resource
+from flask_accepts import accepts, responds
+import marshmallow as ma
+
+api = Namespace('{args.output_name}', description='All things {args.output_name}')
+
+
+class {args.output_name.title()}:
+    '''A super awesome {args.output_name}'''
+
+    def __init__(self, id: int, a_float: float = 42.0, description: str = ''):
+        self.id = id
+        self.a_float = a_float
+        self.description = description
+
+
+class {args.output_name.title()}Schema(ma.Schema):
+    id = ma.fields.Integer()
+    a_float = ma.fields.Float()
+    description = ma.fields.String(256)
+
+    @ma.post_load
+    def make(self, kwargs):
+        return {args.output_name.title()}(**kwargs)
+
+
+@api.route('/')
+class {args.output_name.title()}Resource(Resource):
+    @accepts(schema={args.output_name.title()}Schema, api=api)
+    @responds(schema={args.output_name.title()}Schema)
+    def post(self):
+        return request.parsed_obj
+
+    @accepts(dict(name='id', type=int, help='ID of the {args.output_name.title()}'), api=api)
+    def get(self):
+        return {args.output_name.title()}(id=id)
+
+    @accepts(schema={args.output_name.title()}Schema, api=api)
+    @responds(schema={args.output_name.title()}Schema)
+    def update(self, id, data):
+        todo = self.get(id)
+        todo.update(data)
+        return todo
+
+    @accepts(dict(name='id', type=int, help='ID of the {args.output_name.title()}'), api=api)
+    def delete(self, id):
+        todo = self.get(id)
+        self.todos.remove(todo)
+
+    """
+    print(args)
+    _generate(CONTENTS, file=args.output_name, dry_run=args.dry_run)
 
 
 def dockerfile(args):
@@ -165,7 +227,7 @@ EXPOSE 8080
 ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:8080", "--access-logfile", "-", "--error-logfile", "-", "{args.source}"]
 
     """
-    _generate(CONTENTS, args.output_name, dry_run=args.dry_run)
+    _generate(CONTENTS, file=args.output_name, dry_run=args.dry_run)
     print("Successfully created new Dockerfile '{}'".format(args.output_name))
     print('Next, run `docker build -t my_app_image .` to build the docker image and '
           'then use `docker run my_app_image -p 127.0.0.1:80:8080` to launch')
@@ -178,5 +240,6 @@ a = {
     'dockerfile': dockerfile,
     'wsgi': wsgi,
     'app_from_dir': app_from_dir,
-    'blueprint': blueprint, 'bp': blueprint
+    'blueprint': blueprint, 'bp': blueprint,
+    'namespace': namespace, 'ns': namespace
 }

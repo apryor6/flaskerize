@@ -115,8 +115,10 @@ class Flaskerize(object):
         arg_parser = FzArgumentParser(description='generate [g]')
         arg_parser.add_argument('what', type=str,
                                 help='What to generate')
-        arg_parser.add_argument('output_name', type=str,
+        arg_parser.add_argument('output_name', type=str, default=None,
                                 help='Base name for outputted resource')
+        arg_parser.add_argument('--output-file', '-o', type=str,
+                                help='Name of output file')
         arg_parser.add_argument('-from', '--source', type=str,
                                 help='Path of input resource')
         parsed = arg_parser.parse_args(args)
@@ -126,7 +128,7 @@ class Flaskerize(object):
             print(f"Input source {parsed.source} does not end with trailing /, adding "
                   "for you")
             parsed.source += '/'
-        if os.path.isfile(output_name) and not parsed.force:
+        if output_name is not None and os.path.isfile(output_name) and not parsed.force:
             raise FileExistsError("ERROR: Target file '{}' already exists. "
                                   "Add --force to override".format(output_name))
         generate.a[what](parsed)
