@@ -8,7 +8,8 @@ def _generate(contents, output_name, filename=None, mode='w', dry_run=False):
         with open(filename, mode) as fid:
             fid.write(contents)
 
-    print(f"Successfully created {filename}")
+    if filename:
+        print(f"Successfully created {filename}")
 
 
 def hello_world(args):
