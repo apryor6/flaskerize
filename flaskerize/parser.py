@@ -121,6 +121,8 @@ class Flaskerize(object):
                                 help='Name of output file')
         arg_parser.add_argument('-from', '--source', type=str,
                                 help='Path of input resource')
+        arg_parser.add_argument('--without-test', type=str,
+                                help='Disable test generation')
         parsed = arg_parser.parse_args(args)
         print('parsed = ', parsed)
         what = parsed.what

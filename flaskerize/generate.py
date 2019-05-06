@@ -189,8 +189,9 @@ class {args.output_name.title()}Resource(Resource):
         return request.parsed_obj
 
     @accepts(dict(name='id', type=int, help='ID of the {args.output_name.title()}'), api=api)
+    @responds(schema={args.output_name.title()}Schema)
     def get(self):
-        return {args.output_name.title()}(id=id)
+        return {args.output_name.title()}(id=request.parsed_args['id'])
 
     @accepts(schema={args.output_name.title()}Schema, api=api)
     @responds(schema={args.output_name.title()}Schema)
@@ -205,6 +206,53 @@ class {args.output_name.title()}Resource(Resource):
     print(args)
     _generate(CONTENTS, output_name=args.output_name,
               filename=args.output_file, dry_run=args.dry_run)
+
+    if not args.without_test:
+        namespace_test(args)
+
+
+def namespace_test(args):
+    """
+    Generate a new Flask-RESTplus API Namespace
+    """
+
+    CONTENTS = f"""import pytest
+
+from app.test.fixtures import app, client
+from .{args.output_name} import {args.output_name.title()}, {args.output_name.title()}Schema
+
+
+@pytest.fixture
+def schema():
+    return {args.output_name.title()}Schema()
+
+
+def test_schema_valid(schema):  # noqa
+    assert schema
+
+
+def test_post(app, client, schema):  # noqa
+    with client:
+        obj = {args.output_name.title()}(id=42)
+        resp = client.post('{args.output_name}/', json=schema.dump(obj).data)
+        rv = schema.load(resp.json).data
+        assert obj.id == rv.id
+
+
+def test_get(app, client, schema):  # noqa
+    with client:
+        resp = client.get('{args.output_name}/?id=42')
+        rv = schema.load(resp.json).data
+        assert rv
+        assert rv.id == 42
+
+    """
+    print(args)
+    _generate(CONTENTS, output_name=args.output_name and args.output_name.replace(
+        '.py', '') + '_test.py',
+        filename=args.output_file and args.output_file.replace(
+        '.py', '') + '_test.py',
+        dry_run=args.dry_run)
 
 
 def dockerfile(args):
