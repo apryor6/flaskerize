@@ -195,14 +195,11 @@ class {args.output_name.title()}Resource(Resource):
     @accepts(schema={args.output_name.title()}Schema, api=api)
     @responds(schema={args.output_name.title()}Schema)
     def update(self, id, data):
-        todo = self.get(id)
-        todo.update(data)
-        return todo
+        pass
 
     @accepts(dict(name='id', type=int, help='ID of the {args.output_name.title()}'), api=api)
     def delete(self, id):
-        todo = self.get(id)
-        self.todos.remove(todo)
+        pass
 
     """
     print(args)
