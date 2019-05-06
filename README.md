@@ -117,6 +117,35 @@ You can also use the longer form of both of these commands:
 
 ### Generate a new namespace
 
+Usage: `fz g ns <basename>`
+Namespace generation will create a new file containing a:
+	- Class
+	- Marshmallow Schema
+	- Flask-RESTplus Resource
+
+The `basename` argument is used to determine the name of the classes and a default filename unless one is specified with the `-o` flag. By default, a test is also generated using the same filename as the resource except ending in `_test.py`. The generated tests using pytest and assume (currently) that you have followed the best practice of creating a tests/fixtures.py file within the app that contains pytest fixtures for generating an app, client, etc. For example, this might simply be 
+
+```python
+# app/test/fixtures.py
+
+import pytest
+
+from app import create_app
+
+
+@pytest.fixture
+def app():
+    return create_app('test')
+
+
+@pytest.fixture
+def client(app):
+    return app.test_client()
+```
+
+_Note: The test files for the code itself are always placed alongside the code itself. For example, the test for `api/widget.py` should be `api/widget_test.py`. The `tests/` folder is for application-wide testing utilities and, although you can place tests here and they will correctly be detected and run, it is not advised. It is better to localize all code related to the same concept. If you are doubting whether you are putting code into the right place, always ask yourself "How long would it take me to delete this feature entirely from the code?". If the answer is "five seconds because I just delete the `app/doodad` folder, then you are probably doing this right."_
+
+Example:
 `fz g ns product --dry-run`
 
 ### <a name="factory-pattern"></a>Factory Pattern

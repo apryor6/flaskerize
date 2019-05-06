@@ -86,7 +86,6 @@ from flask import Flask
 def create_app():
     app = Flask(__name__)
     @app.route('/health')
-    @app.route('/')
     def serve():
         return 'Well hello there!'
     return app
