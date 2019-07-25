@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 setup(name='flaskerize',
-      version='0.1.7',
+      version='0.1.9',
       description='Bundle and serve static web applications such as Angular or React '
                   'with Flask APIs through a single, Flask app',
       author='AJ Pryor',
