@@ -30,8 +30,8 @@ def attach(args):
               "existing static folders and is overwriting.")
     contents[key_lines['flask']] = f"{indent}{updated})"
 
-    register_line = f"{indent}app.register_blueprint(site, url_prefix="
-    if register_line not in contents:
+    register_line = f"{indent}app.register_blueprint(site, url_prefix='/')"
+    if register_line not in contents and register_line.replace("'", '"') not in contents:
         contents.insert(key_lines['flask'] + 1,
                         register_line)
 
