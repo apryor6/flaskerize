@@ -2,13 +2,14 @@
 
 from setuptools import setup, find_packages
 
-setup(name='flaskerize',
-      version='0.1.10',
-      description='Bundle and serve static web applications such as Angular or React '
-                  'with Flask APIs through a single, Flask app',
-      author='AJ Pryor',
-      author_email='apryor6@gmail.com',
-      url='http://alanpryorjr.com/',
-      packages=find_packages(),
-      scripts=['bin/flaskerize', 'bin/fz']
-      )
+setup(
+    name="flaskerize",
+    version="0.1.11",
+    description="Flask CLI build/dev tool for bundling static sites into Flask apps and templated code generation",
+    author="AJ Pryor",
+    author_email="apryor6@gmail.com",
+    url="http://alanpryorjr.com/",
+    packages=find_packages(),
+    install_requires=["Flask>=1.1.1"],
+    scripts=["bin/flaskerize", "bin/fz"],
+)

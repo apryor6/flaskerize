@@ -3,6 +3,6 @@ import sys
 
 from flaskerize.parser import Flaskerize
 
-print('Flaskerizing...')
+print("Flaskerizing...")
 Flaskerize(sys.argv)
 print("Success!")
