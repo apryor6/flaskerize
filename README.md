@@ -5,6 +5,30 @@ Build tool Command line interface (CLI) for Flask for tasks including:
     - Generate Flask resources such as Dockerfiles, blueprints, or even entire applications
     - Bundle and serve static web applications such as Angular or React with python APIs through a single, combined Flask app
 
+### Why do I need a tool like this?
+
+This project is heavily influenced by the [CLI](https://cli.angular.io/) available in the popular JavaScript framework [Angular](https://github.com/angular). There's also some other goodness added by the [Nx]((https://nx.dev/)) project, which is made by [Nrwl](https://nrwl.io/). Of particular note is the concept of schematics, which can be used to generate code from parameterized templates. However, Angular schematics can do much more. They support the ability to register newly created entities with other parts of the app, generate functioning tests, and provide upgrade paths across breaking version of libraries. Perhaps more important than the time this functionality saves the developer is the consistency it provides to the rest of the team, resulting in decreased time required for code reviews and collaborative development. Also, it promotes testing, which is always a good thing in my book.
+
+### Flaskerize is looking for developers
+
+_At the time of this writing, the `flaskerize` project is somewhat of a experiment that was born out of a personal weekend hackathon. I am extremely happy with how that turned out, but there are many aspects of the current code that should be changed. See the Issues section for updates on this. The rest of this section details the grander vision for the project_
+
+Currently, there is nothing even remotely close to the Angular CLI descried previously in the Python community, but we would benefit from it immensely. This is the reason for `flaskerize`. The vision is to create a generalized and extensible CLI for generation of new code and modification of existing code. This functionality could include, but is not limited to, things such as generating:
+
+	- Flask API resources, such as those described [in this blog post](http://alanpryorjr.com/2019-05-20-flask-api-example/) (multi-file templates)
+	- SQLAlchemy models
+	- Marshmallow schemas
+	- Typed interfaces
+	- Flask/Django views and other Jinja templates
+	- Data science modeling pipelines
+	- Anything else the community wants to provide templates for
+
+This last one is important, as providing a hook to make the system extensible opens an entire ecosystem of possibilities. Imagine being able to `pip install <some_custom_templates>` and then being able to use `flaskerize` to generate a bunch of custom code that is specific to your organization, personal project, enthusiast group, etc.
+
+In addition to code generation, this CLI could modify existing files. For example -- create a new directory containing a Flask-RESTplus Namespace and associated resources, tests, _and then register that within an existing Flask app_. This would need to be able to inspect the existing app and determine if the registration has already been provided and adding it only if necessary. The magic here is that with one command the user will be able to generate a new resource, reload (or hot-reload) their app, and view the new code already wired up with working tests. I cannot emphasize enough how much this improves developer workflow, especially among teams and/or on larger projects.
+  
+
+
 ## Installation
 
 Simple, `pip install flaskerize`
