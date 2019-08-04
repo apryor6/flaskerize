@@ -1,5 +1,6 @@
 import argparse
 import sys
+from typing import List, Optional
 
 arg_parser = argparse.ArgumentParser(description="Flaskerize")
 arg_parser.add_argument(
@@ -47,7 +48,7 @@ class FzArgumentParser(argparse.ArgumentParser):
 
 
 class Flaskerize(object):
-    COMMANDS = ["attach", "bundle", "generate"]
+    COMMANDS: List[str] = ["attach", "bundle", "generate"]
 
     def __init__(self, args):
         parser = FzArgumentParser(
@@ -64,7 +65,7 @@ class Flaskerize(object):
             )
         getattr(self, parsed.command)(args[2:])
 
-    def _exit_invalid(self, parser, msg=None):
+    def _exit_invalid(self, parser, msg: Optional[str] = None):
         if msg:
             print(msg)
         parser.print_help()
@@ -94,6 +95,7 @@ class Flaskerize(object):
         DEFAULT_BP_NAME = "_fz_bp.py"
         DEFAULT_WSGI_NAME = "wsgi.py"
         DEFAULT_GUNICORN_ENTRY = f"{DEFAULT_WSGI_NAME.replace('.py', '')}:app"
+
         arg_parser = FzArgumentParser(description="bundle [b]")
         arg_parser.add_argument(
             "-from", "--source", type=str, help="Path of input static site to bundle"

@@ -1,8 +1,13 @@
-def split_file_factory(path, delim=":", default_func_name="create_app"):
+from typing import List, Tuple
+
+
+def split_file_factory(
+    path: str, delim: str = ":", default_func_name: str = "create_app"
+) -> Tuple[str, str]:
     import os
 
     if delim in path:
-        _split = path.split(delim)
+        _split: List[str] = path.split(delim)
         if len(_split) != 2:
             raise ValueError(
                 "Failure to parse path to app factory. Syntax should be "
