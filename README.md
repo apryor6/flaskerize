@@ -35,7 +35,9 @@ Simple, `pip install flaskerize`
 
 ## Examples
 
-### Create a new React + Flask project with Flaskerize
+### Create a new React + Flask project and bundle together with Flaskerize
+
+Install [yarn](https://yarnpkg.com/lang/en/docs/install/) and [create-react-app](https://facebook.github.io/create-react-app/docs/getting-started)
 
 Make a new react project and build into a static site:
 
@@ -76,6 +78,8 @@ create (see [available types](#available-types), and the following argument is t
 
 ### Create new React app
 
+Install [yarn](https://yarnpkg.com/lang/en/docs/install/) and [create-react-app](https://facebook.github.io/create-react-app/docs/getting-started)
+
 `create-react-app test`
 
 `cd test`
@@ -99,6 +103,8 @@ This command will generate a file `app.py` containing the Flask app, which can t
 The Flask-ready version of your React app can now be viewed at [http:localhost:5000/](http:localhost:5000/)!
 
 ### Create new Angular app
+
+Install [yarn](https://yarnpkg.com/lang/en/docs/install/) and [the Angular CLI](https://cli.angular.io/)
 
 `ng new`
 
