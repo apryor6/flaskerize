@@ -74,20 +74,17 @@ def create_app():
     app = Flask(__name__, static_folder='{args.source}')
 
     # Serve static site
-    @app.route('/', defaults={{'path': ''}})
-    @app.route('/<path:path>')
-    def serve(path):
-        if path != "" and os.path.exists(app.static_folder + path):
-            return send_from_directory(app.static_folder, path)
-        else:
-            return send_from_directory(app.static_folder, 'index.html')
+    @app.route('/')
+    def index():
+        return send_from_directory(app.static_folder, 'index.html')
+            
     return app
 
 if __name__ == '__main__':
     app = create_app()
     app.run()
 
-    """
+"""
     _generate(
         CONTENTS,
         output_name=args.output_name,
@@ -114,7 +111,7 @@ if __name__ == '__main__':
     app = create_app()
     app.run()
 
-    """
+"""
     _generate(
         CONTENTS,
         output_name=args.output_name,
@@ -141,15 +138,11 @@ from flask import Blueprint, send_from_directory
 site = Blueprint('site', __name__, static_folder='{args.source}')
 
 # Serve static site
-@site.route('/', defaults={{'path': ''}})
-@site.route('/<path:path>')
-def serve(path):
-    if path != "" and os.path.exists(site.static_folder + path):
-        return send_from_directory(site.static_folder, path)
-    else:
-        return send_from_directory(site.static_folder, 'index.html')
+@site.route('/')
+def index():
+    return send_from_directory(site.static_folder, 'index.html')
 
-    """
+"""
     _generate(
         CONTENTS,
         output_name=args.output_name,
@@ -233,7 +226,7 @@ class {args.output_name.title()}Resource(Resource):
     def delete(self, id):
         pass
 
-    """
+"""
     print(args)
     _generate(
         CONTENTS,
@@ -281,7 +274,7 @@ def test_get(app, client, schema):  # noqa
         assert rv
         assert rv.id == 42
 
-    """
+"""
     print(args)
     _generate(
         CONTENTS,
@@ -318,7 +311,7 @@ WORKDIR /app
 EXPOSE 8080
 ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:8080", "--access-logfile", "-", "--error-logfile", "-", "{args.source}"]
 
-    """
+"""
     _generate(
         CONTENTS,
         output_name=args.output_name,
