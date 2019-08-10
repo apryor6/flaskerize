@@ -204,7 +204,7 @@ class Flaskerize(object):
         arg_parser = FzGenerateParser()
         parsed, rest = arg_parser.parse_known_args(args)
         print(f"parsed = {parsed}")
-        what = parsed.what[0]
+        what = parsed.what
         generate.a[what](parsed)
 
         # ,

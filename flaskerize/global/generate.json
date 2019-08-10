@@ -3,14 +3,12 @@
     {
       "arg": "what",
       "type": "str",
-      "nargs": "+",
       "help": "What to generate"
     },
     {
       "arg": "output_name",
       "type": "str",
       "default": null,
-      "nargs": "+",
       "help": "Base name for outputted resource"
     },
     {
@@ -18,6 +16,11 @@
       "aliases": ["-o"],
       "type": "str",
       "help": "Name of output file"
+    },
+    {
+      "arg": "--dry-run",
+      "action": "store_true",
+      "help": "Dry run -- don't actually create any files."
     }
   ]
 }
