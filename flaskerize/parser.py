@@ -1,27 +1,56 @@
+import os
 import argparse
 import sys
 from typing import List, Optional
 
-arg_parser = argparse.ArgumentParser(description="Flaskerize")
-arg_parser.add_argument(
-    "--bundle",
-    "-b",
-    type=str,
-    nargs="+",
-    help="Target static site to host within Flask",
-)
-arg_parser.add_argument(
-    "--generate", "-g", type=str, nargs="+", help="Generate a new resource"
-)
-arg_parser.add_argument(
-    "--force",
-    "-f",
-    action="store_true",
-    help="Ignore safety checks, such as checking that " "target Flask app is a *.py",
-)
-arg_parser.add_argument(
-    "--dry-run", action="store_true", help="Dry run -- don't actually create any files."
-)
+from .exceptions import InvalidSchema
+
+# dirname = os.path.dirname(__file__)
+# global_schema = os.path.join(dirname, 'global/schema.json')
+# global_arg_parser = from_schema(global_schema)
+# schematic_arg_parser = from_schema("global/schema.json")
+# arg_parser = global_arg_parser
+# # arg_parser = argparse.ArgumentParser([global_arg_parser, schematic_arg_parser])
+
+# arg_parser = argparse.ArgumentParser(description="Flaskerize")
+# arg_parser.add_argument(
+#     "--bundle",
+#     "-b",
+#     type=str,
+#     nargs="+",
+#     help="Target static site to host within Flask",
+# )
+# arg_parser.add_argument(
+#     "--generate", "-g", type=str, nargs="+", help="Generate a new resource"
+# )
+# arg_parser.add_argument(
+#     "--force",
+#     "-f",
+#     action="store_true",
+#     help="Ignore safety checks, such as checking that " "target Flask app is a *.py",
+# )
+# arg_parser.add_argument(
+#     "--dry-run", action="store_true", help="Dry run -- don't actually create any files."
+# )
+
+
+def from_schema(filename: str) -> argparse.ArgumentParser:
+    """Create an argument parser from a schema JSON file"""
+
+    import json
+
+    with open(filename, "r") as fid:
+        cfg = json.load(fid)
+    if "options" not in cfg:
+        raise InvalidSchema(f"Required key 'options' not found in '{filename}'")
+    arg_parser = argparse.ArgumentParser(description="Flaskerize")
+    for option in cfg["options"]:
+        arg_parser.add_argument(
+            "--dry-run",
+            action="store_true",
+            help="Dry run -- don't actually create any files.",
+        )
+    return arg_parser
 
 
 def parse(args):
@@ -186,6 +215,6 @@ class Flaskerize(object):
 # Add shorthand aliases
 
 
-Flaskerize.b = Flaskerize.bundle
-Flaskerize.g = Flaskerize.generate
-Flaskerize.a = Flaskerize.attach
+# Flaskerize.b = Flaskerize.bundle
+# Flaskerize.g = Flaskerize.generate
+# Flaskerize.a = Flaskerize.attach
