@@ -17,15 +17,11 @@
     {
       "arg": "--force",
       "aliases": ["-f"],
-      "type": "str",
-      "nargs": "+",
       "action": "store_true",
-      "help": "Generate a new resource"
+      "help": "Ignore safety checks, such as checking that target Flask app is a *.py"
     },
     {
       "arg": "--dry-run",
-      "type": "str",
-      "nargs": "+",
       "action": "store_true",
       "help": "Dry run -- don't actually create any files."
     }
