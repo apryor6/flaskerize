@@ -1,0 +1,23 @@
+{
+  "options": [
+    {
+      "arg": "what",
+      "type": "str",
+      "nargs": "+",
+      "help": "What to generate"
+    },
+    {
+      "arg": "output_name",
+      "type": "str",
+      "default": null,
+      "nargs": "+",
+      "help": "Base name for outputted resource"
+    },
+    {
+      "arg": "--output-file",
+      "aliases": ["-o"],
+      "type": "str",
+      "help": "Name of output file"
+    }
+  ]
+}

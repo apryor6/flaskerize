@@ -77,13 +77,10 @@ def parse(args):
     return arg_parser.parse_args(args)
 
 
-dirname = os.path.dirname(__file__)
-
-
 class FzArgumentParser(argparse.ArgumentParser):
     """Flaskerize argument parser with default common options"""
 
-    _GLOBAL_SCHEMA = os.path.join(dirname, "global/schema.json")
+    _GLOBAL_SCHEMA = os.path.join(os.path.dirname(__file__), "global/schema.json")
 
     def __init__(self, schema_files: Optional[List[str]] = None):
         import json
@@ -99,22 +96,27 @@ class FzArgumentParser(argparse.ArgumentParser):
                 self.add_argument(*switches, **option)
 
 
+class FzGenerateParser(FzArgumentParser):
+    """Flaskerize argument parser for generate command"""
+
+    _GLOBAL_SCHEMA = os.path.join(os.path.dirname(__file__), "global/generate.json")
+
+
 class Flaskerize(object):
-    COMMANDS: List[str] = ["attach", "bundle", "generate"]
+    # COMMANDS: List[str] = ["attach", "bundle", "generate"]
 
     def __init__(self, args):
         import os
 
         dirname = os.path.dirname(__file__)
         parser = FzArgumentParser()
-        parser.add_argument("command", help="Subcommand to run")
         parsed = parser.parse_args(args[1:2])
-        if not hasattr(self, parsed.command):
-            self._exit_invalid(
-                parser,
-                msg="ERROR: Unrecognized command. Options are {}".format(self.COMMANDS),
-            )
-        getattr(self, parsed.command)(args[2:])
+        # if not hasattr(self, parsed.command):
+        #     self._exit_invalid(
+        #         parser,
+        #         msg="ERROR: Unrecognized command. Options are {}".format(self.COMMANDS),
+        #     )
+        getattr(self, parsed.command[0])(args[2:])
 
     def _exit_invalid(self, parser, msg: Optional[str] = None):
         if msg:
@@ -199,39 +201,25 @@ class Flaskerize(object):
         from flaskerize import generate
         import os
 
-        arg_parser = FzArgumentParser()
-        arg_parser.add_argument("what", type=str, help="What to generate")
-        arg_parser.add_argument(
-            "output_name",
-            type=str,
-            default=None,
-            help="Base name for outputted resource",
-        )
-        arg_parser.add_argument(
-            "--output-file", "-o", type=str, help="Name of output file"
-        )
-        arg_parser.add_argument(
-            "-from", "--source", type=str, help="Path of input resource"
-        )
-        arg_parser.add_argument(
-            "--without-test", type=str, help="Disable test generation"
-        )
-        parsed = arg_parser.parse_args(args)
-        print("parsed = ", parsed)
-        what = parsed.what
-        output_file = parsed.output_file
-        if parsed.source and not parsed.source.endswith("/"):
-            print(
-                f"Input source {parsed.source} does not end with trailing /, adding "
-                "for you"
-            )
-            parsed.source += "/"
-        if output_file is not None and os.path.isfile(output_file) and not parsed.force:
-            raise FileExistsError(
-                "ERROR: Target file '{}' already exists. "
-                "Add --force to override".format(output_file)
-            )
+        arg_parser = FzGenerateParser()
+        parsed, rest = arg_parser.parse_known_args(args)
+        print(f"parsed = {parsed}")
+        what = parsed.what[0]
         generate.a[what](parsed)
+
+        # ,
+        # {
+        #   "arg": "--dry-run",
+        #   "action": "store_true",
+        #   "help": "Dry run -- don't actually create any files."
+        # }
+
+    # {
+    #   "arg": "--force",
+    #   "aliases": ["-f"],
+    #   "action": "store_true",
+    #   "help": "Ignore safety checks, such as checking that target Flask app is a *.py"
+    # },
 
 
 # Add shorthand aliases
