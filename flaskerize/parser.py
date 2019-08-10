@@ -1,7 +1,7 @@
 import os
 import argparse
 import sys
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 
 # global_arg_parser = from_schema(global_schema)
@@ -191,7 +191,6 @@ class Flaskerize(object):
     #         )
 
     def generate(self, args):
-        from flaskerize import generate
         import os
 
         arg_parser = FzArgumentParser(
@@ -199,8 +198,41 @@ class Flaskerize(object):
         )
         parsed, rest = arg_parser.parse_known_args(args)
         print(f"parsed = {parsed}")
-        what = parsed.what
-        generate.a[what](rest)
+        schematic = parsed.schematic
+        self._check_render_schematic(schematic, rest)
+
+    def _check_render_schematic(
+        self, pkg_schematic: str, args: List[Any], delim: str = ":"
+    ):
+        from os import path
+        from importlib.util import find_spec
+
+        from flaskerize import generate
+
+        if delim not in pkg_schematic:
+            # Assume Flaskerize is the parent package and user has issued shorthand
+            pkg = "flaskerize"
+            schematic = pkg_schematic
+        else:
+            pkg, _, schematic = pkg_schematic.rpartition(delim)
+            if not pkg or not schematic:
+                raise ValueError(
+                    f"Unable to parse schematic '{pkg_schematic}.'"
+                    "Correct syntax is <package_name>:<schematic_name>"
+                )
+
+        spec = find_spec(pkg)
+        if spec is None:
+            raise ModuleNotFoundError(f"Unable to find package '{pkg}'")
+        pkg_path: str = path.dirname(spec.origin)
+        schematic_dirname = path.join(pkg_path, "schematics")
+        if not path.isdir(schematic_dirname):
+            raise ValueError(
+                f"Unable to locate directory 'schematics/' in path {schematic_dirname}"
+            )
+        print(f"pkg = {pkg}")
+        print(f"schematic = {schematic}")
+        generate.a[schematic](args)
 
         # ,
         # {

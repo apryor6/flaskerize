@@ -1,9 +1,9 @@
 {
   "options": [
     {
-      "arg": "what",
+      "arg": "schematic",
       "type": "str",
-      "help": "What to generate"
+      "help": "Name of the schematic to generate in 'package_name:schematic' form. (Schematics built into flaskerize can omit the package_name)"
     },
     {
       "arg": "--dry-run",
