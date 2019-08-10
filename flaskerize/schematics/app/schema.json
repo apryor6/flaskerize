@@ -1,8 +1,8 @@
 {
   "options": [
     {
-      "arg": "name",
-      "aliases": ["n"],
+      "arg": "--name",
+      "aliases": ["-n"],
       "type": "str",
       "required": "true",
       "help": "The name of the application"
