@@ -1,7 +1,7 @@
 def test_flaskerize_generate():
     import os
 
-    status = os.system("flaskerize generate --dry-run hw should_not_create.py")
+    status = os.system("flaskerize generate --dry-run app my/test/app")
     assert status == 0
 
 
