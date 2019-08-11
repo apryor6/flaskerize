@@ -74,20 +74,17 @@ def create_app():
     app = Flask(__name__, static_folder='{args.source}')
 
     # Serve static site
-    @app.route('/', defaults={{'path': ''}})
-    @app.route('/<path:path>')
-    def serve(path):
-        if path != "" and os.path.exists(app.static_folder + path):
-            return send_from_directory(app.static_folder, path)
-        else:
-            return send_from_directory(app.static_folder, 'index.html')
+    @app.route('/')
+    def index():
+        return send_from_directory(app.static_folder, 'index.html')
+            
     return app
 
 if __name__ == '__main__':
     app = create_app()
     app.run()
 
-    """
+"""
     _generate(
         CONTENTS,
         output_name=args.output_name,
@@ -98,30 +95,76 @@ if __name__ == '__main__':
 
 
 def app(args):
-    CONTENTS = """import os
-from flask import Flask
+    import os
+    from jinja2 import Environment
 
+    from flaskerize.parser import FzArgumentParser
 
-def create_app():
-    app = Flask(__name__)
-    @app.route('/health')
-    def serve():
-        return 'Well hello there!'
-    return app
+    env = Environment()
+    basename = os.path.dirname(os.path.abspath(__file__))
+    SCHEMATIC_FILE = f"{basename}/schematics/app/app.template.py"
 
+    with open(SCHEMATIC_FILE, "r") as fid:
+        tpl = env.from_string(fid.read())
 
-if __name__ == '__main__':
-    app = create_app()
-    app.run()
+    arg_parser = FzArgumentParser(schema=f"{basename}/schematics/app/schema.json")
+    context = arg_parser.parse_args(args)
 
-    """
-    _generate(
-        CONTENTS,
-        output_name=args.output_name,
-        filename=args.output_file,
-        dry_run=args.dry_run,
-    )
+    outfile = SCHEMATIC_FILE.replace(".template", "")
+    context = {k: v for k, v in context._get_kwargs()}
+    with open(outfile, "w") as fid:
+        fid.write(tpl.render(**context))
+    print(f"Successfully wrote {outfile}")
+
+    #     CONTENTS = """import os
+    # from flask import Flask
+
+    # def create_app():
+    #     app = Flask(__name__)
+    #     @app.route('/health')
+    #     def serve():
+    #         return 'Well hello there!'
+    #     return app
+
+    # if __name__ == '__main__':
+    #     app = create_app()
+    #     app.run()
+
+    # """
+    #     _generate(
+    #         CONTENTS,
+    #         output_name=args.output_name,
+    #         filename=args.output_file,
+    #         dry_run=args.dry_run,
+    #     )
     print("Successfully created new app")
+
+
+# def app(args):
+#     CONTENTS = """import os
+# from flask import Flask
+
+
+# def create_app():
+#     app = Flask(__name__)
+#     @app.route('/health')
+#     def serve():
+#         return 'Well hello there!'
+#     return app
+
+
+# if __name__ == '__main__':
+#     app = create_app()
+#     app.run()
+
+# """
+#     _generate(
+#         CONTENTS,
+#         output_name=args.output_name,
+#         filename=args.output_file,
+#         dry_run=args.dry_run,
+#     )
+#     print("Successfully created new app")
 
 
 def blueprint(args):
@@ -141,15 +184,11 @@ from flask import Blueprint, send_from_directory
 site = Blueprint('site', __name__, static_folder='{args.source}')
 
 # Serve static site
-@site.route('/', defaults={{'path': ''}})
-@site.route('/<path:path>')
-def serve(path):
-    if path != "" and os.path.exists(site.static_folder + path):
-        return send_from_directory(site.static_folder, path)
-    else:
-        return send_from_directory(site.static_folder, 'index.html')
+@site.route('/')
+def index():
+    return send_from_directory(site.static_folder, 'index.html')
 
-    """
+"""
     _generate(
         CONTENTS,
         output_name=args.output_name,
@@ -233,7 +272,7 @@ class {args.output_name.title()}Resource(Resource):
     def delete(self, id):
         pass
 
-    """
+"""
     print(args)
     _generate(
         CONTENTS,
@@ -281,7 +320,7 @@ def test_get(app, client, schema):  # noqa
         assert rv
         assert rv.id == 42
 
-    """
+"""
     print(args)
     _generate(
         CONTENTS,
@@ -318,7 +357,7 @@ WORKDIR /app
 EXPOSE 8080
 ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:8080", "--access-logfile", "-", "--error-logfile", "-", "{args.source}"]
 
-    """
+"""
     _generate(
         CONTENTS,
         output_name=args.output_name,
