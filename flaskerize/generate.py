@@ -102,15 +102,15 @@ def app(args):
 
     env = Environment()
     basename = os.path.dirname(os.path.abspath(__file__))
-    TEMPLATE_FILE = f"{basename}/schematics/app/app.template.py"
+    SCHEMATIC_FILE = f"{basename}/schematics/app/app.template.py"
 
-    with open(TEMPLATE_FILE, "r") as fid:
+    with open(SCHEMATIC_FILE, "r") as fid:
         tpl = env.from_string(fid.read())
 
     arg_parser = FzArgumentParser(schema=f"{basename}/schematics/app/schema.json")
     context = arg_parser.parse_args(args)
 
-    outfile = TEMPLATE_FILE.replace(".template", "")
+    outfile = SCHEMATIC_FILE.replace(".template", "")
     context = {k: v for k, v in context._get_kwargs()}
     with open(outfile, "w") as fid:
         fid.write(tpl.render(**context))

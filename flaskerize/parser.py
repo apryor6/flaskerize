@@ -3,6 +3,7 @@ from os import path
 import argparse
 import sys
 from typing import Any, Dict, List, Tuple, Optional
+from importlib.machinery import ModuleSpec
 
 
 # global_arg_parser = from_schema(global_schema)
@@ -200,7 +201,9 @@ class Flaskerize(object):
         parsed, rest = arg_parser.parse_known_args(args)
         print(f"parsed = {parsed}")
         schematic = parsed.schematic
-        self._check_render_schematic(schematic, rest)
+        root_name = parsed.name
+        root, name = path.split(root_name)
+        self._check_render_schematic(schematic, root=root, name=name, args=rest)
 
     def _split_pkg_schematic(
         self, pkg_schematic: str, delim: str = ":"
@@ -218,7 +221,7 @@ class Flaskerize(object):
                 )
         return pkg, schematic
 
-    def _check_validate_package(self, pkg: str) -> importlib.ModuleSpec:
+    def _check_validate_package(self, pkg: str) -> ModuleSpec:
         from importlib.util import find_spec
 
         spec = find_spec(pkg)
@@ -243,21 +246,35 @@ class Flaskerize(object):
             )
         return schematic_path
 
-    def _check_get_schematic(self, schematic: str, spec: importli.ModuleSpec) -> None:
+    def _check_get_schematic(self, schematic: str, spec: ModuleSpec) -> str:
 
         pkg_path: str = path.dirname(spec.origin)
         schematic_dirname = self._check_get_schematic_dirname(pkg_path)
         schematic_path = self._check_get_schematic_path(schematic_dirname, schematic)
+        return schematic_path
 
     def _check_render_schematic(
-        self, pkg_schematic: str, args: List[Any], delim: str = ":"
-    ):
+        self,
+        pkg_schematic: str,
+        root: str,
+        name: str,
+        args: List[Any],
+        delim: str = ":",
+    ) -> None:
         from os import path
 
         from flaskerize import generate
 
         pkg, schematic = self._split_pkg_schematic(pkg_schematic, delim=delim)
-        spec = self._check_validate_package(pkg)
-        self._check_get_schematic(schematic, spec)
+        module_spec = self._check_validate_package(pkg)
+        schematic_path = self._check_get_schematic(schematic, module_spec)
+        self.render_schematic(schematic_path, root=root, name=name, args=args)
+        # generate.a[schematic](args)
 
-        generate.a[schematic](args)
+    def render_schematic(
+        self, schematic_path: str, root: str, name: str, args: List[Any]
+    ) -> None:
+        from flaskerize.render import SchematicRenderer
+
+        SchematicRenderer(schematic_path, root=root).render(name, args)
+
