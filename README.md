@@ -9,6 +9,35 @@ Build tool Command line interface (CLI) for Flask for tasks including:
 
 This project is heavily influenced by the [CLI](https://cli.angular.io/) available in the popular JavaScript framework [Angular](https://github.com/angular). There's also some other goodness added by the [Nx]((https://nx.dev/)) project, which is made by [Nrwl](https://nrwl.io/). Of particular note is the concept of schematics, which can be used to generate code from parameterized templates. However, Angular schematics can do much more. They support the ability to register newly created entities with other parts of the app, generate functioning tests, and provide upgrade paths across breaking version of libraries. Perhaps more important than the time this functionality saves the developer is the consistency it provides to the rest of the team, resulting in decreased time required for code reviews and collaborative development. Also, it promotes testing, which is always a good thing in my book.
 
+### Schematics in third-party packages
+
+`flaskerize` is fully extensible and supports schematics provided by external libraries. To target a schematic from another package, simply use the syntax `fz generate <package_name>:<schematic_name> [OPTIONS]`
+
+Flaskerize expects to find a couple of things when using this synatx:
+
+	- The package `<package_name>` should be installed from the current python environment
+	- The top-level source directory of `<package_name>` should contain a `schematics/` package. Inside of that directory should be one or more directories, each corresponding to a single schematic. See the section "Structure of a schematic" for details on schematic contents.
+	- A `schematics/__init__.py` file, just so that schematics can be found as a package
+
+
+For example, the command  `fz generate test_schematics:resource my/new/resource` will work if test_schematics is an installed package in the current path with a source directory structure similar to:
+
+```
+├── setup.py
+└── test_schematics
+    ├── __init__.py
+    └── schematics
+        ├── __init__.py
+        ├── resource
+        │   ├── schema.json
+        │   ├── someConfig.template.json
+        │   ├── thingy.interface.template.ts
+        │   ├── thingy.template.py
+        │   └── widget.template.py
+```
+
+#### Structure of a schematic
+
 ### Flaskerize is looking for developers!
 
 _At the time of this writing, the `flaskerize` project is somewhat of a experiment that was born out of a personal weekend hackathon. I am pretty happy with how that turned out, particularly the CLI syntax, but there are many aspects of the current internal code that should be changed. See the Issues section for updates on this. The rest of this section details the grander vision for the project_

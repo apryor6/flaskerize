@@ -54,9 +54,9 @@ class SchematicRenderer:
             # Update status of creation, modification, etc
             # TODO: This behavior does not belong in this method or this class at that
             if path.exists(outfile):
-                self._files_created.append(outfile)
-            else:
                 self._files_modified.append(outfile)
+            else:
+                self._files_created.append(outfile)
             if not path.exists(outdir):
                 makedirs(outdir)
                 self._directories_created.append(outdir)
@@ -77,6 +77,7 @@ class SchematicRenderer:
 Flaskerize job summary:
 
         Schematic generation successful!
+        Full schematic path {self.schematic_path}
 
         {len(self._directories_created)} directories created
         {len(self._files_created)} files created
@@ -95,20 +96,20 @@ Flaskerize job summary:
 
     def _print_modified(self, value: str) -> None:
 
-        COLOR = "cyan"
+        COLOR = "blue"
         BASE = "MODIFIED"
         print(f"{colored(BASE, COLOR)}: {value}")
 
     def _print_deleted(self, value: str) -> None:
 
-        COLOR = "green"
-        BASE = "CREATED"
+        COLOR = "red"
+        BASE = "DELETED"
         print(f"{colored(BASE, COLOR)}: {value}")
 
     def _print_created(self, value: str) -> None:
 
-        COLOR = "cyan"
-        BASE = "MODIFIED"
+        COLOR = "green"
+        BASE = "CREATED"
         print(f"{colored(BASE, COLOR)}: {value}")
 
     def render(self, name: str, args: List[Any]) -> None:
