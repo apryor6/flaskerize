@@ -1,6 +1,7 @@
 from os import path, makedirs
 import argparse
 from typing import Any, Dict, List, Optional
+from termcolor import colored
 
 from flaskerize.parser import FzArgumentParser
 
@@ -16,6 +17,10 @@ class SchematicRenderer:
         self.arg_parser = self._check_get_arg_parser()
         self.env = Environment()
         self.dry_run = dry_run
+        self._directories_created: List[str] = []
+        self._files_created: List[str] = []
+        self._files_delete: List[str] = []
+        self._files_modified: List[str] = []
 
     def _check_get_arg_parser(self) -> Optional[argparse.ArgumentParser]:
         """Load argument parser from schema.json, if provided"""
@@ -45,6 +50,17 @@ class SchematicRenderer:
         # passed into this class rather than it containing the write logic
         with open(template_file, "r") as fid:
             tpl = self.env.from_string(fid.read())
+
+            # Update status of creation, modification, etc
+            # TODO: This behavior does not belong in this method or this class at that
+            if path.exists(outfile):
+                self._files_created.append(outfile)
+            else:
+                self._files_modified.append(outfile)
+            if not path.exists(outdir):
+                makedirs(outdir)
+                self._directories_created.append(outdir)
+
             if not self.dry_run:
                 if not path.exists(outdir):
                     makedirs(outdir)
@@ -53,11 +69,50 @@ class SchematicRenderer:
             else:
                 print(tpl.render(**context))
 
+    def print_summary(self):
+        """Print summary of operations performed"""
+
+        print(
+            f"""
+Flaskerize job summary:
+
+        Schematic generation successful!
+
+        {len(self._directories_created)} directories created
+        {len(self._files_created)} files created
+        {len(self._files_delete)} files deleted
+        {len(self._files_modified)} files modified
+        """
+        )
+        for dirname in self._directories_created:
+            self._print_created(dirname)
+        for filename in self._files_created:
+            self._print_created(filename)
+        for filename in self._files_delete:
+            self._print_deleted(filename)
+        for filename in self._files_modified:
+            self._print_modified(filename)
+
+    def _print_modified(self, value: str) -> None:
+
+        COLOR = "cyan"
+        BASE = "MODIFIED"
+        print(f"{colored(BASE, COLOR)}: {value}")
+
+    def _print_deleted(self, value: str) -> None:
+
+        COLOR = "green"
+        BASE = "CREATED"
+        print(f"{colored(BASE, COLOR)}: {value}")
+
+    def _print_created(self, value: str) -> None:
+
+        COLOR = "cyan"
+        BASE = "MODIFIED"
+        print(f"{colored(BASE, COLOR)}: {value}")
+
     def render(self, name: str, args: List[Any]) -> None:
         """Renders the schematic"""
-
-        print(f"schematic_path = {self.schematic_path}")
-        print(f"args = {args}")
 
         if self.arg_parser is None:
             context: Dict = {"name": name}
@@ -74,6 +129,6 @@ class SchematicRenderer:
 
         for filename in template_files:
             self.render_from_file(filename, context=context)
-        print(f"template_files = {template_files}")
+        self.print_summary()
         # if not template_files:
         # raise ValueError(f"No template files found in {self.schematic_path}")

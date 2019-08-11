@@ -10,6 +10,6 @@ setup(
     author_email="apryor6@gmail.com",
     url="http://alanpryorjr.com/",
     packages=find_packages(),
-    install_requires=["Flask>=1.1.1"],
+    install_requires=["Flask>=1.1.1", "termcolor>=1.1.0"],
     scripts=["bin/flaskerize", "bin/fz"],
 )
