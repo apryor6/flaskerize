@@ -202,8 +202,11 @@ class Flaskerize(object):
         print(f"parsed = {parsed}")
         schematic = parsed.schematic
         root_name = parsed.name
+        dry_run = parsed.dry_run
         root, name = path.split(root_name)
-        self._check_render_schematic(schematic, root=root, name=name, args=rest)
+        self._check_render_schematic(
+            schematic, root=root, name=name, dry_run=dry_run, args=rest
+        )
 
     def _split_pkg_schematic(
         self, pkg_schematic: str, delim: str = ":"
@@ -259,6 +262,7 @@ class Flaskerize(object):
         root: str,
         name: str,
         args: List[Any],
+        dry_run: bool = False,
         delim: str = ":",
     ) -> None:
         from os import path
@@ -268,13 +272,20 @@ class Flaskerize(object):
         pkg, schematic = self._split_pkg_schematic(pkg_schematic, delim=delim)
         module_spec = self._check_validate_package(pkg)
         schematic_path = self._check_get_schematic(schematic, module_spec)
-        self.render_schematic(schematic_path, root=root, name=name, args=args)
+        self.render_schematic(
+            schematic_path, root=root, name=name, dry_run=dry_run, args=args
+        )
         # generate.a[schematic](args)
 
     def render_schematic(
-        self, schematic_path: str, root: str, name: str, args: List[Any]
+        self,
+        schematic_path: str,
+        root: str,
+        name: str,
+        args: List[Any],
+        dry_run: bool = False,
     ) -> None:
         from flaskerize.render import SchematicRenderer
 
-        SchematicRenderer(schematic_path, root=root).render(name, args)
+        SchematicRenderer(schematic_path, root=root, dry_run=dry_run).render(name, args)
 

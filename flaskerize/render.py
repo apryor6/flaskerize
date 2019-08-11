@@ -8,13 +8,14 @@ from flaskerize.parser import FzArgumentParser
 class SchematicRenderer:
     """Render Flaskerize schematics"""
 
-    def __init__(self, schematic_path: str, root: str = "./"):
+    def __init__(self, schematic_path: str, root: str = "./", dry_run: bool = False):
         from jinja2 import Environment
 
         self.schematic_path = schematic_path
         self.root = root
         self.arg_parser = self._check_get_arg_parser()
         self.env = Environment()
+        self.dry_run = dry_run
 
     def _check_get_arg_parser(self) -> Optional[argparse.ArgumentParser]:
         """Load argument parser from schema.json, if provided"""
@@ -38,13 +39,19 @@ class SchematicRenderer:
 
     def render_from_file(self, template_file: str, context: Dict) -> None:
         outfile = self._generate_outfile(template_file, self.root)
-        outdir = path.dirname(outfile)
+        outdir = path.dirname(outfile) or "."
+
+        # TODO: Refactor dry-run and file system interactions to a composable object
+        # passed into this class rather than it containing the write logic
         with open(template_file, "r") as fid:
-            if not path.exists(outdir):
-                makedirs(outdir)
-            with open(outfile, "w") as fout:
-                tpl = self.env.from_string(fid.read())
-                fout.write(tpl.render(**context))
+            tpl = self.env.from_string(fid.read())
+            if not self.dry_run:
+                if not path.exists(outdir):
+                    makedirs(outdir)
+                with open(outfile, "w") as fout:
+                    fout.write(tpl.render(**context))
+            else:
+                print(tpl.render(**context))
 
     def render(self, name: str, args: List[Any]) -> None:
         """Renders the schematic"""
