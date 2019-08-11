@@ -22,7 +22,7 @@ class SchematicRenderer:
         self._files_delete: List[str] = []
         self._files_modified: List[str] = []
 
-    def _check_get_arg_parser(self) -> Optional[argparse.ArgumentParser]:
+    def _check_get_arg_parser(self) -> Optional[FzArgumentParser]:
         """Load argument parser from schema.json, if provided"""
 
         import json
@@ -94,6 +94,12 @@ Flaskerize job summary:
         for filename in self._files_modified:
             self._print_modified(filename)
 
+    def _print_created(self, value: str) -> None:
+
+        COLOR = "green"
+        BASE = "CREATED"
+        print(f"{colored(BASE, COLOR)}: {value}")
+
     def _print_modified(self, value: str) -> None:
 
         COLOR = "blue"
@@ -104,12 +110,6 @@ Flaskerize job summary:
 
         COLOR = "red"
         BASE = "DELETED"
-        print(f"{colored(BASE, COLOR)}: {value}")
-
-    def _print_created(self, value: str) -> None:
-
-        COLOR = "green"
-        BASE = "CREATED"
         print(f"{colored(BASE, COLOR)}: {value}")
 
     def render(self, name: str, args: List[Any]) -> None:
