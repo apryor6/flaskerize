@@ -1,7 +1,8 @@
 import os
+from os import path
 import argparse
 import sys
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Tuple, Optional
 
 
 # global_arg_parser = from_schema(global_schema)
@@ -201,14 +202,9 @@ class Flaskerize(object):
         schematic = parsed.schematic
         self._check_render_schematic(schematic, rest)
 
-    def _check_render_schematic(
-        self, pkg_schematic: str, args: List[Any], delim: str = ":"
-    ):
-        from os import path
-        from importlib.util import find_spec
-
-        from flaskerize import generate
-
+    def _split_pkg_schematic(
+        self, pkg_schematic: str, delim: str = ":"
+    ) -> Tuple[str, str]:
         if delim not in pkg_schematic:
             # Assume Flaskerize is the parent package and user has issued shorthand
             pkg = "flaskerize"
@@ -220,38 +216,48 @@ class Flaskerize(object):
                     f"Unable to parse schematic '{pkg_schematic}.'"
                     "Correct syntax is <package_name>:<schematic_name>"
                 )
+        return pkg, schematic
+
+    def _check_validate_package(self, pkg: str) -> importlib.ModuleSpec:
+        from importlib.util import find_spec
 
         spec = find_spec(pkg)
         if spec is None:
             raise ModuleNotFoundError(f"Unable to find package '{pkg}'")
-        pkg_path: str = path.dirname(spec.origin)
+        return spec
+
+    def _check_get_schematic_dirname(self, pkg_path: str) -> str:
         schematic_dirname = path.join(pkg_path, "schematics")
         if not path.isdir(schematic_dirname):
             raise ValueError(
                 f"Unable to locate directory 'schematics/' in path {schematic_dirname}"
             )
-        print(f"pkg = {pkg}")
-        print(f"schematic = {schematic}")
+        return schematic_dirname
+
+    def _check_get_schematic_path(self, schematic_dirname: str, schematic: str) -> str:
+
+        schematic_path = path.join(schematic_dirname, schematic)
+        if not path.isdir(schematic_path):
+            raise ValueError(
+                f"Unable to locate schematic '{schematic}' in path {schematic_path}"
+            )
+        return schematic_path
+
+    def _check_get_schematic(self, schematic: str, spec: importli.ModuleSpec) -> None:
+
+        pkg_path: str = path.dirname(spec.origin)
+        schematic_dirname = self._check_get_schematic_dirname(pkg_path)
+        schematic_path = self._check_get_schematic_path(schematic_dirname, schematic)
+
+    def _check_render_schematic(
+        self, pkg_schematic: str, args: List[Any], delim: str = ":"
+    ):
+        from os import path
+
+        from flaskerize import generate
+
+        pkg, schematic = self._split_pkg_schematic(pkg_schematic, delim=delim)
+        spec = self._check_validate_package(pkg)
+        self._check_get_schematic(schematic, spec)
+
         generate.a[schematic](args)
-
-        # ,
-        # {
-        #   "arg": "--dry-run",
-        #   "action": "store_true",
-        #   "help": "Dry run -- don't actually create any files."
-        # }
-
-    # {
-    #   "arg": "--force",
-    #   "aliases": ["-f"],
-    #   "action": "store_true",
-    #   "help": "Ignore safety checks, such as checking that target Flask app is a *.py"
-    # },
-
-
-# Add shorthand aliases
-
-
-# Flaskerize.b = Flaskerize.bundle
-# Flaskerize.g = Flaskerize.generate
-# Flaskerize.a = Flaskerize.attach
