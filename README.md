@@ -13,12 +13,13 @@ This project is heavily influenced by the [CLI](https://cli.angular.io/) availab
 
 `flaskerize` is fully extensible and supports schematics provided by external libraries. To target a schematic from another package, simply use the syntax `fz generate <package_name>:<schematic_name> [OPTIONS]`
 
-Flaskerize expects to find a couple of things when using this synatx:
+Flaskerize expects to find a couple of things when using this syntax:
 
 	- The package `<package_name>` should be installed from the current python environment
 	- The top-level source directory of `<package_name>` should contain a `schematics/` package. Inside of that directory should be one or more directories, each corresponding to a single schematic. See the section "Structure of a schematic" for details on schematic contents.
 	- A `schematics/__init__.py` file, just so that schematics can be found as a package
 
+> For schematics that are built into `flaskerize`, you can drop the `<package_name>` piece of the schematic name. Thus the command `fz generate flaskerize:app new_app` is _exactly equivalent_ to `fz generate app new_app`. For all third-party schematics, you must provide both the package and schematic name.
 
 For example, the command  `fz generate test_schematics:resource my/new/resource` will work if test_schematics is an installed package in the current path with a source directory structure similar to:
 
