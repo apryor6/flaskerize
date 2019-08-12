@@ -67,3 +67,4 @@ wsgi.py
 .coverage
 
 _fz_bp.py
+htmlcov/
