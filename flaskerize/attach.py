@@ -1,5 +1,7 @@
+from flaskerize.utils import split_file_factory
+
+
 def attach(args):
-    from flaskerize.utils import split_file_factory
 
     print("Attaching...")
     # TODO: Check that the provided blueprint exists, error if not
