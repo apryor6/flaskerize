@@ -65,3 +65,5 @@ wsgi.py
 .mypy_cache/
 
 .coverage
+
+_fz_bp.py

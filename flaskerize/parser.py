@@ -82,11 +82,18 @@ def parse(args):
 class FzArgumentParser(argparse.ArgumentParser):
     """Flaskerize argument parser with default common options"""
 
-    def __init__(self, schema: str, xtra_schema_files: Optional[List[str]] = None):
+    def __init__(
+        self,
+        schema: Optional[str] = None,
+        xtra_schema_files: Optional[List[str]] = None,
+    ):
         import json
 
         super().__init__()
-        cfgs: List[Dict] = [_load_schema(schema)]
+        cfgs: List[Dict] = []
+        # TODO: consolidate schema and xtra_schema_files
+        if schema:
+            cfgs.append(_load_schema(schema))
         if xtra_schema_files:
             cfgs.extend([_load_schema(file) for file in xtra_schema_files])
 
@@ -119,78 +126,125 @@ class Flaskerize(object):
         parser.print_help()
         exit(1)
 
-    # def attach(self, args):
-    #     from flaskerize.attach import attach
+    def attach(self, args):
+        from flaskerize.attach import attach
 
-    #     arg_parser = FzArgumentParser(description="attach [a]")
-    #     arg_parser.add_argument(
-    #         "-to",
-    #         type=str,
-    #         required=True,
-    #         help="Flask app factory function to attach blueprint",
-    #     )
-    #     arg_parser.add_argument("bp", type=str, help="Blueprint to attach")
-    #     parse = arg_parser.parse_args(args)
-    #     attach(parse)
+        arg_parser = FzArgumentParser()
+        arg_parser.add_argument(
+            "-to",
+            type=str,
+            required=True,
+            help="Flask app factory function to attach blueprint",
+        )
+        arg_parser.add_argument(
+            "--dry-run",
+            action="store_true",
+            help="Dry run -- don't actually create any files.",
+        )
+        arg_parser.add_argument("bp", type=str, help="Blueprint to attach")
+        parse = arg_parser.parse_args(args)
+        attach(parse)
 
-    # def bundle(self, args):
-    #     """
-    #     Generate a new Blueprint from a source static site and attach it
-    #     to an existing Flask application
-    #     """
-    #     import os
+    def bundle(self, args):
+        """
+        Generate a new Blueprint from a source static site and attach it
+        to an existing Flask application
+        """
+        import os
 
-    #     DEFAULT_BP_NAME = "_fz_bp.py"
-    #     DEFAULT_WSGI_NAME = "wsgi.py"
-    #     DEFAULT_GUNICORN_ENTRY = f"{DEFAULT_WSGI_NAME.replace('.py', '')}:app"
+        from flaskerize import generate
 
-    #     arg_parser = FzArgumentParser(description="bundle [b]")
-    #     arg_parser.add_argument(
-    #         "-from", "--source", type=str, help="Path of input static site to bundle"
-    #     )
-    #     arg_parser.add_argument(
-    #         "-to",
-    #         type=str,
-    #         required=True,
-    #         help="Flask app factory function to attach blueprint",
-    #     )
-    #     arg_parser.add_argument(
-    #         "--with-wsgi",
-    #         action="store_true",
-    #         help="Also generate a wsgi.py for gunicorn",
-    #     )
-    #     arg_parser.add_argument(
-    #         "--with-dockerfile", action="store_true", help="Also generate a Dockerfile"
-    #     )
-    #     parsed = arg_parser.parse_args(args)
-    #     if parsed.force:
-    #         force = "--force"
-    #     else:
-    #         force = ""
+        DEFAULT_BP_NAME = "_fz_bp.py"
+        DEFAULT_WSGI_NAME = "wsgi.py"
+        DEFAULT_GUNICORN_ENTRY = f"{DEFAULT_WSGI_NAME.replace('.py', '')}:app"
 
-    #     if parsed.source and not parsed.source.endswith("/"):
-    #         print(
-    #             f"Input source {parsed.source} does not end with trailing /, adding "
-    #             "for you"
-    #         )
-    #         parsed.source += "/"
-    #     self.generate(
-    #         f"blueprint -from {parsed.source} {DEFAULT_BP_NAME} {force}".split()
-    #     )
-    #     self.attach(f"-to {parsed.to} {DEFAULT_BP_NAME} {force}".split())
+        arg_parser = FzArgumentParser()
+        # arg_parser.add_argument("what", type=str, help="What to generate")
+        arg_parser.add_argument(
+            "output_name",
+            type=str,
+            default=None,
+            help="Base name for outputted resource",
+        )
+        arg_parser.add_argument(
+            "--output-file", "-o", type=str, help="Name of output file"
+        )
+        arg_parser.add_argument(
+            "-from", "--source", type=str, help="Path of input static site to bundle"
+        )
+        arg_parser.add_argument(
+            "-to",
+            type=str,
+            required=True,
+            help="Flask app factory function to attach blueprint",
+        )
+        arg_parser.add_argument(
+            "--with-wsgi",
+            action="store_true",
+            help="Also generate a wsgi.py for gunicorn",
+        )
+        arg_parser.add_argument(
+            "--with-dockerfile", action="store_true", help="Also generate a Dockerfile"
+        )
+        arg_parser.add_argument(
+            "--force",
+            "-f",
+            action="store_true",
+            help="Ignore safety checks, such as checking that "
+            "target Flask app is a *.py",
+        )
+        arg_parser.add_argument(
+            "--dry-run",
+            action="store_true",
+            help="Dry run -- don't actually create any files.",
+        )
 
-    #     # Build a WSGI file if requested or needed. If user has requested a Dockerfile
-    #     # without adding --with-wsgi flaskerize will add one unless a wsgi.py exists
-    #     # already
-    #     if parsed.with_wsgi or (
-    #         parsed.with_dockerfile and not os.path.isfile(f"{DEFAULT_WSGI_NAME}")
-    #     ):
-    #         self.generate(f"wsgi -from {parsed.to} {DEFAULT_WSGI_NAME} {force}".split())
+        parsed = arg_parser.parse_args(args + [DEFAULT_BP_NAME])
+        if parsed.force:
+            force = "--force"
+        else:
+            force = ""
 
-    #     if parsed.with_dockerfile:
-    #         self.generate(
-    #             f"dockerfile Dockerfile {force} -from {DEFAULT_GUNICORN_ENTRY}".split()
-    #         )
+        if parsed.source and not parsed.source.endswith("/"):
+            print(
+                f"Input source {parsed.source} does not end with trailing /, adding "
+                "for you"
+            )
+            parsed.source += "/"
+        # self.generate(
+        #     f"blueprint -from {parsed.source} {DEFAULT_BP_NAME} {force}".split()
+        # )
+        generate.a["blueprint"](parsed)
+
+        self.attach(f"-to {parsed.to} {DEFAULT_BP_NAME} {force}".split())
+
+        # Build a WSGI file if requested or needed. If user has requested a Dockerfile
+        # without adding --with-wsgi flaskerize will add one unless a wsgi.py exists
+        # already
+        if parsed.with_wsgi or (
+            parsed.with_dockerfile and not os.path.isfile(f"{DEFAULT_WSGI_NAME}")
+        ):
+            # self.generate(f"wsgi -from {parsed.to} {DEFAULT_WSGI_NAME} {force}".split())
+            generate.a["wsgi"](parsed)
+        # if parsed.with_dockerfile:
+        #     self.generate(
+        #         f"dockerfile Dockerfile {force} -from {DEFAULT_GUNICORN_ENTRY}".split()
+        #     )
+        # what = parsed.what
+        # output_file = parsed.output_file
+        # if parsed.source and not parsed.source.endswith("/"):
+        #     print(
+        #         f"Input source {parsed.source} does not end with trailing /, adding "
+        #         "for you"
+        #     )
+        #     parsed.source += "/"
+        # if output_file is not None and os.path.isfile(output_file) and not parsed.force:
+        #     raise FileExistsError(
+        #         "ERROR: Target file '{}' already exists. "
+        #         "Add --force to override".format(output_file)
+        #     )
+
+        # generate.a[what](parsed)
 
     def generate(self, args):
         import os

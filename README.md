@@ -81,11 +81,11 @@ Make a new react project and build into a static site:
 
 Generate a new Flask app with `flaskerize`
 
-`fz g app app.py`
+`fz generate app app.py`
 
 Bundle the new React and Flask apps together:
 
-`fz b -from test/build/ -to app:create_app`
+`fz bundle -from test/build/ -to app:create_app`
 
 Run the resulting app:
 

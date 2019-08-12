@@ -131,5 +131,3 @@ Flaskerize job summary:
         for filename in template_files:
             self.render_from_file(filename, context=context)
         self.print_summary()
-        # if not template_files:
-        # raise ValueError(f"No template files found in {self.schematic_path}")

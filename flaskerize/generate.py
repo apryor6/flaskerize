@@ -140,31 +140,31 @@ def app(args):
     print("Successfully created new app")
 
 
-# def app(args):
-#     CONTENTS = """import os
-# from flask import Flask
+def app(args):
+    CONTENTS = """import os
+from flask import Flask
 
 
-# def create_app():
-#     app = Flask(__name__)
-#     @app.route('/health')
-#     def serve():
-#         return 'Well hello there!'
-#     return app
+def create_app():
+    app = Flask(__name__)
+    @app.route('/health')
+    def serve():
+        return 'Well hello there!'
+    return app
 
 
-# if __name__ == '__main__':
-#     app = create_app()
-#     app.run()
+if __name__ == '__main__':
+    app = create_app()
+    app.run()
 
-# """
-#     _generate(
-#         CONTENTS,
-#         output_name=args.output_name,
-#         filename=args.output_file,
-#         dry_run=args.dry_run,
-#     )
-#     print("Successfully created new app")
+"""
+    _generate(
+        CONTENTS,
+        output_name=args.output_name,
+        filename=args.output_file,
+        dry_run=args.dry_run,
+    )
+    print("Successfully created new app")
 
 
 def blueprint(args):
