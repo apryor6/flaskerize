@@ -216,7 +216,8 @@ class Flaskerize(object):
         # )
         generate.a["blueprint"](parsed)
 
-        self.attach(f"-to {parsed.to} {DEFAULT_BP_NAME} {force}".split())
+        if not parsed.dry_run:
+            self.attach(f"-to {parsed.to} {DEFAULT_BP_NAME} {force}".split())
 
         # Build a WSGI file if requested or needed. If user has requested a Dockerfile
         # without adding --with-wsgi flaskerize will add one unless a wsgi.py exists
