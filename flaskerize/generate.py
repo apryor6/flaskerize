@@ -94,79 +94,6 @@ if __name__ == '__main__':
     print("Successfully created new app")
 
 
-def app(args):
-    import os
-    from jinja2 import Environment
-
-    from flaskerize.parser import FzArgumentParser
-
-    env = Environment()
-    basename = os.path.dirname(os.path.abspath(__file__))
-    SCHEMATIC_FILE = f"{basename}/schematics/app/app.template.py"
-
-    with open(SCHEMATIC_FILE, "r") as fid:
-        tpl = env.from_string(fid.read())
-
-    arg_parser = FzArgumentParser(schema=f"{basename}/schematics/app/schema.json")
-    context = arg_parser.parse_args(args)
-
-    outfile = SCHEMATIC_FILE.replace(".template", "")
-    context = {k: v for k, v in context._get_kwargs()}
-    with open(outfile, "w") as fid:
-        fid.write(tpl.render(**context))
-    print(f"Successfully wrote {outfile}")
-
-    #     CONTENTS = """import os
-    # from flask import Flask
-
-    # def create_app():
-    #     app = Flask(__name__)
-    #     @app.route('/health')
-    #     def serve():
-    #         return 'Well hello there!'
-    #     return app
-
-    # if __name__ == '__main__':
-    #     app = create_app()
-    #     app.run()
-
-    # """
-    #     _generate(
-    #         CONTENTS,
-    #         output_name=args.output_name,
-    #         filename=args.output_file,
-    #         dry_run=args.dry_run,
-    #     )
-    print("Successfully created new app")
-
-
-def app(args):
-    CONTENTS = """import os
-from flask import Flask
-
-
-def create_app():
-    app = Flask(__name__)
-    @app.route('/health')
-    def serve():
-        return 'Well hello there!'
-    return app
-
-
-if __name__ == '__main__':
-    app = create_app()
-    app.run()
-
-"""
-    _generate(
-        CONTENTS,
-        output_name=args.output_name,
-        filename=args.output_file,
-        dry_run=args.dry_run,
-    )
-    print("Successfully created new app")
-
-
 def blueprint(args):
     """
     Static site blueprint
@@ -375,7 +302,6 @@ ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:8080", "--access-logfile", "-", "--er
 a: Dict[str, Callable] = {
     "hello-world": hello_world,
     "hw": hello_world,
-    "app": app,
     "dockerfile": dockerfile,
     "wsgi": wsgi,
     "app_from_dir": app_from_dir,

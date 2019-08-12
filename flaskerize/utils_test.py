@@ -37,7 +37,7 @@ def test_split_file_factory_adds_extension(tmp_path):
     filename = f"{tmp_path}/my_app.py"
     with open(filename, "w") as fid:
         fid.write("")
-    root, app = utils.split_file_factory(filename)
+    root, app = utils.split_file_factory(f"{tmp_path}/my_app")
     assert "my_app.py" in root
 
 
