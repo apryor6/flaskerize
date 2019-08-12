@@ -6,6 +6,12 @@
       "help": "Name of the schematic to generate in 'package_name:schematic' form. (Schematics built into flaskerize can omit the package_name)"
     },
     {
+      "arg": "--schematic-path",
+      "type": "str",
+      "help": "Exact path in which to search for schematics/ directory."
+    },
+
+    {
       "arg": "name",
       "type": "str",
       "help": "Output name of the resource including path to use as rendering root"

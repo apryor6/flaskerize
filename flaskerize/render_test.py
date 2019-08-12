@@ -115,9 +115,12 @@ class TestColorizingPrint:
         self, colored: MagicMock, renderer: SchematicRenderer
     ):
         renderer._files_created.append("some file I made")
+        renderer._files_modified.append("some file I modified")
+        renderer._files_deleted.append("some file I deleted")
+        renderer._directories_created.append("some directory I made/")
         renderer.print_summary()
 
-        colored.assert_called_once()
+        assert colored.call_count == 4
 
 
 @patch("flaskerize.render.colored")

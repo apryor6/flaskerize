@@ -259,9 +259,22 @@ class Flaskerize(object):
         root_name = parsed.name
         dry_run = parsed.dry_run
         root, name = path.split(root_name)
-        self._check_render_schematic(
-            schematic, root=root, name=name, dry_run=dry_run, args=rest
-        )
+
+        # TODO: cleanup logic for when full schematic path is passed versus providing a
+        # package name. Perhaps just use the same param but check if it is pathlike and
+        # assume package-like if it doesn't exist
+        if parsed.schematic_path:
+            self._check_render_schematic(
+                schematic,
+                name=name,
+                dry_run=dry_run,
+                full_schematic_path=parsed.schematic_path,
+                args=rest,
+            )
+        else:
+            self._check_render_schematic(
+                schematic, root=root, name=name, dry_run=dry_run, args=rest
+            )
 
     def _split_pkg_schematic(
         self, pkg_schematic: str, delim: str = ":"
@@ -317,6 +330,7 @@ class Flaskerize(object):
         root: str,
         name: str,
         args: List[Any],
+        full_schematic_path: Optional[str] = None,
         dry_run: bool = False,
         delim: str = ":",
     ) -> None:
@@ -324,9 +338,12 @@ class Flaskerize(object):
 
         from flaskerize import generate
 
-        pkg, schematic = self._split_pkg_schematic(pkg_schematic, delim=delim)
-        module_spec = self._check_validate_package(pkg)
-        schematic_path = self._check_get_schematic(schematic, module_spec)
+        if full_schematic_path is not None:
+            schematic_path = full_schematic_path
+        else:
+            pkg, schematic = self._split_pkg_schematic(pkg_schematic, delim=delim)
+            module_spec = self._check_validate_package(pkg)
+            schematic_path = self._check_get_schematic(schematic, module_spec)
         self.render_schematic(
             schematic_path, root=root, name=name, dry_run=dry_run, args=args
         )

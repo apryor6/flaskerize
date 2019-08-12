@@ -19,7 +19,7 @@ class SchematicRenderer:
         self.dry_run = dry_run
         self._directories_created: List[str] = []
         self._files_created: List[str] = []
-        self._files_delete: List[str] = []
+        self._files_deleted: List[str] = []
         self._files_modified: List[str] = []
 
     def _check_get_arg_parser(self) -> Optional[FzArgumentParser]:
@@ -81,7 +81,7 @@ Flaskerize job summary:
 
         {len(self._directories_created)} directories created
         {len(self._files_created)} files created
-        {len(self._files_delete)} files deleted
+        {len(self._files_deleted)} files deleted
         {len(self._files_modified)} files modified
         """
         )
@@ -89,7 +89,7 @@ Flaskerize job summary:
             self._print_created(dirname)
         for filename in self._files_created:
             self._print_created(filename)
-        for filename in self._files_delete:
+        for filename in self._files_deleted:
             self._print_deleted(filename)
         for filename in self._files_modified:
             self._print_modified(filename)
