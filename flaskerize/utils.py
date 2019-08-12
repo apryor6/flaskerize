@@ -4,6 +4,8 @@ from typing import List, Tuple
 def split_file_factory(
     path: str, delim: str = ":", default_func_name: str = "create_app"
 ) -> Tuple[str, str]:
+    """Split the gunicorn-style module:factory syntax for the provided app factory"""
+
     import os
 
     if delim in path:
