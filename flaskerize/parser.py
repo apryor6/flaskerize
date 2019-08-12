@@ -120,12 +120,6 @@ class Flaskerize(object):
         parsed = parser.parse_args(args[1:2])
         getattr(self, parsed.command[0])(args[2:])
 
-    def _exit_invalid(self, parser, msg: Optional[str] = None):
-        if msg:
-            print(msg)
-        parser.print_help()
-        exit(1)
-
     def attach(self, args):
         from flaskerize.attach import attach
 

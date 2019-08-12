@@ -13,6 +13,46 @@ def test_flaskerize_generate():
     assert not os.path.isfile("should_not_create.py")
 
 
+def test_flaskerize_attach_from_cli(tmp_path):
+    import os
+
+    CONTENTS = """import os
+    from flask import Flask
+
+    def create_app():
+        app = Flask(__name__)
+
+        @app.route("/health")
+        def serve():
+            return "{{ name }} online!"
+
+        return app
+
+    if __name__ == "__main__":
+        app = create_app()
+        app.run()"""
+
+    app_file = f"{tmp_path}/app.py"
+    with open(app_file, "w") as fid:
+        fid.write(CONTENTS)
+
+    BP_CONTENTS = """import os
+    from flask import Blueprint, send_from_directory
+    
+    site = Blueprint('site', __name__, static_folder='test/build/')
+    
+    # Serve static site
+    @site.route('/')
+    def index():
+        return send_from_directory(site.static_folder, 'index.html')"""
+    bp_name = f"{tmp_path}/_fz_bp.py"
+    with open(bp_name, "w") as fid:
+        fid.write(BP_CONTENTS)
+    status = os.system(f"fz attach --dry-run -to {app_file} {bp_name}")
+    assert status == 0
+    assert not os.path.isfile("should_not_create.py")
+
+
 def test_attach_with_dry_run(tmp_path):
     CONTENTS = """import os
     from flask import Flask
