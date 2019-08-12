@@ -97,11 +97,8 @@ The app will now be available on [http:localhost:5000/](http:localhost:5000/)!
 
 Generating a basic Flask app is simple:
 
-`flaskerize generate hello-world app.py`
+`fz generate hello-world app.py`
 
-Or the shorthand:
-
-`fz g hw app.py`
 
 The first argument after the `generate` flag is the type of application you want to
 create (see [available types](#available-types), and the following argument is the name of the application.
@@ -126,7 +123,7 @@ The app will now be available on [http:localhost:5000/](http:localhost:5000/)
 
 Now, to serve this from a new Flask app with `flaskerize`, run the following
 
-`flaskerize generate app -from test/build/ app.py`
+`fz generate app -from test/build/ app.py`
 
 This command will generate a file `app.py` containing the Flask app, which can then be run with `python app.py`
 
@@ -142,7 +139,7 @@ Install [yarn](https://yarnpkg.com/lang/en/docs/install/) and [the Angular CLI](
 
 `yarn build --prod`
 
-`flaskerize generate app -from dist/<project name>/ app.py`
+`fz generate app -from dist/<project name>/ app.py`
 
 This command will generate a file `app.py` containing the Flask app, which can then be run with `python app.py`
 
@@ -154,16 +151,14 @@ _Flaskerize uses the [factory pattern](http://flask.pocoo.org/docs/1.0/patterns/
 
 #### Attach with one command and generate Dockerfile
 
-`fz b -from test/build/ -to app:create_app --with-dockerfile`
+`fz bundle -from test/build/ -to app:create_app --with-dockerfile`
 
-Or, longer
-`flaskerize bundle -from test/build/ -to app:create_app --with-dockerfile`
 
 #### Separate generation and attachment
 
 First, create a blueprint from the static site
 
-`fz g bp -from test/build/ _fz_blueprint.py`
+`fz generate bp -from test/build/ _fz_blueprint.py`
 
 Next, attach the blueprint to your existing Flask app
 
@@ -171,13 +166,13 @@ Next, attach the blueprint to your existing Flask app
 
 You can also use the longer form of both of these commands:
 
-`flaskerize generate blueprint --static-dir-name test/build/ _fz_blueprint.py`
+`fz generate blueprint --static-dir-name test/build/ _fz_blueprint.py`
 
 `flaskerize attach _fz_blueprint.py -to app:create_app`
 
 ### Generate a new namespace
 
-Usage: `fz g ns <basename>`
+Usage: `fz generate ns <basename>`
 Namespace generation will create a new file containing a:
 	- Class
 	- Marshmallow Schema
@@ -206,7 +201,7 @@ def client(app):
 _Note: The test files for the code itself are always placed alongside the code itself. For example, the test for `api/widget.py` should be `api/widget_test.py`. The `tests/` folder is for application-wide testing utilities and, although you can place tests here and they will correctly be detected and run, it is not advised. It is better to localize all code related to the same concept. If you are doubting whether you are putting code into the right place, always ask yourself "How long would it take me to delete this feature entirely from the code?". If the answer is "five seconds because I just delete the `app/doodad` folder, then you are probably doing this right."_
 
 Example:
-`fz g ns product --dry-run`
+`fz generate ns product --dry-run`
 
 ### <a name="factory-pattern"></a>Factory Pattern
 
