@@ -1,7 +1,8 @@
 {
   "options": [
     {
-      "arg": "--from",
+      "arg": "--source",
+      "aliases": ["--from"],
       "type": "str",
       "help": "Name of the static site to serve from generated Flask app"
     }

@@ -161,7 +161,7 @@ class Flaskerize(object):
             "--output-file", "-o", type=str, help="Name of output file"
         )
         arg_parser.add_argument(
-            "--from", "--source", type=str, help="Path of input static site to bundle"
+            "--source", "--from", type=str, help="Path of input static site to bundle"
         )
         arg_parser.add_argument(
             "--to",
