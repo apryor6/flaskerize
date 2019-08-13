@@ -8,7 +8,7 @@ from flaskerize.attach import attach
 def test_flaskerize_generate():
     import os
 
-    status = os.system("fz bundle --dry-run -from test/build/ -to app:create_app")
+    status = os.system("fz bundle --dry-run --from test/build/ --to app:create_app")
     assert status == 0
     assert not os.path.isfile("should_not_create.py")
 
@@ -48,7 +48,7 @@ def test_flaskerize_attach_from_cli(tmp_path):
     bp_name = f"{tmp_path}/_fz_bp.py"
     with open(bp_name, "w") as fid:
         fid.write(BP_CONTENTS)
-    status = os.system(f"fz attach --dry-run -to {app_file} {bp_name}")
+    status = os.system(f"fz attach --dry-run --to {app_file} {bp_name}")
     assert status == 0
     assert not os.path.isfile("should_not_create.py")
 

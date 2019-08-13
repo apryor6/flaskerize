@@ -83,7 +83,7 @@ def test_bundle(tmp_path):
     with open(os.path.join(site_dir, "index.html"), "w") as fid:
         fid.write(INDEX_CONTENTS)
 
-    status = os.system(f"fz bundle --dry-run -from {site_dir} -to app:create_app")
+    status = os.system(f"fz bundle --dry-run --from {site_dir} --to app:create_app")
 
     assert status == 0
 
