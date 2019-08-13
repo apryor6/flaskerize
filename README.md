@@ -9,7 +9,12 @@ Use `flaskerize` for tasks including:
     - Bundle and serve static web applications such as Angular, React, Gatsby, Jekyll, etc within a new or existing Flask app.
     - Register Flask resources as new routes within an existing application 
     - Creating new schematics for your own library or organization
-  
+
+### What about cookiecutter?
+
+[Cookiecutter](https://github.com/cookiecutter/cookiecutter) is awesome and does something different than `flaskerize`, but understandably they sound similar at first. Whereas `cookiecutter` is designed for scaffolding new projects, `flaskerize` is for ongoing use within an existing project for generation of new components, resources, etc and for modification of existing code.
+
+Both projects use Jinja templates and JSON files for configuration of parameters. If you like `cookiecutter` (like me), you should feel right at home with `flaskerize`.
 
 ### Flaskerize is looking for developers!
 
