@@ -1,4 +1,4 @@
-from pytest import fixture
+from pytest import fixture, raises
 import os
 from os import path
 from unittest.mock import patch, MagicMock
@@ -132,3 +132,9 @@ def test_render(colored, renderer):
     renderer.render(name="test_resource", args=[])
 
     mock.assert_called_once()
+
+
+# def test_render_raises(renderer):
+#     with raises(ValueError):
+#         renderer.render(name="test_resource", args=["name"])
+

@@ -75,10 +75,6 @@ def _load_schema(filename: str) -> Dict:
 #     return arg_parser
 
 
-def parse(args):
-    return arg_parser.parse_args(args)
-
-
 class FzArgumentParser(argparse.ArgumentParser):
     """Flaskerize argument parser with default common options"""
 
@@ -113,6 +109,7 @@ class Flaskerize(object):
     def __init__(self, args):
         import os
 
+        print("\n\n\n ARGS = ", args)
         dirname = os.path.dirname(__file__)
         parser = FzArgumentParser(
             os.path.join(os.path.dirname(__file__), "global/schema.json")
@@ -180,13 +177,13 @@ class Flaskerize(object):
         arg_parser.add_argument(
             "--with-dockerfile", action="store_true", help="Also generate a Dockerfile"
         )
-        arg_parser.add_argument(
-            "--force",
-            "-f",
-            action="store_true",
-            help="Ignore safety checks, such as checking that "
-            "target Flask app is a *.py",
-        )
+        # arg_parser.add_argument(
+        #     "--force",
+        #     "-f",
+        #     action="store_true",
+        #     help="Ignore safety checks, such as checking that "
+        #     "target Flask app is a *.py",
+        # )
         arg_parser.add_argument(
             "--dry-run",
             action="store_true",
@@ -194,10 +191,10 @@ class Flaskerize(object):
         )
 
         parsed = arg_parser.parse_args(args + [DEFAULT_BP_NAME])
-        if parsed.force:
-            force = "--force"
-        else:
-            force = ""
+        # if parsed.force:
+        #     force = "--force"
+        # else:
+        #     force = ""
 
         if parsed.source and not parsed.source.endswith("/"):
             print(
@@ -211,35 +208,7 @@ class Flaskerize(object):
         generate.a["blueprint"](parsed)
 
         if not parsed.dry_run:
-            self.attach(f"-to {parsed.to} {DEFAULT_BP_NAME} {force}".split())
-
-        # Build a WSGI file if requested or needed. If user has requested a Dockerfile
-        # without adding --with-wsgi flaskerize will add one unless a wsgi.py exists
-        # already
-        if parsed.with_wsgi or (
-            parsed.with_dockerfile and not os.path.isfile(f"{DEFAULT_WSGI_NAME}")
-        ):
-            # self.generate(f"wsgi -from {parsed.to} {DEFAULT_WSGI_NAME} {force}".split())
-            generate.a["wsgi"](parsed)
-        # if parsed.with_dockerfile:
-        #     self.generate(
-        #         f"dockerfile Dockerfile {force} -from {DEFAULT_GUNICORN_ENTRY}".split()
-        #     )
-        # what = parsed.what
-        # output_file = parsed.output_file
-        # if parsed.source and not parsed.source.endswith("/"):
-        #     print(
-        #         f"Input source {parsed.source} does not end with trailing /, adding "
-        #         "for you"
-        #     )
-        #     parsed.source += "/"
-        # if output_file is not None and os.path.isfile(output_file) and not parsed.force:
-        #     raise FileExistsError(
-        #         "ERROR: Target file '{}' already exists. "
-        #         "Add --force to override".format(output_file)
-        #     )
-
-        # generate.a[what](parsed)
+            self.attach(f"-to {parsed.to} {DEFAULT_BP_NAME}".split())
 
     def generate(self, args):
         import os
