@@ -122,7 +122,7 @@ class Flaskerize(object):
 
         arg_parser = FzArgumentParser()
         arg_parser.add_argument(
-            "-to",
+            "--to",
             type=str,
             required=True,
             help="Flask app factory function to attach blueprint",
@@ -161,10 +161,10 @@ class Flaskerize(object):
             "--output-file", "-o", type=str, help="Name of output file"
         )
         arg_parser.add_argument(
-            "-from", "--source", type=str, help="Path of input static site to bundle"
+            "--from", "--source", type=str, help="Path of input static site to bundle"
         )
         arg_parser.add_argument(
-            "-to",
+            "--to",
             type=str,
             required=True,
             help="Flask app factory function to attach blueprint",
@@ -202,13 +202,11 @@ class Flaskerize(object):
                 "for you"
             )
             parsed.source += "/"
-        # self.generate(
-        #     f"blueprint -from {parsed.source} {DEFAULT_BP_NAME} {force}".split()
-        # )
+
         generate.a["blueprint"](parsed)
 
         if not parsed.dry_run:
-            self.attach(f"-to {parsed.to} {DEFAULT_BP_NAME}".split())
+            self.attach(f"--to {parsed.to} {DEFAULT_BP_NAME}".split())
 
     def generate(self, args):
         import os

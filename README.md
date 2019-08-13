@@ -54,21 +54,20 @@ Install [yarn](https://yarnpkg.com/lang/en/docs/install/) and [create-react-app]
 
 Make a new react project and build into a static site:
 
-`create-react-app test`
-
-`cd test`
-
-`yarn build --prod`
-
-`cd ..`
+```
+create-react-app test
+cd test
+yarn build --prod
+cd ..
+```
 
 Generate a new Flask app with `flaskerize`
 
-`fz generate app app.py`
+`fz generate app app`
 
 Bundle the new React and Flask apps together:
 
-`fz bundle -from test/build/ -to app:create_app`
+`fz bundle --from test/build/ --to app:create_app`
 
 Run the resulting app:
 
@@ -108,7 +107,7 @@ The app will now be available on [http:localhost:5000/](http:localhost:5000/)
 
 Now, to serve this from a new Flask app with `flaskerize`, run the following
 
-`fz generate app -from test/build/ app.py`
+`fz generate app --from test/build/ app.py`
 
 This command will generate a file `app.py` containing the Flask app, which can then be run with `python app.py`
 
@@ -121,13 +120,12 @@ The Flask-ready version of your React app can now be viewed at [http:localhost:5
 
 Install [yarn](https://yarnpkg.com/lang/en/docs/install/) and [the Angular CLI](https://cli.angular.io/)
 
-`ng new`
-
-`cd <project name>`
-
-`yarn build --prod`
-
-`fz generate app -from dist/<project name>/ app.py`
+```
+ng new
+cd <project name>
+yarn build --prod
+fz generate app --from dist/<project name>/ app.py
+```
 
 This command will generate a file `app.py` containing the Flask app, which can then be run with `python app.py`
 
@@ -139,18 +137,18 @@ _Flaskerize uses the [factory pattern](http://flask.pocoo.org/docs/1.0/patterns/
 
 #### Attach with one command and generate Dockerfile
 
-`fz bundle -from test/build/ -to app:create_app --with-dockerfile`
+`fz bundle --from test/build/ --to app:create_app --with-dockerfile`
 
 
 #### Separate generation and attachment
 
 First, create a blueprint from the static site
 
-`fz generate bp -from test/build/ _fz_blueprint.py`
+`fz generate bp --from test/build/ _fz_blueprint.py`
 
 Next, attach the blueprint to your existing Flask app
 
-`fz a -to app.py:create_app _fz_blueprint.py`
+`fz a --to app.py:create_app _fz_blueprint.py`
 
 
 ### Generate a new namespace
