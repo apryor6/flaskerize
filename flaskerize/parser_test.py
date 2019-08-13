@@ -1,5 +1,6 @@
-import pytest
 import os
+from unittest.mock import MagicMock
+import pytest
 
 from flaskerize.exceptions import InvalidSchema
 from flaskerize.parser import FzArgumentParser, Flaskerize
@@ -107,6 +108,13 @@ def test__check_get_schematic_dirname(tmp_path):
         )
 
 
+@pytest.fixture
+def fz(tmp_path):
+    tmp_app_path = os.path.join(tmp_path, "test.py")
+    fz = Flaskerize(["fz", "generate", "app", tmp_app_path])
+    return fz
+
+
 def test__check_get_schematic_path(tmp_path):
     tmp_schematic_path = os.path.join(tmp_path, "some/pkg")
     os.makedirs(tmp_schematic_path)
@@ -116,4 +124,25 @@ def test__check_get_schematic_path(tmp_path):
         fz._check_get_schematic_path(
             tmp_schematic_path, "schematic that does not exist"
         )
+
+
+def test__split_pkg_schematic(fz, tmp_path):
+    with pytest.raises(ValueError):
+        pkg, schematic = fz._split_pkg_schematic(":schematic")
+
+
+def test__check_render_schematic(fz):
+    mock = fz.render_schematic = MagicMock()
+    result = fz._check_render_schematic(
+        pkg_schematic="test",
+        root="test",
+        name="test",
+        args=[],
+        full_schematic_path="some_path",
+        dry_run=True,
+    )
+    print("result = ", result)
+    mock.assert_called_with(
+        "some_path", root="test", name="test", dry_run=True, args=[]
+    )
 
