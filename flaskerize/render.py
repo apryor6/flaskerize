@@ -37,13 +37,18 @@ class SchematicRenderer:
 
         return [str(p) for p in Path(self.schematic_path).glob("**/*.template*")]
 
-    def _generate_outfile(self, template_file: str, root: str):
+    def _generate_outfile(
+        self, template_file: str, root: str, context: Optional[Dict] = None
+    ) -> str:
         full_path = path.join(root, path.relpath(template_file, self.schematic_path))
-        without_template = "".join(full_path.rsplit(".template"))
-        return without_template
+        outfile_name = "".join(full_path.rsplit(".template"))
+        tpl = self.env.from_string(outfile_name)
+        if context is None:
+            context = {}
+        return tpl.render(**context)
 
     def render_from_file(self, template_file: str, context: Dict) -> None:
-        outfile = self._generate_outfile(template_file, self.root)
+        outfile = self._generate_outfile(template_file, self.root, context=context)
         outdir = path.dirname(outfile) or "."
 
         # TODO: Refactor dry-run and file system interactions to a composable object

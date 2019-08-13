@@ -1,3 +1,9 @@
 {
-  "options": []
+  "options": [
+    {
+      "arg": "-from",
+      "type": "str",
+      "help": "Name of the static site to serve from generated Flask app"
+    }
+  ]
 }
