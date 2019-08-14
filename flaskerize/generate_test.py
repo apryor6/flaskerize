@@ -140,3 +140,4 @@ def test__generate_with_adds_extension(tmp_path):
     _generate(contents=CONTENTS, output_name=output_name, dry_run=False)
 
     assert path.isfile(output_name + ".py")
+

@@ -13,6 +13,13 @@ def test_flaskerize_generate():
     assert not os.path.isfile("should_not_create.py")
 
 
+def test_flaskerize_generate_with_schematic_path():
+
+    status = os.system("fz generate --dry-run app --schematic-path app my/test/app")
+    assert status == 0
+    assert not os.path.isfile("should_not_create.py")
+
+
 def test__load_schema(tmp_path):
     from flaskerize.parser import _load_schema
 

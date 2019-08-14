@@ -54,10 +54,22 @@ class SchematicRenderer:
 
         filenames = []
         patterns = self.config.get("templateFilePatterns", [])
-        # patterns = ["**/*.template"]
         for pattern in patterns:
             filenames.extend([str(p) for p in Path(self.schematic_path).glob(pattern)])
+        ignore_filenames = self._get_ignore_files()
+        filenames = list(set(filenames) - set(ignore_filenames))
         return filenames
+
+    def _get_ignore_files(self) -> List[str]:
+        from pathlib import Path
+
+        ignore_filenames = []
+        ignore_patterns = self.config.get("ignoreFilePatterns", [])
+        for pattern in ignore_patterns:
+            ignore_filenames.extend(
+                [str(p) for p in Path(self.schematic_path).glob(pattern)]
+            )
+        return ignore_filenames
 
     def _generate_outfile(
         self, template_file: str, root: str, context: Optional[Dict] = None

@@ -69,9 +69,7 @@ def test__get_template_files(tmp_path):
     CONTENTS = """
     {
         "templateFilePatterns": ["**/*.template"],
-        "options": [
-
-        ]
+        "options": []
     }
       
     """
@@ -90,10 +88,38 @@ def test__get_template_files(tmp_path):
     assert len(template_files) == 2
 
 
+def test_ignoreFilePatterns_is_respected(tmp_path):
+    from pathlib import Path
+
+    CONTENTS = """
+    {
+        "templateFilePatterns": ["**/*.template"],
+        "ignoreFilePatterns": ["**/b.txt.template"],
+        "options": []
+    }
+      
+    """
+    os.makedirs(path.join(tmp_path, "schematics/doodad"))
+    schematic_path = path.join(tmp_path, "schematics/doodad")
+    schema_path = path.join(schematic_path, "schema.json")
+    with open(schema_path, "w") as fid:
+        fid.write(CONTENTS)
+    renderer = SchematicRenderer(schematic_path=schematic_path, root="./", dry_run=True)
+    Path(path.join(renderer.schematic_path, "b.txt.template")).touch()
+    Path(path.join(renderer.schematic_path, "c.notatemplate.txt")).touch()
+    Path(path.join(renderer.schematic_path, "a.txt.template")).touch()
+
+    template_files = renderer._get_template_files()
+
+    assert len(template_files) == 1
+
+
 def test__generate_outfile(renderer: SchematicRenderer):
+
     outfile = renderer._generate_outfile(
         template_file="my/file.txt.template", root="/base"
     )
+
     base, file = path.split(outfile)
     assert file == "file.txt"
 
@@ -145,7 +171,25 @@ def test_render(colored, renderer):
     mock.assert_called_once()
 
 
-# def test_render_raises(renderer):
-#     with raises(ValueError):
-#         renderer.render(name="test_resource", args=["name"])
+def test_render_raises_if_colliding_parameter_provided(tmp_path):
+    CONTENTS = """
+    {
+        "options": [
+          {
+            "arg": "name",
+            "type": "str",
+            "help": "An option that is reserved and will cause an error"
+          }
+        ]
+    }
+
+    """
+    os.makedirs(path.join(tmp_path, "schematics/doodad"))
+    schematic_path = path.join(tmp_path, "schematics/doodad")
+    schema_path = path.join(schematic_path, "schema.json")
+    with open(schema_path, "w") as fid:
+        fid.write(CONTENTS)
+    renderer = SchematicRenderer(schematic_path=schematic_path, root="./", dry_run=True)
+    with raises(ValueError):
+        renderer.render(name="test_resource", args=["test_name"])
 
