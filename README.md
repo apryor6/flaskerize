@@ -1,4 +1,6 @@
 [![codecov](https://codecov.io/gh/apryor6/flaskerize/branch/master/graph/badge.svg)](https://codecov.io/gh/apryor6/flaskerize)
+[![license](https://img.shields.io/github/license/apryor6/flaskerize)](https://img.shields.io/github/license/apryor6/flaskerize)
+
 
 # flaskerize
 
