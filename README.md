@@ -1,13 +1,20 @@
 # flaskerize
 
-Build tool Command line interface (CLI) for Flask for tasks including:
+`flaskerize` is a code generation and project modification command line interface (CLI) written in Python and created for Python. It is heavily influenced by concepts and design patterns of the [Angular CLI](https://cli.angular.io/) available in the popular JavaScript framework [Angular](https://github.com/angular). 
 
-    - Generate Flask resources such as Dockerfiles, blueprints, or even entire applications
-    - Bundle and serve static web applications such as Angular or React with python APIs through a single, combined Flask app
+Use `flaskerize` for tasks including:
 
-### Why do I need a tool like this?
+    - Generate Flask resources such as Dockerfiles, blueprints, SQLAlchemy entites, or even entire applications, all with functioning tests
+	- Upgrade between breaking versions of projects that provide flaskerize upgrade schematics with one command
+    - Bundle and serve static web applications such as Angular, React, Gatsby, Jekyll, etc within a new or existing Flask app.
+    - Register Flask resources as new routes within an existing application 
+    - Creating new schematics for your own library or organization
 
-This project is heavily influenced by the [CLI](https://cli.angular.io/) available in the popular JavaScript framework [Angular](https://github.com/angular). There's also some other goodness added by the [Nx]((https://nx.dev/)) project, which is made by [Nrwl](https://nrwl.io/). Of particular note is the concept of schematics, which can be used to generate code from parameterized templates. However, Angular schematics can do much more. They support the ability to register newly created entities with other parts of the app, generate functioning tests, and provide upgrade paths across breaking version of libraries. Perhaps more important than the time this functionality saves the developer is the consistency it provides to the rest of the team, resulting in decreased time required for code reviews and collaborative development. Also, it promotes testing, which is always a good thing in my book.
+### What about cookiecutter?
+
+[Cookiecutter](https://github.com/cookiecutter/cookiecutter) is awesome and does something different than `flaskerize`, but understandably they sound similar at first. Whereas `cookiecutter` is designed for scaffolding new projects, `flaskerize` is for ongoing use within an existing project for generation of new components, resources, etc and for modification of existing code.
+
+Both projects use Jinja templates and JSON files for configuration of parameters. If you like `cookiecutter` (like me), you should feel right at home with `flaskerize`.
 
 ### Flaskerize is looking for developers!
 
@@ -28,6 +35,12 @@ This last one is important, as providing a hook to make the system extensible op
 In addition to code generation, this CLI could modify existing files. For example -- create a new directory containing a Flask-RESTplus Namespace and associated resources, tests, _and then register that within an existing Flask app_. This would need to be able to inspect the existing app and determine if the registration has already been provided and adding it only if necessary. The magic here is that with one command the user will be able to generate a new resource, reload (or hot-reload) their app, and view the new code already wired up with working tests. I cannot emphasize enough how much this improves developer workflow, especially among teams and/or on larger projects.
   
 
+### Why do I need a tool like this?
+
+Productivity, consistency, and also productivity.
+
+Flaskerize is an incredible productivity boost (_something something 10x dev_). This project is based on the concept of _schematics_, which can be used to generate code from parameterized templates. However, schematics can do much more. They support the ability to register newly created entities with other parts of the app, generate functioning tests, and provide upgrade paths across breaking version of libraries. Perhaps more important than the time this functionality saves the developer is the consistency it provides to the rest of the team, resulting in decreased time required for code reviews and collaborative development. Also, it promotes testing, which is always a good thing.
+
 
 ## Installation
 
@@ -41,21 +54,20 @@ Install [yarn](https://yarnpkg.com/lang/en/docs/install/) and [create-react-app]
 
 Make a new react project and build into a static site:
 
-`create-react-app test`
-
-`cd test`
-
-`yarn build --prod`
-
-`cd ..`
+```
+create-react-app test
+cd test
+yarn build --prod
+cd ..
+```
 
 Generate a new Flask app with `flaskerize`
 
-`fz g app app.py`
+`fz generate app app`
 
 Bundle the new React and Flask apps together:
 
-`fz b -from test/build/ -to app:create_app`
+`fz bundle --from test/build/ --to app:create_app`
 
 Run the resulting app:
 
@@ -67,52 +79,53 @@ The app will now be available on [http:localhost:5000/](http:localhost:5000/)!
 
 Generating a basic Flask app is simple:
 
-`flaskerize generate hello-world app.py`
+`fz generate app my_app`
 
-Or the shorthand:
-
-`fz g hw app.py`
-
-The first argument after the `generate` flag is the type of application you want to
-create (see [available types](#available-types), and the following argument is the name of the application.
+Then you can start the app with `python my_app.py` and navigate to http://localhost:5000/health to check that the app is online
 
 ### Create new React app
 
 Install [yarn](https://yarnpkg.com/lang/en/docs/install/) and [create-react-app](https://facebook.github.io/create-react-app/docs/getting-started)
 
-`create-react-app test`
+```
+create-react-app test
+cd test
+yarn build --prod
+cd ..
+```
 
-`cd test`
-
-`yarn build --prod`
-
-`cd ..`
+Upon completion the built site will be contained in `test/build/`
 
 To view the production React app as-is (no Flask), you can use `serve` (you'll need to install it globally first `yarn global add serve`)
 
 `serve -s test/build/`
 
+Alternatively, you could also serve directly with python `http.server`:
+
+`python -m http.server 5000 --directory test/build`
 The app will now be available on [http:localhost:5000/](http:localhost:5000/)
 
 Now, to serve this from a new Flask app with `flaskerize`, run the following
 
-`flaskerize generate app -from test/build/ app.py`
+`fz generate app --from test/build/ app.py`
 
 This command will generate a file `app.py` containing the Flask app, which can then be run with `python app.py`
 
 The Flask-ready version of your React app can now be viewed at [http:localhost:5000/](http:localhost:5000/)!
 
+
+
+
 ### Create new Angular app
 
 Install [yarn](https://yarnpkg.com/lang/en/docs/install/) and [the Angular CLI](https://cli.angular.io/)
 
-`ng new`
-
-`cd <project name>`
-
-`yarn build --prod`
-
-`flaskerize generate app -from dist/<project name>/ app.py`
+```
+ng new
+cd <project name>
+yarn build --prod
+fz generate app --from dist/<project name>/ app.py
+```
 
 This command will generate a file `app.py` containing the Flask app, which can then be run with `python app.py`
 
@@ -124,30 +137,23 @@ _Flaskerize uses the [factory pattern](http://flask.pocoo.org/docs/1.0/patterns/
 
 #### Attach with one command and generate Dockerfile
 
-`fz b -from test/build/ -to app:create_app --with-dockerfile`
+`fz bundle --from test/build/ --to app:create_app --with-dockerfile`
 
-Or, longer
-`flaskerize bundle -from test/build/ -to app:create_app --with-dockerfile`
 
 #### Separate generation and attachment
 
 First, create a blueprint from the static site
 
-`fz g bp -from test/build/ _fz_blueprint.py`
+`fz generate bp --from test/build/ _fz_blueprint.py`
 
 Next, attach the blueprint to your existing Flask app
 
-`fz a -to app.py:create_app _fz_blueprint.py`
+`fz a --to app.py:create_app _fz_blueprint.py`
 
-You can also use the longer form of both of these commands:
-
-`flaskerize generate blueprint --static-dir-name test/build/ _fz_blueprint.py`
-
-`flaskerize attach _fz_blueprint.py -to app:create_app`
 
 ### Generate a new namespace
 
-Usage: `fz g ns <basename>`
+Usage: `fz generate ns <basename>`
 Namespace generation will create a new file containing a:
 	- Class
 	- Marshmallow Schema
@@ -176,13 +182,36 @@ def client(app):
 _Note: The test files for the code itself are always placed alongside the code itself. For example, the test for `api/widget.py` should be `api/widget_test.py`. The `tests/` folder is for application-wide testing utilities and, although you can place tests here and they will correctly be detected and run, it is not advised. It is better to localize all code related to the same concept. If you are doubting whether you are putting code into the right place, always ask yourself "How long would it take me to delete this feature entirely from the code?". If the answer is "five seconds because I just delete the `app/doodad` folder, then you are probably doing this right."_
 
 Example:
-`fz g ns product --dry-run`
+`fz generate ns product --dry-run`
 
-### <a name="factory-pattern"></a>Factory Pattern
 
-WIP
+### Schematics in third-party packages
 
-### <a name="available-types"></a>Available application types
+`flaskerize` is fully extensible and supports schematics provided by external libraries. To target a schematic from another package, simply use the syntax `fz generate <package_name>:<schematic_name> [OPTIONS]`
 
-    - hello-world (hw): A basic hello world app. Args: [app_name -> name of the app]
+Flaskerize expects to find a couple of things when using this syntax:
+
+	- The package `<package_name>` should be installed from the current python environment
+	- The top-level source directory of `<package_name>` should contain a `schematics/` package. Inside of that directory should be one or more directories, each corresponding to a single schematic. See the section "Structure of a schematic" for details on schematic contents.
+	- A `schematics/__init__.py` file, just so that schematics can be found as a package
+
+> For schematics that are built into `flaskerize`, you can drop the `<package_name>` piece of the schematic name. Thus the command `fz generate flaskerize:app new_app` is _exactly equivalent_ to `fz generate app new_app`. For all third-party schematics, you must provide both the package and schematic name.
+
+For example, the command  `fz generate test_schematics:resource my/new/resource` will work if test_schematics is an installed package in the current path with a source directory structure similar to:
+
+```
+├── setup.py
+└── test_schematics
+    ├── __init__.py
+    └── schematics
+        ├── __init__.py
+        ├── resource
+        │   ├── schema.json
+        │   ├── someConfig.json.template
+        │   ├── thingy.interface.ts.template
+        │   ├── thingy.py.template
+        │   └── widget.py.template
+```
+
+#### Structure of a schematic
 

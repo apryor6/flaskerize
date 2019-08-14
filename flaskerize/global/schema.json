@@ -1,0 +1,11 @@
+{
+  "options": [
+    {
+      "arg": "command",
+      "choices": ["attach", "bundle", "generate"],
+      "type": "str",
+      "nargs": "+",
+      "help": "Generate a new resource"
+    }
+  ]
+}

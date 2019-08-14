@@ -63,3 +63,8 @@ _flaskerize_blueprint.py
 wsgi.py
 **/venv
 .mypy_cache/
+
+.coverage
+
+_fz_bp.py
+htmlcov/

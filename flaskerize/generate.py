@@ -94,33 +94,6 @@ if __name__ == '__main__':
     print("Successfully created new app")
 
 
-def app(args):
-    CONTENTS = """import os
-from flask import Flask
-
-
-def create_app():
-    app = Flask(__name__)
-    @app.route('/health')
-    def serve():
-        return 'Well hello there!'
-    return app
-
-
-if __name__ == '__main__':
-    app = create_app()
-    app.run()
-
-"""
-    _generate(
-        CONTENTS,
-        output_name=args.output_name,
-        filename=args.output_file,
-        dry_run=args.dry_run,
-    )
-    print("Successfully created new app")
-
-
 def blueprint(args):
     """
     Static site blueprint
@@ -289,17 +262,11 @@ def dockerfile(args):
     print("args = ", args)
     import os
 
-    if os.path.isfile("requirements.txt"):
-        req_txt = """COPY requirements.txt /requirements.txt
-RUN pip install --install-option="--prefix=/install" -r /requirements.txt"""
-    else:
-        req_txt = ""
     CONTENTS = f"""FROM python:3.7 as base
 
 FROM base as builder
 RUN mkdir /install
 WORKDIR /install
-{req_txt}
 RUN pip install --install-option="--prefix=/install" gunicorn
 RUN pip install --install-option="--prefix=/install" flask
 
@@ -329,7 +296,6 @@ ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:8080", "--access-logfile", "-", "--er
 a: Dict[str, Callable] = {
     "hello-world": hello_world,
     "hw": hello_world,
-    "app": app,
     "dockerfile": dockerfile,
     "wsgi": wsgi,
     "app_from_dir": app_from_dir,
