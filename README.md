@@ -151,39 +151,6 @@ Next, attach the blueprint to your existing Flask app
 `fz a --to app.py:create_app _fz_blueprint.py`
 
 
-### Generate a new namespace
-
-Usage: `fz generate ns <basename>`
-Namespace generation will create a new file containing a:
-	- Class
-	- Marshmallow Schema
-	- Flask-RESTplus Resource
-
-The `basename` argument is used to determine the name of the classes and a default filename unless one is specified with the `-o` flag. By default, a test is also generated using the same filename as the resource except ending in `_test.py`. The generated tests using pytest and assume (currently) that you have followed the best practice of creating a tests/fixtures.py file within the app that contains pytest fixtures for generating an app, client, etc. For example, this might simply be 
-
-```python
-# app/test/fixtures.py
-
-import pytest
-
-from app import create_app
-
-
-@pytest.fixture
-def app():
-    return create_app('test')
-
-
-@pytest.fixture
-def client(app):
-    return app.test_client()
-```
-
-_Note: The test files for the code itself are always placed alongside the code itself. For example, the test for `api/widget.py` should be `api/widget_test.py`. The `tests/` folder is for application-wide testing utilities and, although you can place tests here and they will correctly be detected and run, it is not advised. It is better to localize all code related to the same concept. If you are doubting whether you are putting code into the right place, always ask yourself "How long would it take me to delete this feature entirely from the code?". If the answer is "five seconds because I just delete the `app/doodad` folder, then you are probably doing this right."_
-
-Example:
-`fz generate ns product --dry-run`
-
 
 ### Schematics in third-party packages
 
@@ -213,5 +180,13 @@ For example, the command  `fz generate test_schematics:resource my/new/resource`
         │   └── widget.py.template
 ```
 
-#### Structure of a schematic
+### Structure of a schematic
 
+#### schema.json
+
+Each schematic contains a `schema.json` file that defines configuration parameters including the available CLI arguments, template files to include, etc.
+
+__parameters__:
+  - templateFilePatterns: array of glob patterns representing files that are to be rendered as Jinja templates
+  - ignoreFilePatterns: array of glob patterns representing files that are not to be rendered as part of the schematic output, such as helper modules
+  - options: array of dicts containing parameters for argument parsing with the addition of an array parameter `aliases` that is used to generate alternative/shorthand names for the command. These dicts are passed along directly to `argparse.ArgumentParser.add_argument` and thus support the same parameters. See [here](https://docs.python.org/3/library/argparse.html) for more information.
