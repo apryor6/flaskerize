@@ -207,10 +207,10 @@ For example, the command  `fz generate test_schematics:resource my/new/resource`
         ├── __init__.py
         ├── resource
         │   ├── schema.json
-        │   ├── someConfig.template.json
-        │   ├── thingy.interface.template.ts
-        │   ├── thingy.template.py
-        │   └── widget.template.py
+        │   ├── someConfig.json.template
+        │   ├── thingy.interface.ts.template
+        │   ├── thingy.py.template
+        │   └── widget.py.template
 ```
 
 #### Structure of a schematic
