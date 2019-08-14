@@ -14,6 +14,10 @@ class SchematicRenderer:
 
         self.schematic_path = schematic_path
         self.root = root
+
+        self.schema_path = self._get_schema_path()
+        self._load_schema()
+
         self.arg_parser = self._check_get_arg_parser()
         self.env = Environment()
         self.dry_run = dry_run
@@ -22,20 +26,50 @@ class SchematicRenderer:
         self._files_deleted: List[str] = []
         self._files_modified: List[str] = []
 
-    def _check_get_arg_parser(self) -> Optional[FzArgumentParser]:
-        """Load argument parser from schema.json, if provided"""
+    def _load_schema(self) -> None:
+        if self.schema_path:
+            import json
 
-        import json
+            with open(self.schema_path, "r") as fid:
+                self.config = json.load(fid)
+        else:
+            self.config = {}
 
-        schema_path = f"{self.schematic_path}/schema.json"
+    def _get_schema_path(self) -> Optional[str]:
+
+        schema_path = path.join(self.schematic_path, "schema.json")
         if not path.isfile(schema_path):
             return None
-        return FzArgumentParser(schema=schema_path)
+        return schema_path
+
+    def _check_get_arg_parser(
+        self, schema_path: Optional[str] = None
+    ) -> Optional[FzArgumentParser]:
+        """Load argument parser from schema.json, if provided"""
+
+        return FzArgumentParser(schema=schema_path or self.schema_path)
 
     def _get_template_files(self) -> List[str]:
         from pathlib import Path
 
-        return [str(p) for p in Path(self.schematic_path).glob("**/*.template")]
+        filenames = []
+        patterns = self.config.get("templateFilePatterns", [])
+        for pattern in patterns:
+            filenames.extend([str(p) for p in Path(self.schematic_path).glob(pattern)])
+        ignore_filenames = self._get_ignore_files()
+        filenames = list(set(filenames) - set(ignore_filenames))
+        return filenames
+
+    def _get_ignore_files(self) -> List[str]:
+        from pathlib import Path
+
+        ignore_filenames = []
+        ignore_patterns = self.config.get("ignoreFilePatterns", [])
+        for pattern in ignore_patterns:
+            ignore_filenames.extend(
+                [str(p) for p in Path(self.schematic_path).glob(pattern)]
+            )
+        return ignore_filenames
 
     def _generate_outfile(
         self, template_file: str, root: str, context: Optional[Dict] = None

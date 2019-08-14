@@ -1,3 +1,4 @@
+from os import path
 import pytest
 from unittest.mock import MagicMock
 from dataclasses import dataclass
@@ -32,7 +33,7 @@ def test_flaskerize_attach_from_cli(tmp_path):
         app = create_app()
         app.run()"""
 
-    app_file = f"{tmp_path}/app.py"
+    app_file = path.join(tmp_path, "app.py")
     with open(app_file, "w") as fid:
         fid.write(CONTENTS)
 
@@ -45,7 +46,7 @@ def test_flaskerize_attach_from_cli(tmp_path):
     @site.route('/')
     def index():
         return send_from_directory(site.static_folder, 'index.html')"""
-    bp_name = f"{tmp_path}/_fz_bp.py"
+    bp_name = path.join(tmp_path, "_fz_bp.py")
     with open(bp_name, "w") as fid:
         fid.write(BP_CONTENTS)
     status = os.system(f"fz attach --dry-run --to {app_file} {bp_name}")
@@ -70,7 +71,7 @@ def test_attach_with_dry_run(tmp_path):
         app = create_app()
         app.run()"""
 
-    app_file = f"{tmp_path}/app.py"
+    app_file = path.join(tmp_path, "app.py")
     with open(app_file, "w") as fid:
         fid.write(CONTENTS)
 
@@ -105,7 +106,7 @@ def test_attach_without_dry_run_raises_if_file_does_not_exist(tmp_path):
         app = create_app()
         app.run()"""
 
-    app_file = f"{tmp_path}/app.py"
+    app_file = path.join(tmp_path, "app.py")
     with open(app_file, "w") as fid:
         fid.write(CONTENTS)
 
@@ -115,7 +116,7 @@ def test_attach_without_dry_run_raises_if_file_does_not_exist(tmp_path):
         bp: str = "_fz_bp.py"
         dry_run: bool = False
 
-    outfile = f"{tmp_path}/outfile.py"
+    outfile = path.join(tmp_path, "outfile.py")
     attach.split_file_factory = MagicMock(return_value=(app_file, "create_app"))
     attach.attach(Args())
 
@@ -141,7 +142,7 @@ def test_attach_raises_with_no_target_function_call(tmp_path):
         app = create_app()
         app.run()"""
 
-    app_file = f"{tmp_path}/app.py"
+    app_file = path.join(tmp_path, "app.py")
     with open(app_file, "w") as fid:
         fid.write(CONTENTS)
 
@@ -151,7 +152,7 @@ def test_attach_raises_with_no_target_function_call(tmp_path):
         bp: str = "_fz_bp.py"
         dry_run: bool = False
 
-    outfile = f"{tmp_path}/outfile.py"
+    outfile = path.join(tmp_path, "outfile.py")
     attach.split_file_factory = MagicMock(return_value=(app_file, "create_app"))
     with pytest.raises(SyntaxError):
         attach.attach(Args())
@@ -177,7 +178,7 @@ def test_attach_raises_with_no_Flask_call(tmp_path):
         app = create_app()
         app.run()"""
 
-    app_file = f"{tmp_path}/app.py"
+    app_file = path.join(tmp_path, "app.py")
     with open(app_file, "w") as fid:
         fid.write(CONTENTS)
 
@@ -187,7 +188,7 @@ def test_attach_raises_with_no_Flask_call(tmp_path):
         bp: str = "_fz_bp.py"
         dry_run: bool = False
 
-    outfile = f"{tmp_path}/outfile.py"
+    outfile = path.join(tmp_path, "outfile.py")
     attach.split_file_factory = MagicMock(return_value=(app_file, "create_app"))
     with pytest.raises(SyntaxError):
         attach.attach(Args())

@@ -228,6 +228,7 @@ class Flaskerize(object):
             self._check_render_schematic(
                 schematic,
                 name=name,
+                root=root,
                 dry_run=dry_run,
                 full_schematic_path=parsed.schematic_path,
                 args=rest,

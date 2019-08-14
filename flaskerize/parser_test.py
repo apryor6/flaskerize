@@ -13,6 +13,13 @@ def test_flaskerize_generate():
     assert not os.path.isfile("should_not_create.py")
 
 
+def test_flaskerize_generate_with_schematic_path():
+
+    status = os.system("fz generate --dry-run app --schematic-path app my/test/app")
+    assert status == 0
+    assert not os.path.isfile("should_not_create.py")
+
+
 def test__load_schema(tmp_path):
     from flaskerize.parser import _load_schema
 
@@ -63,7 +70,7 @@ def test_bundle(tmp_path):
         app = create_app()
         app.run()"""
 
-    app_file = f"{tmp_path}/app.py"
+    app_file = os.path.join(tmp_path, "app.py")
     with open(app_file, "w") as fid:
         fid.write(CONTENTS)
 
@@ -79,7 +86,7 @@ def test_bundle(tmp_path):
     
       </body>
     </html>"""
-    site_dir = f"{tmp_path}"
+    site_dir = tmp_path
     with open(os.path.join(site_dir, "index.html"), "w") as fid:
         fid.write(INDEX_CONTENTS)
 
