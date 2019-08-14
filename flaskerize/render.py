@@ -35,7 +35,7 @@ class SchematicRenderer:
     def _get_template_files(self) -> List[str]:
         from pathlib import Path
 
-        return [str(p) for p in Path(self.schematic_path).glob("**/*.template*")]
+        return [str(p) for p in Path(self.schematic_path).glob("**/*.template")]
 
     def _generate_outfile(
         self, template_file: str, root: str, context: Optional[Dict] = None

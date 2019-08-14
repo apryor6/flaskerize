@@ -71,9 +71,9 @@ def test__check_get_arg_parser_returns_functioning_parser_with_schema_file(
 def test__get_template_files(tmp_path, renderer: SchematicRenderer):
     from pathlib import Path
 
-    Path(path.join(renderer.schematic_path, "b.template.txt")).touch()
+    Path(path.join(renderer.schematic_path, "b.txt.template")).touch()
     Path(path.join(renderer.schematic_path, "c.notatemplate.txt")).touch()
-    Path(path.join(renderer.schematic_path, "a.template.txt")).touch()
+    Path(path.join(renderer.schematic_path, "a.txt.template")).touch()
 
     template_files = renderer._get_template_files()
     assert len(template_files) == 2
@@ -81,7 +81,7 @@ def test__get_template_files(tmp_path, renderer: SchematicRenderer):
 
 def test__generate_outfile(renderer: SchematicRenderer):
     outfile = renderer._generate_outfile(
-        template_file="my/file.template.txt", root="/base"
+        template_file="my/file.txt.template", root="/base"
     )
     base, file = path.split(outfile)
     assert file == "file.txt"
