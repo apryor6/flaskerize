@@ -15,12 +15,6 @@ def renderer(tmp_path):
     )
 
 
-def test__check_get_arg_parser_returns_None_with_no_file(renderer: SchematicRenderer):
-    parser = renderer._check_get_arg_parser()
-
-    assert parser is None
-
-
 def test__check_get_arg_parser_returns_parser_with_schema_file(
     renderer: SchematicRenderer
 ):
@@ -36,11 +30,10 @@ def test__check_get_arg_parser_returns_parser_with_schema_file(
       }
       
     """
-    schema_path = f"{renderer.schematic_path}/schema.json"
-    print(f"renderer.schematic_path = {renderer.schematic_path}")
+    schema_path = path.join(renderer.schematic_path, "schema.json")
     with open(schema_path, "w") as fid:
         fid.write(CONTENTS)
-    parser = renderer._check_get_arg_parser()
+    parser = renderer._check_get_arg_parser(schema_path)
     assert parser is not None
 
 
@@ -59,11 +52,10 @@ def test__check_get_arg_parser_returns_functioning_parser_with_schema_file(
       }
 
     """
-    schema_path = f"{renderer.schematic_path}/schema.json"
-    print(f"renderer.schematic_path = {renderer.schematic_path}")
+    schema_path = path.join(renderer.schematic_path, "schema.json")
     with open(schema_path, "w") as fid:
         fid.write(CONTENTS)
-    parser = renderer._check_get_arg_parser()
+    parser = renderer._check_get_arg_parser(schema_path)
     parsed = parser.parse_args(["some_value"])
     assert parsed.some_option == "some_value"
 

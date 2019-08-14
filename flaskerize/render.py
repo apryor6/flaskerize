@@ -14,6 +14,9 @@ class SchematicRenderer:
 
         self.schematic_path = schematic_path
         self.root = root
+
+        self.schema_path = self._get_schema_path()
+
         self.arg_parser = self._check_get_arg_parser()
         self.env = Environment()
         self.dry_run = dry_run
@@ -22,15 +25,19 @@ class SchematicRenderer:
         self._files_deleted: List[str] = []
         self._files_modified: List[str] = []
 
-    def _check_get_arg_parser(self) -> Optional[FzArgumentParser]:
-        """Load argument parser from schema.json, if provided"""
+    def _get_schema_path(self) -> Optional[str]:
 
-        import json
-
-        schema_path = f"{self.schematic_path}/schema.json"
+        schema_path = path.join(self.schematic_path, "schema.json")
         if not path.isfile(schema_path):
             return None
-        return FzArgumentParser(schema=schema_path)
+        return schema_path
+
+    def _check_get_arg_parser(
+        self, schema_path: Optional[str] = None
+    ) -> Optional[FzArgumentParser]:
+        """Load argument parser from schema.json, if provided"""
+
+        return FzArgumentParser(schema=schema_path or self.schema_path)
 
     def _get_template_files(self) -> List[str]:
         from pathlib import Path
