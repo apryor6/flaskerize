@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/apryor6/flaskerize/branch/master/graph/badge.svg)](https://codecov.io/gh/apryor6/flaskerize)
+
 # flaskerize
 
 `flaskerize` is a code generation and project modification command line interface (CLI) written in Python and created for Python. It is heavily influenced by concepts and design patterns of the [Angular CLI](https://cli.angular.io/) available in the popular JavaScript framework [Angular](https://github.com/angular). 
