@@ -9,9 +9,9 @@ from .render import SchematicRenderer
 
 @fixture
 def renderer(tmp_path):
-    os.makedirs(f"{tmp_path}/schematics/doodad")
+    os.makedirs(path.join(tmp_path, "schematics/doodad"))
     return SchematicRenderer(
-        schematic_path=f"{tmp_path}/schematics/doodad", root="./", dry_run=True
+        schematic_path=path.join(tmp_path, "schematics/doodad"), root="./", dry_run=True
     )
 
 
@@ -75,8 +75,8 @@ def test__get_template_files(tmp_path):
     }
       
     """
-    os.makedirs(f"{tmp_path}/schematics/doodad")
-    schematic_path = f"{tmp_path}/schematics/doodad"
+    os.makedirs(path.join(tmp_path, "schematics/doodad"))
+    schematic_path = path.join(tmp_path, "schematics/doodad")
     schema_path = path.join(schematic_path, "schema.json")
     with open(schema_path, "w") as fid:
         fid.write(CONTENTS)

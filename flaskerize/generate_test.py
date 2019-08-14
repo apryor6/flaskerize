@@ -112,7 +112,7 @@ def test__generate_with_dry_run(tmp_path):
     from flaskerize.generate import _generate
 
     CONTENTS = "asdf"
-    output_name = f"{tmp_path}/some/file"
+    output_name = path.join(tmp_path, "some/file")
     _generate(contents=CONTENTS, output_name=output_name, dry_run=True)
 
     assert not path.isfile(output_name)
@@ -124,7 +124,7 @@ def test__generate_with_file(tmp_path):
     from flaskerize.generate import _generate
 
     CONTENTS = "asdf"
-    output_name = f"{tmp_path}/file.py"
+    output_name = path.join(tmp_path, "file.py")
     _generate(contents=CONTENTS, output_name=output_name, dry_run=False)
 
     assert path.isfile(output_name)
@@ -136,7 +136,7 @@ def test__generate_with_adds_extension(tmp_path):
     from flaskerize.generate import _generate
 
     CONTENTS = "asdf"
-    output_name = f"{tmp_path}/file"
+    output_name = path.join(tmp_path, "file")
     _generate(contents=CONTENTS, output_name=output_name, dry_run=False)
 
     assert path.isfile(output_name + ".py")

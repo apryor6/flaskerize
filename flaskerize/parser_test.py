@@ -63,7 +63,7 @@ def test_bundle(tmp_path):
         app = create_app()
         app.run()"""
 
-    app_file = f"{tmp_path}/app.py"
+    app_file = os.path.join(tmp_path, "app.py")
     with open(app_file, "w") as fid:
         fid.write(CONTENTS)
 
@@ -79,7 +79,7 @@ def test_bundle(tmp_path):
     
       </body>
     </html>"""
-    site_dir = f"{tmp_path}"
+    site_dir = tmp_path
     with open(os.path.join(site_dir, "index.html"), "w") as fid:
         fid.write(INDEX_CONTENTS)
 
