@@ -16,6 +16,7 @@ class SchematicRenderer:
         self.root = root
 
         self.schema_path = self._get_schema_path()
+        self._load_schema()
 
         self.arg_parser = self._check_get_arg_parser()
         self.env = Environment()
@@ -24,6 +25,15 @@ class SchematicRenderer:
         self._files_created: List[str] = []
         self._files_deleted: List[str] = []
         self._files_modified: List[str] = []
+
+    def _load_schema(self) -> None:
+        if self.schema_path:
+            import json
+
+            with open(self.schema_path, "r") as fid:
+                self.config = json.load(fid)
+        else:
+            self.config = {}
 
     def _get_schema_path(self) -> Optional[str]:
 
@@ -42,7 +52,12 @@ class SchematicRenderer:
     def _get_template_files(self) -> List[str]:
         from pathlib import Path
 
-        return [str(p) for p in Path(self.schematic_path).glob("**/*.template")]
+        filenames = []
+        patterns = self.config.get("templateFilePatterns", [])
+        # patterns = ["**/*.template"]
+        for pattern in patterns:
+            filenames.extend([str(p) for p in Path(self.schematic_path).glob(pattern)])
+        return filenames
 
     def _generate_outfile(
         self, template_file: str, root: str, context: Optional[Dict] = None

@@ -1,5 +1,5 @@
 {
-  "renderPatterns": ["**/*.template"],
-  "ignorePatterns": ["schema.json", "run.py", "functions.py"],
+  "templateFilePatterns": ["**/*.template"],
+  "ignoreFilePatterns": ["schema.json", "run.py", "functions.py"],
   "options": []
 }

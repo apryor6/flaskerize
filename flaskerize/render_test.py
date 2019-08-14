@@ -20,6 +20,7 @@ def test__check_get_arg_parser_returns_parser_with_schema_file(
 ):
     CONTENTS = """
     {
+        "templateFilePatterns": ["**/*.template"],
         "options": [
           {
             "arg": "some_option",
@@ -27,7 +28,7 @@ def test__check_get_arg_parser_returns_parser_with_schema_file(
             "help": "An option used in this test"
           }
         ]
-      }
+    }
       
     """
     schema_path = path.join(renderer.schematic_path, "schema.json")
@@ -42,6 +43,7 @@ def test__check_get_arg_parser_returns_functioning_parser_with_schema_file(
 ):
     CONTENTS = """
     {
+        "templateFilePatterns": ["**/*.template"],
         "options": [
           {
             "arg": "some_option",
@@ -49,25 +51,42 @@ def test__check_get_arg_parser_returns_functioning_parser_with_schema_file(
             "help": "An option used in this test"
           }
         ]
-      }
+    }
 
     """
     schema_path = path.join(renderer.schematic_path, "schema.json")
     with open(schema_path, "w") as fid:
         fid.write(CONTENTS)
     parser = renderer._check_get_arg_parser(schema_path)
+    assert parser is not None
     parsed = parser.parse_args(["some_value"])
     assert parsed.some_option == "some_value"
 
 
-def test__get_template_files(tmp_path, renderer: SchematicRenderer):
+def test__get_template_files(tmp_path):
     from pathlib import Path
 
+    CONTENTS = """
+    {
+        "templateFilePatterns": ["**/*.template"],
+        "options": [
+
+        ]
+    }
+      
+    """
+    os.makedirs(f"{tmp_path}/schematics/doodad")
+    schematic_path = f"{tmp_path}/schematics/doodad"
+    schema_path = path.join(schematic_path, "schema.json")
+    with open(schema_path, "w") as fid:
+        fid.write(CONTENTS)
+    renderer = SchematicRenderer(schematic_path=schematic_path, root="./", dry_run=True)
     Path(path.join(renderer.schematic_path, "b.txt.template")).touch()
     Path(path.join(renderer.schematic_path, "c.notatemplate.txt")).touch()
     Path(path.join(renderer.schematic_path, "a.txt.template")).touch()
 
     template_files = renderer._get_template_files()
+
     assert len(template_files) == 2
 
 
