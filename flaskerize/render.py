@@ -44,7 +44,7 @@ class SchematicRenderer:
 
     def _check_get_arg_parser(
         self, schema_path: Optional[str] = None
-    ) -> Optional[FzArgumentParser]:
+    ) -> FzArgumentParser:
         """Load argument parser from schema.json, if provided"""
 
         return FzArgumentParser(schema=schema_path or self.schema_path)
@@ -84,7 +84,7 @@ class SchematicRenderer:
     def render_from_file(self, template_file: str, context: Dict) -> None:
         outfile = self._generate_outfile(template_file, self.root, context=context)
         outdir = path.dirname(outfile) or "."
-
+        print("outdir = ", outdir)
         # TODO: Refactor dry-run and file system interactions to a composable object
         # passed into this class rather than it containing the write logic
         with open(template_file, "r") as fid:
@@ -101,8 +101,6 @@ class SchematicRenderer:
                 self._directories_created.append(outdir)
 
             if not self.dry_run:
-                if not path.exists(outdir):
-                    makedirs(outdir)
                 with open(outfile, "w") as fout:
                     fout.write(tpl.render(**context))
             else:
@@ -154,17 +152,14 @@ Flaskerize job summary:
     def render(self, name: str, args: List[Any]) -> None:
         """Renders the schematic"""
 
-        if self.arg_parser is None:
-            context: Dict = {"name": name}
-        else:
-            context = vars(self.arg_parser.parse_args(args))
-            if "name" in context:
-                raise ValueError(
-                    "Collision between Flaskerize-reserved parameter 'name' and "
-                    "parameter found in schema.json corresponding to "
-                    f"{self.schematic_path}"
-                )
-            context = {**context, "name": name}
+        context = vars(self.arg_parser.parse_args(args))
+        if "name" in context:
+            raise ValueError(
+                "Collision between Flaskerize-reserved parameter 'name' and "
+                "parameter found in schema.json corresponding to "
+                f"{self.schematic_path}"
+            )
+        context = {**context, "name": name}
         template_files = self._get_template_files()
 
         for filename in template_files:

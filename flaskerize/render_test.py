@@ -171,6 +171,34 @@ def test_render(colored, renderer):
     mock.assert_called_once()
 
 
+def test_render_from_file(renderer, tmp_path):
+    filename = os.path.join(tmp_path, "my_template.py.template")
+    CONTENTS = "{{ secret }}"
+    with open(filename, "w") as fid:
+        fid.write(CONTENTS)
+    outfile = os.path.join(tmp_path, "doodad/my_template.py")
+    renderer._generate_outfile = MagicMock(return_value=outfile)
+    renderer.render_from_file(filename, context={"secret": "42"})
+
+    assert len(renderer._directories_created) > 0
+
+
+def test_render_from_file_when_outfile_exists(renderer, tmp_path):
+    filename = os.path.join(tmp_path, "my_template.py.template")
+    CONTENTS = "{{ secret }}"
+    with open(filename, "w") as fid:
+        fid.write(CONTENTS)
+    outdir = os.path.join(tmp_path, "doodad")
+    os.makedirs(outdir)
+    outfile = os.path.join(outdir, "my_template.py")
+    with open(outfile, "w") as fid:
+        fid.write("some existing content")
+    renderer._generate_outfile = MagicMock(return_value=outfile)
+    renderer.render_from_file(filename, context={"secret": "42"})
+
+    assert len(renderer._files_modified) > 0
+
+
 def test_render_raises_if_colliding_parameter_provided(tmp_path):
     CONTENTS = """
     {
