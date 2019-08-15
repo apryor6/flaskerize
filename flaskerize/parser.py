@@ -62,7 +62,6 @@ class Flaskerize(object):
     def __init__(self, args):
         import os
 
-        print("\n\n\n ARGS = ", args)
         dirname = os.path.dirname(__file__)
         parser = FzArgumentParser(
             os.path.join(os.path.dirname(__file__), "global/schema.json")

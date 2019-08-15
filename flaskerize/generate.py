@@ -60,7 +60,6 @@ def app_from_dir(args) -> None:
     from_static_files as anything within the directory can be served.
     """
 
-    print("args = ", args)
     print("Generating an app from static site directory")
 
     # The routing for `send_from_directory` comes directly from https://stackoverflow.com/questions/44209978/serving-a-create-react-app-with-flask  # noqa
@@ -99,7 +98,6 @@ def blueprint(args):
     Static site blueprint
     """
 
-    print("args = ", args)
     print("Generating a blueprint from static site")
 
     # The routing for `send_from_directory` comes directly from https://stackoverflow.com/questions/44209978/serving-a-create-react-app-with-flask  # noqa
@@ -128,7 +126,6 @@ def index():
 def wsgi(args):
     from flaskerize.utils import split_file_factory
 
-    print("args = ", args)
     filename, func = split_file_factory(args.source)
     filename = filename.replace(".py", "")
 
@@ -259,7 +256,6 @@ def test_get(app, client, schema):  # noqa
 
 
 def dockerfile(args):
-    print("args = ", args)
     import os
 
     CONTENTS = f"""FROM python:3.7 as base
