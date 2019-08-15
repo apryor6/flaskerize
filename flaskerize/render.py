@@ -153,12 +153,11 @@ Flaskerize job summary:
         from importlib.util import spec_from_file_location, module_from_spec
 
         spec = spec_from_file_location("run", run_function_path)
-        if spec is None:
-            raise ImportError(f"Unable to find spec run.py in {run_function_path}")
+
         module = module_from_spec(spec)
         spec.loader.exec_module(module)
         if not hasattr(module, "run"):
-            raise ValueError("No method 'run' function found in {run_function_path}")
+            raise ValueError(f"No method 'run' function found in {run_function_path}")
         return getattr(module, "run")
 
     def render(self, name: str, args: List[Any]) -> None:

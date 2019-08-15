@@ -221,3 +221,60 @@ def test_render_raises_if_colliding_parameter_provided(tmp_path):
     with raises(ValueError):
         renderer.render(name="test_resource", args=["test_name"])
 
+
+def test_render_raises_if_invalid_run_py(tmp_path):
+    SCHEMA_CONTENTS = """{"options": []}"""
+    os.makedirs(path.join(tmp_path, "schematics/doodad"))
+    schematic_path = path.join(tmp_path, "schematics/doodad")
+    schema_path = path.join(schematic_path, "schema.json")
+    with open(schema_path, "w") as fid:
+        fid.write(SCHEMA_CONTENTS)
+
+    RUN_CONTENTS = """from typing import Any, Dict
+
+from flaskerize import SchematicRenderer
+
+
+def wrong_named_run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
+    return
+"""
+    run_path = path.join(schematic_path, "run.py")
+    with open(run_path, "w") as fid:
+        fid.write(RUN_CONTENTS)
+
+    renderer = SchematicRenderer(schematic_path=schematic_path, root="./", dry_run=True)
+    with raises(ValueError):
+        renderer._load_run_function(
+            run_function_path=path.join(renderer.schematic_path, "run.py")
+        )
+
+
+def test_render_uses_custom_run(tmp_path):
+    SCHEMA_CONTENTS = """{"options": []}"""
+    os.makedirs(path.join(tmp_path, "schematics/doodad"))
+    schematic_path = path.join(tmp_path, "schematics/doodad")
+    schema_path = path.join(schematic_path, "schema.json")
+    with open(schema_path, "w") as fid:
+        fid.write(SCHEMA_CONTENTS)
+
+    RUN_CONTENTS = """from typing import Any, Dict
+
+from flaskerize import SchematicRenderer
+
+
+def run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
+    return 'result from the custom run function'
+"""
+    run_path = path.join(schematic_path, "run.py")
+    with open(run_path, "w") as fid:
+        fid.write(RUN_CONTENTS)
+
+    renderer = SchematicRenderer(schematic_path=schematic_path, root="./", dry_run=True)
+    run = renderer._load_run_function(
+        run_function_path=path.join(renderer.schematic_path, "run.py")
+    )
+
+    result = run(renderer=renderer, context={})
+
+    assert result == "result from the custom run function"
+
