@@ -2,6 +2,14 @@ v0.1.9
 
 - Change attachment line so choice of quotation does not conflict
 
-v2.0.0
+v0.2.0
 
 - Enable Flask() calls with existing static directories and dramatically simplify handling of static files from blueprints
+
+v0.3.0
+
+- Substantial refactor to use Jinja templates for rendering
+- Enable configurable schema.json for custom parameters from schematic author
+- Enable multi-glob parameters in schema.json for determining file patterns to include, ignore, render, etc
+- Dramatically increase test coverage
+- Provide hook for user-provided run method

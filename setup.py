@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="flaskerize",
-    version="0.2.0",
+    version="0.3.0",
     description="Flask CLI build/dev tool for bundling static sites into Flask apps and templated code generation",
     author="AJ Pryor",
     author_email="apryor6@gmail.com",
