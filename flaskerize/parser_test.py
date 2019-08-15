@@ -20,6 +20,7 @@ def test_flaskerize_generate_with_schematic_path():
     assert not os.path.isfile("should_not_create.py")
 
 
+@patch.dict("flaskerize.generate.a", {"blueprint": lambda params: None})
 def test_bundle_calls_attach(tmp_path):
     with patch.object(Flaskerize, "attach") as mock:
         fz = Flaskerize("fz bundle --from test/build/ --to app:create_app".split())
