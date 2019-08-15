@@ -3,6 +3,8 @@ include LICENSE
 include pytest.ini
 include README.md
 include setup.py
+include flaskerize/global/generate.json
+include flaskerize/global/schema.json
 
 graft flaskerize
 
