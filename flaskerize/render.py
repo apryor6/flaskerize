@@ -178,12 +178,12 @@ Flaskerize job summary:
             )
         except (ImportError, ValueError, FileNotFoundError) as e:
             run = default_run
-        # run = default_run
         run(renderer=self, context=context)
 
 
 def default_run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
     """Default run method"""
+
     template_files = renderer._get_template_files()
 
     for filename in template_files:
