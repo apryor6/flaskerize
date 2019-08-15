@@ -1,4 +1,9 @@
-include *.py
+include MANIFEST.in
 include LICENSE
 include pytest.ini
+include README.md
+include setup.py
+
+graft flaskerize
+
 recursive-include flaskerize *.json *.py *.template
