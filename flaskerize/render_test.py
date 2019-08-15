@@ -188,7 +188,9 @@ def test_render_from_file_when_outfile_exists(renderer, tmp_path):
     CONTENTS = "{{ secret }}"
     with open(filename, "w") as fid:
         fid.write(CONTENTS)
-    outfile = "doodad/my_template.py"
+    outdir = os.path.join(tmp_path, "doodad")
+    os.makedirs(outdir)
+    outfile = os.path.join(outdir, "my_template.py")
     with open(outfile, "w") as fid:
         fid.write("some existing content")
     renderer._generate_outfile = MagicMock(return_value=outfile)
