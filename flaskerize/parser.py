@@ -6,33 +6,6 @@ from typing import Any, Dict, List, Tuple, Optional
 from importlib.machinery import ModuleSpec
 
 
-# global_arg_parser = from_schema(global_schema)
-# schematic_arg_parser = from_schema("global/schema.json")
-# arg_parser = global_arg_parser
-# # arg_parser = argparse.ArgumentParser([global_arg_parser, schematic_arg_parser])
-
-# arg_parser = argparse.ArgumentParser(description="Flaskerize")
-# arg_parser.add_argument(
-#     "--bundle",
-#     "-b",
-#     type=str,
-#     nargs="+",
-#     help="Target static site to host within Flask",
-# )
-# arg_parser.add_argument(
-#     "--generate", "-g", type=str, nargs="+", help="Generate a new resource"
-# )
-# arg_parser.add_argument(
-#     "--force",
-#     "-f",
-#     action="store_true",
-#     help="Ignore safety checks, such as checking that " "target Flask app is a *.py",
-# )
-# arg_parser.add_argument(
-#     "--dry-run", action="store_true", help="Dry run -- don't actually create any files."
-# )
-
-
 def _convert_types(cfg: Dict) -> Dict:
     for option in cfg["options"]:
         if "type" in option:
@@ -61,20 +34,6 @@ def _load_schema(filename: str) -> Dict:
     return cfg
 
 
-# def _from_schema(filename: str) -> argparse.ArgumentParser:
-#     """Create an argument parser from a schema JSON file"""
-
-#     cfg = _load_schema(filename)
-#     arg_parser = argparse.ArgumentParser(description="Flaskerize")
-#     for option in cfg["options"]:
-#         arg_parser.add_argument(
-#             "--dry-run",
-#             action="store_true",
-#             help="Dry run -- don't actually create any files.",
-#         )
-#     return arg_parser
-
-
 class FzArgumentParser(argparse.ArgumentParser):
     """Flaskerize argument parser with default common options"""
 
@@ -97,12 +56,6 @@ class FzArgumentParser(argparse.ArgumentParser):
             for option in cfg["options"]:
                 switches = [option.pop("arg")] + option.pop("aliases", [])
                 self.add_argument(*switches, **option)
-
-
-# class FzGenerateParser(FzArgumentParser):
-#     """Flaskerize argument parser for generate command"""
-
-#     _GLOBAL_SCHEMA = os.path.join(os.path.dirname(__file__), "global/generate.json")
 
 
 class Flaskerize(object):
