@@ -155,9 +155,9 @@ Flaskerize job summary:
         context = vars(self.arg_parser.parse_args(args))
         if "name" in context:
             raise ValueError(
-                "Collision between Flaskerize-reserved parameter 'name' and "
-                "parameter found in schema.json corresponding to "
-                f"{self.schematic_path}"
+                "Collision between Flaskerize-reserved parameter "
+                "'name' and parameter found in schema.json corresponding "
+                f"to {self.schematic_path}"
             )
         context = {**context, "name": name}
         template_files = self._get_template_files()
