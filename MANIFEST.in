@@ -10,6 +10,6 @@ graft flaskerize
 
 global-exclude *.json
 
-recursive-include flaskerize/global
-recursive-include flaskerize/schematics
+recursive-include flaskerize/global *
+recursive-include flaskerize/schematics *
 recursive-include flaskerize *.json *.py *.template

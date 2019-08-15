@@ -11,5 +11,6 @@ setup(
     url="http://alanpryorjr.com/",
     packages=find_packages(),
     install_requires=["Flask>=1.1.1", "termcolor>=1.1.0"],
+    include_package_data=True,
     scripts=["bin/fz"],
 )
