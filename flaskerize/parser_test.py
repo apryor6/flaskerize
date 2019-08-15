@@ -117,10 +117,7 @@ def test__check_get_schematic_dirname(tmp_path):
     fz = Flaskerize(["fz", "generate", "app", tmp_pkg_path])
 
     with pytest.raises(ValueError):
-        fz._check_get_schematic_dirname(
-            tmp_pkg_path
-            # os.path.join(tmp_path, "pkg that does not exist")
-        )
+        fz._check_get_schematic_dirname(tmp_pkg_path)
 
 
 @pytest.fixture

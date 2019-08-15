@@ -177,6 +177,7 @@ For example, the command  `fz generate test_schematics:resource my/new/resource`
     └── schematics
         ├── __init__.py
         ├── resource
+        │   ├── run.py
         │   ├── schema.json
         │   ├── someConfig.json.template
         │   ├── thingy.interface.ts.template
@@ -194,3 +195,46 @@ __parameters__:
   - templateFilePatterns: array of glob patterns representing files that are to be rendered as Jinja templates
   - ignoreFilePatterns: array of glob patterns representing files that are not to be rendered as part of the schematic output, such as helper modules
   - options: array of dicts containing parameters for argument parsing with the addition of an array parameter `aliases` that is used to generate alternative/shorthand names for the command. These dicts are passed along directly to `argparse.ArgumentParser.add_argument` and thus support the same parameters. See [here](https://docs.python.org/3/library/argparse.html) for more information.
+
+
+#### Running custom code
+
+The default behavior of a schematic is to render all template files; however, `flaskerize` schematics may also provide custom code to be executed at runtime through providing a `run` method inside of a `run.py` within the top level of the schematic. A basic run.py looks as follows:
+
+```python
+from typing import Any, Dict
+
+from flaskerize import SchematicRenderer
+
+
+def run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
+    template_files = renderer.get_template_files()
+
+    for filename in template_files:
+        renderer.render_from_file(filename, context=context)
+    renderer.print_summary()
+```
+
+The `run` method takes two parameters:
+
+- renderer: A SchematicRenderer instance which contains information about the configured schematic such as the fully-qualified `schematic_path`, the Jinja `env`, handles to the file system, etc. It also has helper methods such as `get_template_files` for obtaining a list of template files based upon the contents of the schematic and the configuration settings of `schema.json` and `render_from_file` which reads the contents of a (template) file and renders it with `context`.
+- context: A `dict` containing the key-value pairs of the parsed command line arguments provided in the `options` array from `schema.json`.
+
+With these two parameters, it is possible to accomplish quite a lot of custom modification. For example, suppose a schematic optionally contains an `app-engine.yaml` file for deployment to Google Cloud, which the consumer might not be interested in. The schematic author can then provide a `--no-app-engine` switch in `schema.json` and then provide a custom run method:
+
+```python
+from os import path
+from typing import Any, Dict
+
+from flaskerize import SchematicRenderer
+
+
+def run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
+    for filename in renderer.get_template_files():
+		dirname, fname = path.split(filename)
+		if fname == 'app-engine.yaml' and context.get('no_app_engine', False):
+			continue
+        renderer.render_from_file(filename, context=context)
+```
+
+Although rendering templates is the most common operation, you can perform arbitrary code execution inside of `run` methods, including modification/deletion of existing files, logging, API requests, test execution, etc. As such, it is important to be security minded with regard to executing third-party schematics, just like any other script.

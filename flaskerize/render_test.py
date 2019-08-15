@@ -63,7 +63,7 @@ def test__check_get_arg_parser_returns_functioning_parser_with_schema_file(
     assert parsed.some_option == "some_value"
 
 
-def test__get_template_files(tmp_path):
+def test_get_template_files(tmp_path):
     from pathlib import Path
 
     CONTENTS = """
@@ -83,7 +83,7 @@ def test__get_template_files(tmp_path):
     Path(path.join(renderer.schematic_path, "c.notatemplate.txt")).touch()
     Path(path.join(renderer.schematic_path, "a.txt.template")).touch()
 
-    template_files = renderer._get_template_files()
+    template_files = renderer.get_template_files()
 
     assert len(template_files) == 2
 
@@ -109,7 +109,7 @@ def test_ignoreFilePatterns_is_respected(tmp_path):
     Path(path.join(renderer.schematic_path, "c.notatemplate.txt")).touch()
     Path(path.join(renderer.schematic_path, "a.txt.template")).touch()
 
-    template_files = renderer._get_template_files()
+    template_files = renderer.get_template_files()
 
     assert len(template_files) == 1
 
@@ -162,7 +162,7 @@ class TestColorizingPrint:
 
 @patch("flaskerize.render.colored")
 def test_render(colored, renderer):
-    renderer._get_template_files = lambda: ["file1"]
+    renderer.get_template_files = lambda: ["file1"]
     mock = MagicMock()
     renderer.render_from_file = mock
 
@@ -199,7 +199,7 @@ def test_render_from_file_when_outfile_exists(renderer, tmp_path):
     assert len(renderer._files_modified) > 0
 
 
-def test_render_raises_if_colliding_parameter_provided(tmp_path):
+def test__load_run_function_raises_if_colliding_parameter_provided(tmp_path):
     CONTENTS = """
     {
         "options": [
@@ -221,3 +221,104 @@ def test_render_raises_if_colliding_parameter_provided(tmp_path):
     with raises(ValueError):
         renderer.render(name="test_resource", args=["test_name"])
 
+
+def test__load_run_function_raises_if_invalid_run_py(tmp_path):
+    SCHEMA_CONTENTS = """{"options": []}"""
+    os.makedirs(path.join(tmp_path, "schematics/doodad"))
+    schematic_path = path.join(tmp_path, "schematics/doodad")
+    schema_path = path.join(schematic_path, "schema.json")
+    with open(schema_path, "w") as fid:
+        fid.write(SCHEMA_CONTENTS)
+
+    RUN_CONTENTS = """from typing import Any, Dict
+
+from flaskerize import SchematicRenderer
+
+
+def wrong_named_run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
+    return
+"""
+    run_path = path.join(schematic_path, "run.py")
+    with open(run_path, "w") as fid:
+        fid.write(RUN_CONTENTS)
+
+    renderer = SchematicRenderer(schematic_path=schematic_path, root="./", dry_run=True)
+    with raises(ValueError):
+        renderer._load_run_function(
+            run_function_path=path.join(renderer.schematic_path, "run.py")
+        )
+
+
+def test__load_run_function_uses_custom_run(tmp_path):
+    SCHEMA_CONTENTS = """{"options": []}"""
+    os.makedirs(path.join(tmp_path, "schematics/doodad"))
+    schematic_path = path.join(tmp_path, "schematics/doodad")
+    schema_path = path.join(schematic_path, "schema.json")
+    with open(schema_path, "w") as fid:
+        fid.write(SCHEMA_CONTENTS)
+
+    RUN_CONTENTS = """from typing import Any, Dict
+
+from flaskerize import SchematicRenderer
+
+
+def run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
+    return "result from the custom run function"
+"""
+    run_path = path.join(schematic_path, "run.py")
+    with open(run_path, "w") as fid:
+        fid.write(RUN_CONTENTS)
+
+    renderer = SchematicRenderer(schematic_path=schematic_path, root="./", dry_run=True)
+    run = renderer._load_run_function(
+        run_function_path=path.join(renderer.schematic_path, "run.py")
+    )
+
+    result = run(renderer=renderer, context={})
+
+    assert result == "result from the custom run function"
+
+
+def test__load_run_function_uses_custom_run_with_context_correctly(tmp_path):
+    SCHEMA_CONTENTS = """{"options": []}"""
+    os.makedirs(path.join(tmp_path, "schematics/doodad"))
+    schematic_path = path.join(tmp_path, "schematics/doodad")
+    schema_path = path.join(schematic_path, "schema.json")
+    with open(schema_path, "w") as fid:
+        fid.write(SCHEMA_CONTENTS)
+
+    RUN_CONTENTS = """from typing import Any, Dict
+
+from flaskerize import SchematicRenderer
+
+
+def run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
+    return context["value"]
+"""
+    run_path = path.join(schematic_path, "run.py")
+    with open(run_path, "w") as fid:
+        fid.write(RUN_CONTENTS)
+
+    renderer = SchematicRenderer(schematic_path=schematic_path, root="./", dry_run=True)
+    run = renderer._load_run_function(
+        run_function_path=path.join(renderer.schematic_path, "run.py")
+    )
+
+    result = run(renderer=renderer, context={"value": "secret password"})
+
+    assert result == "secret password"
+
+
+@patch("flaskerize.render.default_run")
+def test_default_run_executed_if_no_custom_run(mock: MagicMock, tmp_path):
+    SCHEMA_CONTENTS = """{"options": []}"""
+    os.makedirs(path.join(tmp_path, "schematics/doodad"))
+    schematic_path = path.join(tmp_path, "schematics/doodad")
+    schema_path = path.join(schematic_path, "schema.json")
+    with open(schema_path, "w") as fid:
+        fid.write(SCHEMA_CONTENTS)
+    renderer = SchematicRenderer(schematic_path=schematic_path, root="./", dry_run=True)
+
+    renderer.render(name="test_resource", args=[])
+
+    mock.assert_called_once()

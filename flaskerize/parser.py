@@ -103,40 +103,38 @@ class Flaskerize(object):
         DEFAULT_GUNICORN_ENTRY = f"{DEFAULT_WSGI_NAME.replace('.py', '')}:app"
 
         arg_parser = FzArgumentParser()
-        # arg_parser.add_argument("what", type=str, help="What to generate")
         arg_parser.add_argument(
             "output_name",
             type=str,
             default=None,
             help="Base name for outputted resource",
         )
+
         arg_parser.add_argument(
             "--output-file", "-o", type=str, help="Name of output file"
         )
+
         arg_parser.add_argument(
             "--source", "--from", type=str, help="Path of input static site to bundle"
         )
+
         arg_parser.add_argument(
             "--to",
             type=str,
             required=True,
             help="Flask app factory function to attach blueprint",
         )
+
         arg_parser.add_argument(
             "--with-wsgi",
             action="store_true",
             help="Also generate a wsgi.py for gunicorn",
         )
+
         arg_parser.add_argument(
             "--with-dockerfile", action="store_true", help="Also generate a Dockerfile"
         )
-        # arg_parser.add_argument(
-        #     "--force",
-        #     "-f",
-        #     action="store_true",
-        #     help="Ignore safety checks, such as checking that "
-        #     "target Flask app is a *.py",
-        # )
+
         arg_parser.add_argument(
             "--dry-run",
             action="store_true",
@@ -144,10 +142,6 @@ class Flaskerize(object):
         )
 
         parsed = arg_parser.parse_args(args + [DEFAULT_BP_NAME])
-        # if parsed.force:
-        #     force = "--force"
-        # else:
-        #     force = ""
 
         if parsed.source and not parsed.source.endswith("/"):
             print(
@@ -262,7 +256,6 @@ class Flaskerize(object):
         self.render_schematic(
             schematic_path, root=root, name=name, dry_run=dry_run, args=args
         )
-        # generate.a[schematic](args)
 
     def render_schematic(
         self,
