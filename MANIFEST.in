@@ -1,0 +1,4 @@
+include *.py
+include LICENSE
+include pytest.ini
+recursive-include flaskerize *.json *.py *.template
