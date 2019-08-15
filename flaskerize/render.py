@@ -1,6 +1,6 @@
 from os import path, makedirs
 import argparse
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 from termcolor import colored
 
 from flaskerize.parser import FzArgumentParser
@@ -149,6 +149,18 @@ Flaskerize job summary:
         BASE = "DELETED"
         print(f"{colored(BASE, COLOR)}: {value}")
 
+    def _load_run_function(self, run_function_path: str) -> Callable:
+        from importlib.util import spec_from_file_location, module_from_spec
+
+        spec = spec_from_file_location("run", run_function_path)
+        if spec is None:
+            raise ImportError(f"Unable to find spec run.py in {run_function_path}")
+        module = module_from_spec(spec)
+        spec.loader.exec_module(module)
+        if not hasattr(module, "run"):
+            raise ValueError("No method 'run' function found in {run_function_path}")
+        return getattr(module, "run")
+
     def render(self, name: str, args: List[Any]) -> None:
         """Renders the schematic"""
 
@@ -160,8 +172,21 @@ Flaskerize job summary:
                 f"to {self.schematic_path}"
             )
         context = {**context, "name": name}
-        template_files = self._get_template_files()
 
-        for filename in template_files:
-            self.render_from_file(filename, context=context)
-        self.print_summary()
+        try:
+            run = self._load_run_function(
+                run_function_path=path.join(self.schematic_path, "run.py")
+            )
+        except (ImportError, ValueError, FileNotFoundError) as e:
+            run = default_run
+        # run = default_run
+        run(renderer=self, context=context)
+
+
+def default_run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
+    """Default run method"""
+    template_files = renderer._get_template_files()
+
+    for filename in template_files:
+        renderer.render_from_file(filename, context=context)
+    renderer.print_summary()
