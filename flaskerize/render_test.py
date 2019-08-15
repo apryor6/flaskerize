@@ -63,7 +63,7 @@ def test__check_get_arg_parser_returns_functioning_parser_with_schema_file(
     assert parsed.some_option == "some_value"
 
 
-def test__get_template_files(tmp_path):
+def test_get_template_files(tmp_path):
     from pathlib import Path
 
     CONTENTS = """
@@ -83,7 +83,7 @@ def test__get_template_files(tmp_path):
     Path(path.join(renderer.schematic_path, "c.notatemplate.txt")).touch()
     Path(path.join(renderer.schematic_path, "a.txt.template")).touch()
 
-    template_files = renderer._get_template_files()
+    template_files = renderer.get_template_files()
 
     assert len(template_files) == 2
 
@@ -109,7 +109,7 @@ def test_ignoreFilePatterns_is_respected(tmp_path):
     Path(path.join(renderer.schematic_path, "c.notatemplate.txt")).touch()
     Path(path.join(renderer.schematic_path, "a.txt.template")).touch()
 
-    template_files = renderer._get_template_files()
+    template_files = renderer.get_template_files()
 
     assert len(template_files) == 1
 
@@ -162,7 +162,7 @@ class TestColorizingPrint:
 
 @patch("flaskerize.render.colored")
 def test_render(colored, renderer):
-    renderer._get_template_files = lambda: ["file1"]
+    renderer.get_template_files = lambda: ["file1"]
     mock = MagicMock()
     renderer.render_from_file = mock
 

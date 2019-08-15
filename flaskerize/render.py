@@ -49,7 +49,7 @@ class SchematicRenderer:
 
         return FzArgumentParser(schema=schema_path or self.schema_path)
 
-    def _get_template_files(self) -> List[str]:
+    def get_template_files(self) -> List[str]:
         from pathlib import Path
 
         filenames = []
@@ -184,7 +184,7 @@ Flaskerize job summary:
 def default_run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
     """Default run method"""
 
-    template_files = renderer._get_template_files()
+    template_files = renderer.get_template_files()
 
     for filename in template_files:
         renderer.render_from_file(filename, context=context)
