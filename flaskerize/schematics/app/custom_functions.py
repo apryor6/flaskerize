@@ -1,0 +1,2 @@
+from flaskerize import register_custom_function
+
