@@ -268,5 +268,9 @@ Hello {{ truncate(name, 3) }}!
 
 Then an invocation of `fz generate <package:schematic_name> voodoo`
 
-will yield a file `voodoo.txt` containing "Hellow voo!"
+will yield a file `voodoo.txt` containing
+
+```
+Hello voo!
+```
 
