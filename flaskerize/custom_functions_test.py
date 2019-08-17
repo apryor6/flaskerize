@@ -1,4 +1,4 @@
-from flaskerize import register_custom_function
+from flaskerize import register_custom_function, registered_funcs
 
 
 def test_register_custom_function():
@@ -9,6 +9,6 @@ def test_register_custom_function():
     def f2():
         return 42
 
-    assert len(register_custom_function.funcs) == 1
-    assert register_custom_function.funcs[0]() == f2()
-    assert register_custom_function.funcs[0]() != f1()
+    assert len(registered_funcs) == 1
+    assert registered_funcs[0]() == f2()
+    assert registered_funcs[0]() != f1()

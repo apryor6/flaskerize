@@ -176,7 +176,8 @@ Flaskerize job summary:
 
         print("\n\n====Running registered functions")
         for f in registered_funcs:
-            f()
+            self.env.globals[f.__name__] = f
+            # f()
 
     def render(self, name: str, args: List[Any]) -> None:
         """Renders the schematic"""

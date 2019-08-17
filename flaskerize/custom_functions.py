@@ -1,4 +1,4 @@
-from typing import List, Callable
+from typing import List, Callable, Any
 
 
 def make_register_custom_function() -> Callable:
@@ -13,3 +13,4 @@ def make_register_custom_function() -> Callable:
 
 
 register_custom_function = make_register_custom_function()
+registered_funcs = register_custom_function.funcs
