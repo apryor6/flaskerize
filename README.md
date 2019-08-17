@@ -243,7 +243,7 @@ Although rendering templates is the most common operation, you can perform arbit
 
 Schematics optionally may provide custom template functions for usage within the schematic.
 
-_Currently, custom_functions.py is provided at the schematic level. There is not yet a means to register custom functions "globally" within a family of schematics, but there are plans to do so if there are interested parties. Comment/follow [#16](https://github.com/apryor6/flaskerize/issues/16) for updates if this is something in which you are interested
+_Currently, custom_functions.py is provided at the schematic level. There is not yet a means to register custom functions "globally" within a family of schematics, but there are plans to do so if there are interested parties. Comment/follow [#16](https://github.com/apryor6/flaskerize/issues/16) for updates if this is something in which you are interested_
 
 To register custom functions, create a file called `custom_functions.py` within the schematic (at the same directory level as schema.json, run.py, etc). Within this file, apply the `flaskerize.register_custom_function` decorator to functions that you would like to make available. Within a template, the function can then be invoked using whatever name and signature was used to define it in `custom_functions.py`.
 
@@ -274,3 +274,4 @@ will yield a file `voodoo.txt` containing
 Hello voo!
 ```
 
+Additional examples can be found within [the Flaskerize test code](https://github.com/apryor6/flaskerize/blob/master/flaskerize/render_test.py)
