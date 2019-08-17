@@ -97,10 +97,11 @@ class SchematicRenderer:
             else:
                 self._files_created.append(outfile)
             if not path.exists(outdir):
-                makedirs(outdir)
                 self._directories_created.append(outdir)
 
             if not self.dry_run:
+                if not path.exists(outdir):
+                    makedirs(outdir)
                 with open(outfile, "w") as fout:
                     fout.write(tpl.render(**context))
             else:
@@ -149,16 +150,33 @@ Flaskerize job summary:
         BASE = "DELETED"
         print(f"{colored(BASE, COLOR)}: {value}")
 
-    def _load_run_function(self, run_function_path: str) -> Callable:
+    def _load_run_function(self, path: str) -> Callable:
         from importlib.util import spec_from_file_location, module_from_spec
 
-        spec = spec_from_file_location("run", run_function_path)
+        spec = spec_from_file_location("run", path)
 
         module = module_from_spec(spec)
         spec.loader.exec_module(module)
         if not hasattr(module, "run"):
-            raise ValueError(f"No method 'run' function found in {run_function_path}")
+            raise ValueError(f"No method 'run' function found in {path}")
         return getattr(module, "run")
+
+    def _load_custom_functions(self, path: str) -> None:
+        import os
+
+        from flaskerize import registered_funcs
+        from importlib.util import spec_from_file_location, module_from_spec
+
+        if not os.path.exists(path):
+            return
+        spec = spec_from_file_location("custom_functions", path)
+
+        module = module_from_spec(spec)
+        spec.loader.exec_module(module)
+
+        print("\n\n====Running registered functions")
+        for f in registered_funcs:
+            f()
 
     def render(self, name: str, args: List[Any]) -> None:
         """Renders the schematic"""
@@ -172,10 +190,11 @@ Flaskerize job summary:
             )
         context = {**context, "name": name}
 
+        self._load_custom_functions(
+            path=path.join(self.schematic_path, "custom_functions.py")
+        )
         try:
-            run = self._load_run_function(
-                run_function_path=path.join(self.schematic_path, "run.py")
-            )
+            run = self._load_run_function(path=path.join(self.schematic_path, "run.py"))
         except (ImportError, ValueError, FileNotFoundError) as e:
             run = default_run
         run(renderer=self, context=context)

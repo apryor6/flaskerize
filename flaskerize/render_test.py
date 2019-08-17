@@ -244,9 +244,7 @@ def wrong_named_run(renderer: SchematicRenderer, context: Dict[str, Any]) -> Non
 
     renderer = SchematicRenderer(schematic_path=schematic_path, root="./", dry_run=True)
     with raises(ValueError):
-        renderer._load_run_function(
-            run_function_path=path.join(renderer.schematic_path, "run.py")
-        )
+        renderer._load_run_function(path=path.join(renderer.schematic_path, "run.py"))
 
 
 def test__load_run_function_uses_custom_run(tmp_path):
@@ -270,9 +268,7 @@ def run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
         fid.write(RUN_CONTENTS)
 
     renderer = SchematicRenderer(schematic_path=schematic_path, root="./", dry_run=True)
-    run = renderer._load_run_function(
-        run_function_path=path.join(renderer.schematic_path, "run.py")
-    )
+    run = renderer._load_run_function(path=path.join(renderer.schematic_path, "run.py"))
 
     result = run(renderer=renderer, context={})
 
@@ -300,9 +296,7 @@ def run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
         fid.write(RUN_CONTENTS)
 
     renderer = SchematicRenderer(schematic_path=schematic_path, root="./", dry_run=True)
-    run = renderer._load_run_function(
-        run_function_path=path.join(renderer.schematic_path, "run.py")
-    )
+    run = renderer._load_run_function(path=path.join(renderer.schematic_path, "run.py"))
 
     result = run(renderer=renderer, context={"value": "secret password"})
 
