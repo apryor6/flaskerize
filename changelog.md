@@ -13,3 +13,8 @@ v0.3.0
 - Enable multi-glob parameters in schema.json for determining file patterns to include, ignore, render, etc
 - Dramatically increase test coverage
 - Provide hook for user-provided run method
+
+v0.4.0
+
+- Implement run.py as a hook for custom run functionality
+- Implement custom_functions.py for enabling custom template functions within schematic scope

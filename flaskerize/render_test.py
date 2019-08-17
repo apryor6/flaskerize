@@ -161,7 +161,7 @@ class TestColorizingPrint:
 
 
 @patch("flaskerize.render.colored")
-def test_render(colored, renderer):
+def test_render_colored(colored, renderer):
     renderer.get_template_files = lambda: ["file1"]
     mock = MagicMock()
     renderer.render_from_file = mock
@@ -244,9 +244,7 @@ def wrong_named_run(renderer: SchematicRenderer, context: Dict[str, Any]) -> Non
 
     renderer = SchematicRenderer(schematic_path=schematic_path, root="./", dry_run=True)
     with raises(ValueError):
-        renderer._load_run_function(
-            run_function_path=path.join(renderer.schematic_path, "run.py")
-        )
+        renderer._load_run_function(path=path.join(renderer.schematic_path, "run.py"))
 
 
 def test__load_run_function_uses_custom_run(tmp_path):
@@ -270,9 +268,7 @@ def run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
         fid.write(RUN_CONTENTS)
 
     renderer = SchematicRenderer(schematic_path=schematic_path, root="./", dry_run=True)
-    run = renderer._load_run_function(
-        run_function_path=path.join(renderer.schematic_path, "run.py")
-    )
+    run = renderer._load_run_function(path=path.join(renderer.schematic_path, "run.py"))
 
     result = run(renderer=renderer, context={})
 
@@ -300,9 +296,7 @@ def run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
         fid.write(RUN_CONTENTS)
 
     renderer = SchematicRenderer(schematic_path=schematic_path, root="./", dry_run=True)
-    run = renderer._load_run_function(
-        run_function_path=path.join(renderer.schematic_path, "run.py")
-    )
+    run = renderer._load_run_function(path=path.join(renderer.schematic_path, "run.py"))
 
     result = run(renderer=renderer, context={"value": "secret password"})
 
@@ -322,3 +316,158 @@ def test_default_run_executed_if_no_custom_run(mock: MagicMock, tmp_path):
     renderer.render(name="test_resource", args=[])
 
     mock.assert_called_once()
+
+
+def test_render(tmp_path: str):
+
+    schematic_path = path.join(tmp_path, "schematic/doodad")
+    os.makedirs(schematic_path)
+    SCHEMA_CONTENTS = """
+    {
+        "templateFilePatterns": ["**/*.template"],
+        "options": [
+          {
+            "arg": "some_option",
+            "type": "str",
+            "help": "An option used in this test"
+          }
+        ]
+    }
+
+    """
+    schema_path = path.join(schematic_path, "schema.json")
+    with open(schema_path, "w") as fid:
+        fid.write(SCHEMA_CONTENTS)
+
+    TEMPLATE_CONTENT = "Hello {{ some_option }}!"
+    template_path = path.join(schematic_path, "output.txt.template")
+    with open(template_path, "w") as fid:
+        fid.write(TEMPLATE_CONTENT)
+
+    renderer = SchematicRenderer(
+        schematic_path=schematic_path,
+        root=path.join(tmp_path, "results"),
+        dry_run=False,
+    )
+    renderer.render(name="Test schematic", args=["there"])
+
+    outfile = path.join(tmp_path, "results/output.txt")
+    assert path.exists(outfile)
+    with open(outfile, "r") as fid:
+        contents = fid.read()
+    assert contents == "Hello there!"
+
+
+def test_render_with_custom_function(tmp_path: str):
+
+    schematic_path = path.join(tmp_path, "schematic/doodad")
+    os.makedirs(schematic_path)
+    SCHEMA_CONTENTS = """
+    {
+        "templateFilePatterns": ["**/*.template"],
+        "options": [
+          {
+            "arg": "some_option",
+            "type": "str",
+            "help": "An option used in this test"
+          }
+        ]
+    }
+
+    """
+    schema_path = path.join(schematic_path, "schema.json")
+    with open(schema_path, "w") as fid:
+        fid.write(SCHEMA_CONTENTS)
+
+    CUSTOM_FUNCTIONS_CONTENTS = """from flaskerize import register_custom_function  # noqa
+
+
+@register_custom_function
+def derp_case(val: str) -> str:
+    from itertools import zip_longest
+
+    downs = val[::2].lower()
+    ups = val[1::2].upper()
+    result = ""
+    for i, j in zip_longest(downs, ups):
+        if i is not None:
+            result += i
+        if j is not None:
+            result += j
+    return result
+
+    """
+    custom_functions_path = path.join(schematic_path, "custom_functions.py")
+    with open(custom_functions_path, "w") as fid:
+        fid.write(CUSTOM_FUNCTIONS_CONTENTS)
+
+    TEMPLATE_CONTENT = "Hello {{ derp_case(some_option) }}!"
+    template_path = path.join(schematic_path, "output.txt.template")
+    with open(template_path, "w") as fid:
+        fid.write(TEMPLATE_CONTENT)
+
+    renderer = SchematicRenderer(
+        schematic_path=schematic_path,
+        root=path.join(tmp_path, "results"),
+        dry_run=False,
+    )
+    renderer.render(name="Test schematic", args=["there"])
+
+    outfile = path.join(tmp_path, "results/output.txt")
+    assert path.exists(outfile)
+    with open(outfile, "r") as fid:
+        contents = fid.read()
+    assert contents == "Hello tHeRe!"
+
+
+def test_render_with_custom_function_parameterized(tmp_path: str):
+
+    schematic_path = path.join(tmp_path, "schematic/doodad")
+    os.makedirs(schematic_path)
+    SCHEMA_CONTENTS = """
+    {
+        "templateFilePatterns": ["**/*.template"],
+        "options": [
+          {
+            "arg": "some_option",
+            "type": "str",
+            "help": "An option used in this test"
+          }
+        ]
+    }
+
+    """
+    schema_path = path.join(schematic_path, "schema.json")
+    with open(schema_path, "w") as fid:
+        fid.write(SCHEMA_CONTENTS)
+
+    CUSTOM_FUNCTIONS_CONTENTS = """from flaskerize import register_custom_function  # noqa
+
+
+@register_custom_function
+def truncate(val: str, max_length: int) -> str:
+    return val[:max_length]
+
+    """
+    custom_functions_path = path.join(schematic_path, "custom_functions.py")
+    with open(custom_functions_path, "w") as fid:
+        fid.write(CUSTOM_FUNCTIONS_CONTENTS)
+
+    TEMPLATE_CONTENT = "Hello {{ truncate(some_option, 2) }}!"
+    template_path = path.join(schematic_path, "output.txt.template")
+    with open(template_path, "w") as fid:
+        fid.write(TEMPLATE_CONTENT)
+
+    renderer = SchematicRenderer(
+        schematic_path=schematic_path,
+        root=path.join(tmp_path, "results"),
+        dry_run=False,
+    )
+    renderer.render(name="Test schematic", args=["there"])
+
+    outfile = path.join(tmp_path, "results/output.txt")
+    assert path.exists(outfile)
+    with open(outfile, "r") as fid:
+        contents = fid.read()
+    assert contents == "Hello th!"
+
