@@ -148,7 +148,8 @@ class TestColorizingPrint:
     ):
         renderer.print_summary()
 
-        colored.assert_not_called()
+        # One extra call if dry run is enabled
+        colored.call_count == int(renderer.dry_run)
 
     def test_print_summary_with_updates(
         self, colored: MagicMock, renderer: SchematicRenderer
@@ -159,7 +160,8 @@ class TestColorizingPrint:
         renderer._directories_created.append("some directory I made/")
         renderer.print_summary()
 
-        assert colored.call_count == 4
+        # One extra call if dry run is enabled
+        assert colored.call_count == 4 + int(renderer.dry_run)
 
 
 @patch("flaskerize.render.colored")
