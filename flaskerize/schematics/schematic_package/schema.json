@@ -1,0 +1,7 @@
+{
+  "templateFilePatterns": ["**/*.template"],
+  "ignoreFilePatterns": [
+    "*{{ name }}.template/{{ name }}.template/schematics/widget/files/*"
+  ],
+  "options": []
+}

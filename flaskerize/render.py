@@ -9,10 +9,16 @@ from flaskerize.parser import FzArgumentParser
 class SchematicRenderer:
     """Render Flaskerize schematics"""
 
+    # Path to schematic files to copy, relative to top-level schematic_path
+    DEFAULT_FILES_DIRNAME = "files"
+
     def __init__(self, schematic_path: str, root: str = "./", dry_run: bool = False):
         from jinja2 import Environment
 
         self.schematic_path = schematic_path
+        self.schematic_files_path = path.join(
+            self.schematic_path, self.DEFAULT_FILES_DIRNAME
+        )
         self.root = root
 
         self.schema_path = self._get_schema_path()
@@ -55,7 +61,9 @@ class SchematicRenderer:
         filenames = []
         patterns = self.config.get("templateFilePatterns", [])
         for pattern in patterns:
-            filenames.extend([str(p) for p in Path(self.schematic_path).glob(pattern)])
+            filenames.extend(
+                [str(p) for p in Path(self.schematic_files_path).glob(pattern)]
+            )
         ignore_filenames = self._get_ignore_files()
         filenames = list(set(filenames) - set(ignore_filenames))
         return filenames
@@ -74,7 +82,9 @@ class SchematicRenderer:
     def _generate_outfile(
         self, template_file: str, root: str, context: Optional[Dict] = None
     ) -> str:
-        full_path = path.join(root, path.relpath(template_file, self.schematic_path))
+        full_path = path.join(
+            root, path.relpath(template_file, self.schematic_files_path)
+        )
         outfile_name = "".join(full_path.rsplit(".template"))
         tpl = self.env.from_string(outfile_name)
         if context is None:

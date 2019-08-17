@@ -1,5 +1,4 @@
 {
   "templateFilePatterns": ["**/*.template"],
-  "ignoreFilePatterns": [],
   "options": []
 }

@@ -73,15 +73,16 @@ def test_get_template_files(tmp_path):
     }
       
     """
-    os.makedirs(path.join(tmp_path, "schematics/doodad"))
     schematic_path = path.join(tmp_path, "schematics/doodad")
+    schematic_files_path = path.join(schematic_path, "files/")
+    os.makedirs(schematic_files_path)
     schema_path = path.join(schematic_path, "schema.json")
     with open(schema_path, "w") as fid:
         fid.write(CONTENTS)
     renderer = SchematicRenderer(schematic_path=schematic_path, root="./", dry_run=True)
-    Path(path.join(renderer.schematic_path, "b.txt.template")).touch()
-    Path(path.join(renderer.schematic_path, "c.notatemplate.txt")).touch()
-    Path(path.join(renderer.schematic_path, "a.txt.template")).touch()
+    Path(path.join(schematic_files_path, "b.txt.template")).touch()
+    Path(path.join(schematic_files_path, "c.notatemplate.txt")).touch()
+    Path(path.join(schematic_files_path, "a.txt.template")).touch()
 
     template_files = renderer.get_template_files()
 
@@ -99,15 +100,16 @@ def test_ignoreFilePatterns_is_respected(tmp_path):
     }
       
     """
-    os.makedirs(path.join(tmp_path, "schematics/doodad"))
     schematic_path = path.join(tmp_path, "schematics/doodad")
+    schematic_files_path = path.join(schematic_path, "files")
+    os.makedirs(schematic_files_path)
     schema_path = path.join(schematic_path, "schema.json")
     with open(schema_path, "w") as fid:
         fid.write(CONTENTS)
     renderer = SchematicRenderer(schematic_path=schematic_path, root="./", dry_run=True)
-    Path(path.join(renderer.schematic_path, "b.txt.template")).touch()
-    Path(path.join(renderer.schematic_path, "c.notatemplate.txt")).touch()
-    Path(path.join(renderer.schematic_path, "a.txt.template")).touch()
+    Path(path.join(schematic_files_path, "b.txt.template")).touch()
+    Path(path.join(schematic_files_path, "c.notatemplate.txt")).touch()
+    Path(path.join(schematic_files_path, "a.txt.template")).touch()
 
     template_files = renderer.get_template_files()
 
@@ -319,9 +321,9 @@ def test_default_run_executed_if_no_custom_run(mock: MagicMock, tmp_path):
 
 
 def test_render(tmp_path: str):
-
     schematic_path = path.join(tmp_path, "schematic/doodad")
-    os.makedirs(schematic_path)
+    schematic_files_path = path.join(schematic_path, "files")
+    os.makedirs(schematic_files_path)
     SCHEMA_CONTENTS = """
     {
         "templateFilePatterns": ["**/*.template"],
@@ -340,7 +342,7 @@ def test_render(tmp_path: str):
         fid.write(SCHEMA_CONTENTS)
 
     TEMPLATE_CONTENT = "Hello {{ some_option }}!"
-    template_path = path.join(schematic_path, "output.txt.template")
+    template_path = path.join(schematic_files_path, "output.txt.template")
     with open(template_path, "w") as fid:
         fid.write(TEMPLATE_CONTENT)
 
@@ -361,7 +363,8 @@ def test_render(tmp_path: str):
 def test_render_with_custom_function(tmp_path: str):
 
     schematic_path = path.join(tmp_path, "schematic/doodad")
-    os.makedirs(schematic_path)
+    schematic_files_path = path.join(schematic_path, "files")
+    os.makedirs(schematic_files_path)
     SCHEMA_CONTENTS = """
     {
         "templateFilePatterns": ["**/*.template"],
@@ -402,7 +405,7 @@ def derp_case(val: str) -> str:
         fid.write(CUSTOM_FUNCTIONS_CONTENTS)
 
     TEMPLATE_CONTENT = "Hello {{ derp_case(some_option) }}!"
-    template_path = path.join(schematic_path, "output.txt.template")
+    template_path = path.join(schematic_files_path, "output.txt.template")
     with open(template_path, "w") as fid:
         fid.write(TEMPLATE_CONTENT)
 
@@ -423,7 +426,8 @@ def derp_case(val: str) -> str:
 def test_render_with_custom_function_parameterized(tmp_path: str):
 
     schematic_path = path.join(tmp_path, "schematic/doodad")
-    os.makedirs(schematic_path)
+    schematic_files_path = path.join(schematic_path, "files")
+    os.makedirs(schematic_files_path)
     SCHEMA_CONTENTS = """
     {
         "templateFilePatterns": ["**/*.template"],
@@ -454,7 +458,7 @@ def truncate(val: str, max_length: int) -> str:
         fid.write(CUSTOM_FUNCTIONS_CONTENTS)
 
     TEMPLATE_CONTENT = "Hello {{ truncate(some_option, 2) }}!"
-    template_path = path.join(schematic_path, "output.txt.template")
+    template_path = path.join(schematic_files_path, "output.txt.template")
     with open(template_path, "w") as fid:
         fid.write(TEMPLATE_CONTENT)
 
