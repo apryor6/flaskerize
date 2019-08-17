@@ -1,4 +1,4 @@
-from flaskerize import register_custom_function  # noqa
+from flaskerize import register_custom_function
 
 
 @register_custom_function

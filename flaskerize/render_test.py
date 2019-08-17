@@ -419,3 +419,55 @@ def derp_case(val: str) -> str:
         contents = fid.read()
     assert contents == "Hello tHeRe!"
 
+
+def test_render_with_custom_function_parameterized(tmp_path: str):
+
+    schematic_path = path.join(tmp_path, "schematic/doodad")
+    os.makedirs(schematic_path)
+    SCHEMA_CONTENTS = """
+    {
+        "templateFilePatterns": ["**/*.template"],
+        "options": [
+          {
+            "arg": "some_option",
+            "type": "str",
+            "help": "An option used in this test"
+          }
+        ]
+    }
+
+    """
+    schema_path = path.join(schematic_path, "schema.json")
+    with open(schema_path, "w") as fid:
+        fid.write(SCHEMA_CONTENTS)
+
+    CUSTOM_FUNCTIONS_CONTENTS = """from flaskerize import register_custom_function  # noqa
+
+
+@register_custom_function
+def truncate(val: str, max_length: int) -> str:
+    return val[:max_length]
+
+    """
+    custom_functions_path = path.join(schematic_path, "custom_functions.py")
+    with open(custom_functions_path, "w") as fid:
+        fid.write(CUSTOM_FUNCTIONS_CONTENTS)
+
+    TEMPLATE_CONTENT = "Hello {{ truncate(some_option, 2) }}!"
+    template_path = path.join(schematic_path, "output.txt.template")
+    with open(template_path, "w") as fid:
+        fid.write(TEMPLATE_CONTENT)
+
+    renderer = SchematicRenderer(
+        schematic_path=schematic_path,
+        root=path.join(tmp_path, "results"),
+        dry_run=False,
+    )
+    renderer.render(name="Test schematic", args=["there"])
+
+    outfile = path.join(tmp_path, "results/output.txt")
+    assert path.exists(outfile)
+    with open(outfile, "r") as fid:
+        contents = fid.read()
+    assert contents == "Hello th!"
+
