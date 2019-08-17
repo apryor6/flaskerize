@@ -141,6 +141,10 @@ Flaskerize job summary:
             self._print_deleted(filename)
         for filename in self._files_modified:
             self._print_modified(filename)
+        if self.dry_run:
+            print(
+                f'\n{colored("Dry run (--dry-run) enabled. No files were actually written.", "yellow")}'
+            )
 
     def _print_created(self, value: str) -> None:
 
