@@ -177,6 +177,31 @@ Additional examples can be found within [the Flaskerize test code](https://githu
 
 ## Examples
 
+### Create a new Entity
+
+An `entity` is a combination of a Marshmallow schema, type-annotated interface, SQLAlchemy model, Flask controller, and CRUD service as described [in this blog post](http://alanpryorjr.com/2019-05-20-flask-api-example/)
+
+The command `fz generate entity path/to/my/doodad` would produce an `entity` called `Doodad` with the following directory structure.
+
+```
+path
+└── to
+    └── my
+        └── doodad
+            ├── __init__.py
+            ├── controller.py
+            ├── controller_test.py
+            ├── interface.py
+            ├── interface_test.py
+            ├── model.py
+            ├── model_test.py
+            ├── schema.py
+            ├── schema_test.py
+            ├── service.py
+            └── service_test.py
+```
+
+
 ### Create a new React + Flask project and bundle together with Flaskerize
 
 Install [yarn](https://yarnpkg.com/lang/en/docs/install/) and [create-react-app](https://facebook.github.io/create-react-app/docs/getting-started)
