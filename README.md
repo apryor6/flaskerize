@@ -183,6 +183,8 @@ An `entity` is a combination of a Marshmallow schema, type-annotated interface, 
 
 The command `fz generate entity path/to/my/doodad` would produce an `entity` called `Doodad` with the following directory structure.
 
+_Note: the current version of `flaskerize` generates the code for an Entity, but does not yet automatically wire it up to an existing application, configure routing, etc. That will come soon, but for now you will need to make that modification yourself. To do so, invoke the `register_routes` method from the entity's \_\_init\_\_py file from within your application factory. For more information, check out [a full working example project here](https://github.com/apryor6/flask_api_example). This is also a great opportunity to become a contributor!_
+
 ```
 path
 └── to
