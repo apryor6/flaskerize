@@ -161,7 +161,6 @@ class Flaskerize(object):
             schema=os.path.join(os.path.dirname(__file__), "global/generate.json")
         )
         parsed, rest = arg_parser.parse_known_args(args)
-        print(f"parsed = {parsed}")
         schematic = parsed.schematic
         root_name = parsed.name
         dry_run = parsed.dry_run

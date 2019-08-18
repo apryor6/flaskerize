@@ -10,7 +10,6 @@
       "type": "str",
       "help": "Exact path in which to search for schematics/ directory."
     },
-
     {
       "arg": "name",
       "type": "str",
