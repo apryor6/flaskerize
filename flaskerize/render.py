@@ -91,27 +91,30 @@ class SchematicRenderer:
             context = {}
         return tpl.render(**context)
 
-    def render_from_file(self, template_file: str, context: Dict) -> None:
-        outfile = self._generate_outfile(template_file, self.root, context=context)
-        outdir = path.dirname(outfile) or "."
+    def render_from_file(self, template_path: str, context: Dict) -> None:
+        outpath = self._generate_outfile(template_path, self.root, context=context)
+        outdir, outfile = path.split(outpath)
+        outdir = outdir or "."
+
+        if not path.exists(outdir):
+            self._directories_created.append(outdir)
+            if not self.dry_run:
+                makedirs(outdir)
+
         # TODO: Refactor dry-run and file system interactions to a composable object
         # passed into this class rather than it containing the write logic
-        with open(template_file, "r") as fid:
+        with open(template_path, "r") as fid:
             tpl = self.env.from_string(fid.read())
 
             # Update status of creation, modification, etc
             # TODO: This behavior does not belong in this method or this class at that
-            if path.exists(outfile):
-                self._files_modified.append(outfile)
+            if path.exists(outpath):
+                self._files_modified.append(outpath)
             else:
-                self._files_created.append(outfile)
-            if not path.exists(outdir):
-                self._directories_created.append(outdir)
+                self._files_created.append(outpath)
 
             if not self.dry_run:
-                if not path.exists(outdir):
-                    makedirs(outdir)
-                with open(outfile, "w") as fout:
+                with open(outpath, "w") as fout:
                     fout.write(tpl.render(**context))
             else:
                 print(tpl.render(**context))
