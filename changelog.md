@@ -21,7 +21,7 @@ v0.4.0
 
 v0.5.0
 
-- Add setup.py schematic and tests
+- Add setup schematic and tests
 - Create README for available schematics
 
 v0.6.0

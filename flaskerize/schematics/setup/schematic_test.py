@@ -17,7 +17,7 @@ setup(
     install_requires=['thingy>0.3.0', 'widget>=2.4.3', 'doodad>4.1.0'],
 )"""
     NAME = os.path.join(tmp_path, "test")
-    COMMAND = f"""fz generate setup.py {NAME} --install-requires 'thingy>0.3.0' 'widget>=2.4.3' 'doodad>4.1.0' --author 'AJ Pryor' --author-email 'apryor6@gmail.com'"""
+    COMMAND = f"""fz generate setup {NAME} --install-requires 'thingy>0.3.0' 'widget>=2.4.3' 'doodad>4.1.0' --author 'AJ Pryor' --author-email 'apryor6@gmail.com'"""
     os.system(COMMAND)
 
     outfile = os.path.join(tmp_path, "setup.py")
