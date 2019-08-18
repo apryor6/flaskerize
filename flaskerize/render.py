@@ -91,30 +91,34 @@ class SchematicRenderer:
             context = {}
         return tpl.render(**context)
 
-    def render_from_file(self, template_file: str, context: Dict) -> None:
-        outfile = self._generate_outfile(template_file, self.root, context=context)
-        outdir = path.dirname(outfile) or "."
-        # TODO: Refactor dry-run and file system interactions to a composable object
-        # passed into this class rather than it containing the write logic
-        with open(template_file, "r") as fid:
-            tpl = self.env.from_string(fid.read())
+    def render_from_file(self, template_path: str, context: Dict) -> None:
+        outpath = self._generate_outfile(template_path, self.root, context=context)
+        outdir, outfile = path.split(outpath)
+        outdir = outdir or "."
 
-            # Update status of creation, modification, etc
-            # TODO: This behavior does not belong in this method or this class at that
-            if path.exists(outfile):
-                self._files_modified.append(outfile)
-            else:
-                self._files_created.append(outfile)
-            if not path.exists(outdir):
-                self._directories_created.append(outdir)
-
+        if not path.exists(outdir):
+            self._directories_created.append(outdir)
             if not self.dry_run:
-                if not path.exists(outdir):
-                    makedirs(outdir)
-                with open(outfile, "w") as fout:
-                    fout.write(tpl.render(**context))
-            else:
-                print(tpl.render(**context))
+                makedirs(outdir)
+
+        if path.isfile(template_path):
+            # TODO: Refactor dry-run and file system interactions to a composable object
+            # passed into this class rather than it containing the write logic
+            with open(template_path, "r") as fid:
+                tpl = self.env.from_string(fid.read())
+
+                # Update status of creation, modification, etc
+                # TODO: This behavior does not belong in this method or this class at that
+                if path.exists(outpath):
+                    self._files_modified.append(outpath)
+                else:
+                    self._files_created.append(outpath)
+
+                if not self.dry_run:
+                    with open(outpath, "w") as fout:
+                        fout.write(tpl.render(**context))
+                else:
+                    print(tpl.render(**context))
 
     def print_summary(self):
         """Print summary of operations performed"""
@@ -187,10 +191,8 @@ Flaskerize job summary:
         module = module_from_spec(spec)
         spec.loader.exec_module(module)
 
-        print("\n\n====Running registered functions")
         for f in registered_funcs:
             self.env.globals[f.__name__] = f
-            # f()
 
     def render(self, name: str, args: List[Any]) -> None:
         """Renders the schematic"""
