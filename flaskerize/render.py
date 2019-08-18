@@ -101,23 +101,24 @@ class SchematicRenderer:
             if not self.dry_run:
                 makedirs(outdir)
 
-        # TODO: Refactor dry-run and file system interactions to a composable object
-        # passed into this class rather than it containing the write logic
-        with open(template_path, "r") as fid:
-            tpl = self.env.from_string(fid.read())
+        if path.isfile(template_path):
+            # TODO: Refactor dry-run and file system interactions to a composable object
+            # passed into this class rather than it containing the write logic
+            with open(template_path, "r") as fid:
+                tpl = self.env.from_string(fid.read())
 
-            # Update status of creation, modification, etc
-            # TODO: This behavior does not belong in this method or this class at that
-            if path.exists(outpath):
-                self._files_modified.append(outpath)
-            else:
-                self._files_created.append(outpath)
+                # Update status of creation, modification, etc
+                # TODO: This behavior does not belong in this method or this class at that
+                if path.exists(outpath):
+                    self._files_modified.append(outpath)
+                else:
+                    self._files_created.append(outpath)
 
-            if not self.dry_run:
-                with open(outpath, "w") as fout:
-                    fout.write(tpl.render(**context))
-            else:
-                print(tpl.render(**context))
+                if not self.dry_run:
+                    with open(outpath, "w") as fout:
+                        fout.write(tpl.render(**context))
+                else:
+                    print(tpl.render(**context))
 
     def print_summary(self):
         """Print summary of operations performed"""
@@ -190,10 +191,8 @@ Flaskerize job summary:
         module = module_from_spec(spec)
         spec.loader.exec_module(module)
 
-        print("\n\n====Running registered functions")
         for f in registered_funcs:
             self.env.globals[f.__name__] = f
-            # f()
 
     def render(self, name: str, args: List[Any]) -> None:
         """Renders the schematic"""
