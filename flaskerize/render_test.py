@@ -161,7 +161,7 @@ class TestColorizingPrint:
         renderer.print_summary()
 
         # One extra call if dry run is enabled
-        assert colored.call_count == 4 + int(renderer.dry_run)
+        assert colored.call_count >= 4 + int(renderer.dry_run)
 
 
 @patch("flaskerize.render.colored")

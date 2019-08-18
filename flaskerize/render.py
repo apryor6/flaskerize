@@ -94,7 +94,6 @@ class SchematicRenderer:
     def render_from_file(self, template_file: str, context: Dict) -> None:
         outfile = self._generate_outfile(template_file, self.root, context=context)
         outdir = path.dirname(outfile) or "."
-        print("outdir = ", outdir)
         # TODO: Refactor dry-run and file system interactions to a composable object
         # passed into this class rather than it containing the write logic
         with open(template_file, "r") as fid:
@@ -124,8 +123,8 @@ class SchematicRenderer:
             f"""
 Flaskerize job summary:
 
-        Schematic generation successful!
-        Full schematic path {self.schematic_path}
+        {colored("Schematic generation successful!", "green")}
+        Full schematic path: {colored(self.schematic_path, "yellow")}
 
         {len(self._directories_created)} directories created
         {len(self._files_created)} files created
