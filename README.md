@@ -50,7 +50,9 @@ Flaskerize is an incredible productivity boost (_something something 10x dev_). 
 
 Simple, `pip install flaskerize`
 
+### Schematics that ship with flaskerize
 
+For a list of the schematics that are available by default, see [here](https://github.com/apryor6/flaskerize/tree/master/flaskerize/schematics)
 
 ### Schematics in third-party packages
 
