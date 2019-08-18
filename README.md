@@ -50,6 +50,129 @@ Flaskerize is an incredible productivity boost (_something something 10x dev_). 
 
 Simple, `pip install flaskerize`
 
+
+
+### Schematics in third-party packages
+
+`flaskerize` is fully extensible and supports schematics provided by external libraries. To target a schematic from another package, simply use the syntax `fz generate <package_name>:<schematic_name> [OPTIONS]`
+
+Flaskerize expects to find a couple of things when using this syntax:
+
+	- The package `<package_name>` should be installed from the current python environment
+	- The top-level source directory of `<package_name>` should contain a `schematics/` package. Inside of that directory should be one or more directories, each corresponding to a single schematic. See the section "Structure of a schematic" for details on schematic contents.
+	- A `schematics/__init__.py` file, just so that schematics can be found as a package
+
+> For schematics that are built into `flaskerize`, you can drop the `<package_name>` piece of the schematic name. Thus the command `fz generate flaskerize:app new_app` is _exactly equivalent_ to `fz generate app new_app`. For all third-party schematics, you must provide both the package and schematic name.
+
+For example, the command  `fz generate test_schematics:resource my/new/resource` will work if test_schematics is an installed package in the current path with a source directory structure similar to:
+
+```
+├── setup.py
+└── test_schematics
+    ├── __init__.py
+    └── schematics
+        ├── __init__.py
+        ├── resource
+        │   ├── run.py
+        │   ├── schema.json
+        │   ├── someConfig.json.template
+        │   ├── thingy.interface.ts.template
+        │   ├── thingy.py.template
+        │   └── widget.py.template
+```
+
+### Structure of a schematic
+
+#### schema.json
+
+Each schematic contains a `schema.json` file that defines configuration parameters including the available CLI arguments, template files to include, etc.
+
+__parameters__:
+  - templateFilePatterns: array of glob patterns representing files that are to be rendered as Jinja templates
+  - ignoreFilePatterns: array of glob patterns representing files that are not to be rendered as part of the schematic output, such as helper modules
+  - options: array of dicts containing parameters for argument parsing with the addition of an array parameter `aliases` that is used to generate alternative/shorthand names for the command. These dicts are passed along directly to `argparse.ArgumentParser.add_argument` and thus support the same parameters. See [here](https://docs.python.org/3/library/argparse.html) for more information.
+
+
+#### Running custom code
+
+The default behavior of a schematic is to render all template files; however, `flaskerize` schematics may also provide custom code to be executed at runtime through providing a `run` method inside of a `run.py` within the top level of the schematic. A basic run.py looks as follows:
+
+```python
+from typing import Any, Dict
+
+from flaskerize import SchematicRenderer
+
+
+def run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
+    template_files = renderer.get_template_files()
+
+    for filename in template_files:
+        renderer.render_from_file(filename, context=context)
+    renderer.print_summary()
+```
+
+The `run` method takes two parameters:
+
+- renderer: A SchematicRenderer instance which contains information about the configured schematic such as the fully-qualified `schematic_path`, the Jinja `env`, handles to the file system, etc. It also has helper methods such as `get_template_files` for obtaining a list of template files based upon the contents of the schematic and the configuration settings of `schema.json` and `render_from_file` which reads the contents of a (template) file and renders it with `context`.
+- context: A `dict` containing the key-value pairs of the parsed command line arguments provided in the `options` array from `schema.json`.
+
+With these two parameters, it is possible to accomplish quite a lot of custom modification. For example, suppose a schematic optionally contains an `app-engine.yaml` file for deployment to Google Cloud, which the consumer might not be interested in. The schematic author can then provide a `--no-app-engine` switch in `schema.json` and then provide a custom run method:
+
+```python
+from os import path
+from typing import Any, Dict
+
+from flaskerize import SchematicRenderer
+
+
+def run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
+    for filename in renderer.get_template_files():
+		dirname, fname = path.split(filename)
+		if fname == 'app-engine.yaml' and context.get('no_app_engine', False):
+			continue
+        renderer.render_from_file(filename, context=context)
+```
+
+Although rendering templates is the most common operation, you can perform arbitrary code execution inside of `run` methods, including modification/deletion of existing files, logging, API requests, test execution, etc. As such, it is important to be security minded with regard to executing third-party schematics, just like any other script.
+
+#### Customizing template functions
+
+Schematics optionally may provide custom template functions for usage within the schematic.
+
+_Currently, custom_functions.py is provided at the schematic level. There is not yet a means to register custom functions "globally" within a family of schematics, but there are plans to do so if there are interested parties. Comment/follow [#16](https://github.com/apryor6/flaskerize/issues/16) for updates if this is something in which you are interested_
+
+To register custom functions, create a file called `custom_functions.py` within the schematic (at the same directory level as schema.json, run.py, etc). Within this file, apply the `flaskerize.register_custom_function` decorator to functions that you would like to make available. Within a template, the function can then be invoked using whatever name and signature was used to define it in `custom_functions.py`.
+
+Here is an example
+
+```python
+# custom_functions.py
+
+from flaskerize import register_custom_function
+
+
+@register_custom_function
+def truncate(val: str, max_length: int) -> str:
+    return val[:max_length]
+```
+
+That's all! You can now invoke `truncate` from within templates. Suppose a template file `{{name}}.txt.template` containing the following
+
+```
+Hello {{ truncate(name, 3) }}!
+```
+
+Then an invocation of `fz generate <package:schematic_name> voodoo`
+
+will yield a file `voodoo.txt` containing
+
+```
+Hello voo!
+```
+
+Additional examples can be found within [the Flaskerize test code](https://github.com/apryor6/flaskerize/blob/master/flaskerize/render_test.py)
+
+
 ## Examples
 
 ### Create a new React + Flask project and bundle together with Flaskerize
@@ -154,137 +277,3 @@ Next, attach the blueprint to your existing Flask app
 
 `fz a --to app.py:create_app _fz_blueprint.py`
 
-
-
-### Schematics in third-party packages
-
-`flaskerize` is fully extensible and supports schematics provided by external libraries. To target a schematic from another package, simply use the syntax `fz generate <package_name>:<schematic_name> [OPTIONS]`
-
-Flaskerize expects to find a couple of things when using this syntax:
-
-	- The package `<package_name>` should be installed from the current python environment
-	- The top-level source directory of `<package_name>` should contain a `schematics/` package. Inside of that directory should be one or more directories, each corresponding to a single schematic. See the section "Structure of a schematic" for details on schematic contents.
-	- A `schematics/__init__.py` file, just so that schematics can be found as a package
-
-> For schematics that are built into `flaskerize`, you can drop the `<package_name>` piece of the schematic name. Thus the command `fz generate flaskerize:app new_app` is _exactly equivalent_ to `fz generate app new_app`. For all third-party schematics, you must provide both the package and schematic name.
-
-For example, the command  `fz generate test_schematics:resource my/new/resource` will work if test_schematics is an installed package in the current path with a source directory structure similar to:
-
-```
-├── setup.py
-└── test_schematics
-    ├── __init__.py
-    └── schematics
-        ├── __init__.py
-        └── resource
-            ├── custom_functions.py
-            ├── files
-            │   ├── someConfig.json.template
-            │   ├── thingy.interface.ts.template
-            │   ├── thingy.py.template
-            │   └── widget.py.template
-            ├── run.py
-            └── schema.json
-```
-
-There is, of course, a `flaskerize` schematic for creating a pip-installable third-party package of `flaskerize` schematics. Just use
-
-```
-fz generate schematic_package <package_name>
-```
-
-### Structure of a schematic
-
-#### schema.json
-
-Each schematic contains a `schema.json` file that defines configuration parameters including the available CLI arguments, template files to include, etc.
-
-__parameters__:
-  - templateFilePatterns: array of glob patterns representing files that are to be rendered as Jinja templates
-  - ignoreFilePatterns: array of glob patterns representing files that are not to be rendered as part of the schematic output, such as helper modules
-  - options: array of dicts containing parameters for argument parsing with the addition of an array parameter `aliases` that is used to generate alternative/shorthand names for the command. These dicts are passed along directly to `argparse.ArgumentParser.add_argument` and thus support the same parameters. See [here](https://docs.python.org/3/library/argparse.html) for more information.
-
-
-#### Running custom code
-
-The default behavior of a schematic is to render all template files; however, `flaskerize` schematics may also provide custom code to be executed at runtime through providing a `run` method inside of a `run.py` within the top level of the schematic. A basic run.py looks as follows:
-
-```python
-from typing import Any, Dict
-
-from flaskerize import SchematicRenderer
-
-
-def run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
-    template_files = renderer.get_template_files()
-
-    for filename in template_files:
-        renderer.render_from_file(filename, context=context)
-    renderer.print_summary()
-```
-
-The `run` method takes two parameters:
-
-- renderer: A SchematicRenderer instance which contains information about the configured schematic such as the fully-qualified `schematic_path`, the Jinja `env`, handles to the file system, etc. It also has helper methods such as `get_template_files` for obtaining a list of template files based upon the contents of the schematic and the configuration settings of `schema.json` and `render_from_file` which reads the contents of a (template) file and renders it with `context`.
-- context: A `dict` containing the key-value pairs of the parsed command line arguments provided in the `options` array from `schema.json`.
-
-With these two parameters, it is possible to accomplish quite a lot of custom modification. For example, suppose a schematic optionally contains an `app-engine.yaml` file for deployment to Google Cloud, which the consumer might not be interested in. The schematic author can then provide a `--no-app-engine` switch in `schema.json` and then provide a custom run method:
-
-```python
-from os import path
-from typing import Any, Dict
-
-from flaskerize import SchematicRenderer
-
-
-def run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
-    for filename in renderer.get_template_files():
-		dirname, fname = path.split(filename)
-		if fname == 'app-engine.yaml' and context.get('no_app_engine', False):
-			continue
-        renderer.render_from_file(filename, context=context)
-```
-
-Although rendering templates is the most common operation, you can perform arbitrary code execution inside of `run` methods, including modification/deletion of existing files, logging, API requests, test execution, etc. As such, it is important to be security minded with regard to executing third-party schematics, just like any other script.
-
-#### Customizing template functions
-
-Schematics optionally may provide custom template functions for usage within the schematic.
-
-_Currently, custom_functions.py is provided at the schematic level. There is not yet a means to register custom functions "globally" within a family of schematics, but there are plans to do so if there are interested parties. Comment/follow [#16](https://github.com/apryor6/flaskerize/issues/16) for updates if this is something in which you are interested_
-
-To register custom functions, create a file called `custom_functions.py` within the schematic (at the same directory level as schema.json, run.py, etc). Within this file, apply the `flaskerize.register_custom_function` decorator to functions that you would like to make available. Within a template, the function can then be invoked using whatever name and signature was used to define it in `custom_functions.py`.
-
-Here is an example
-
-```python
-# custom_functions.py
-
-from flaskerize import register_custom_function
-
-
-@register_custom_function
-def truncate(val: str, max_length: int) -> str:
-    return val[:max_length]
-```
-
-That's all! You can now invoke `truncate` from within templates. Suppose a template file `{{name}}.txt.template` containing the following
-
-```
-Hello {{ truncate(name, 3) }}!
-```
-
-Then an invocation of `fz generate <package:schematic_name> voodoo`
-
-will yield a file `voodoo.txt` containing
-
-```
-Hello voo!
-```
-
-Additional examples can be found within [the Flaskerize test code](https://github.com/apryor6/flaskerize/blob/master/flaskerize/render_test.py)
-
-
-### Available schematics
-
-See [the schematics README]() for information regarding the default schematics that ship with `flaskerize`
