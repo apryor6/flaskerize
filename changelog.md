@@ -18,3 +18,8 @@ v0.4.0
 
 - Implement run.py as a hook for custom run functionality
 - Implement custom_functions.py for enabling custom template functions within schematic scope
+
+v.0.5.0
+
+- Add setup.py schematic and tests
+- Create README for available schematics

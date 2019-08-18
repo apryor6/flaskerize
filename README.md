@@ -176,13 +176,21 @@ For example, the command  `fz generate test_schematics:resource my/new/resource`
     ├── __init__.py
     └── schematics
         ├── __init__.py
-        ├── resource
-        │   ├── run.py
-        │   ├── schema.json
-        │   ├── someConfig.json.template
-        │   ├── thingy.interface.ts.template
-        │   ├── thingy.py.template
-        │   └── widget.py.template
+        └── resource
+            ├── custom_functions.py
+            ├── files
+            │   ├── someConfig.json.template
+            │   ├── thingy.interface.ts.template
+            │   ├── thingy.py.template
+            │   └── widget.py.template
+            ├── run.py
+            └── schema.json
+```
+
+There is, of course, a `flaskerize` schematic for creating a pip-installable third-party package of `flaskerize` schematics. Just use
+
+```
+fz generate schematic_package <package_name>
 ```
 
 ### Structure of a schematic
@@ -275,3 +283,8 @@ Hello voo!
 ```
 
 Additional examples can be found within [the Flaskerize test code](https://github.com/apryor6/flaskerize/blob/master/flaskerize/render_test.py)
+
+
+### Available schematics
+
+See [the schematics README]() for information regarding the default schematics that ship with `flaskerize`
