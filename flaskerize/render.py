@@ -138,12 +138,13 @@ class SchematicRenderer:
                 else:
                     print(tpl.render(**context))
 
-    def copy_static_file(self, filename: str):
+    def copy_static_file(self, filename: str, context: Dict[str, Any]):
         from shutil import copy
 
-        outpath = self._get_rel_path(full_path=filename, rel_to=self.root)
+        outpath = self._generate_outfile(filename, self.root, context=context)
         outdir, outfile = path.split(outpath)
         outdir = outdir or "."
+
         if not path.exists(outdir):
             self._directories_created.append(outdir)
             if not self.dry_run:
@@ -261,5 +262,5 @@ def default_run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
     for filename in template_files:
         renderer.render_from_file(filename, context=context)
     for filename in static_files:
-        renderer.copy_static_file(filename)
+        renderer.copy_static_file(filename, context=context)
     renderer.print_summary()

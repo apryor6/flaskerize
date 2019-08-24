@@ -194,7 +194,7 @@ def test_copy_static_file_dry_run(renderer, tmp_path):
         fid.write(CONTENTS)
     outfile = os.path.join(tmp_path, "doodad/my_file.txt")
     renderer._generate_outfile = MagicMock(return_value=outfile)
-    renderer.copy_static_file(filename)
+    renderer.copy_static_file(filename, context={})
 
     assert len(renderer._files_created) > 0
 
@@ -212,7 +212,7 @@ def test_copy_static_file(tmp_path):
         fid.write(CONTENTS)
     outfile = os.path.join(tmp_path, "doodad/my_file.txt")
     renderer._get_rel_path = MagicMock(return_value=outfile)
-    renderer.copy_static_file(filename)
+    renderer.copy_static_file(filename, context={})
 
     assert len(renderer._files_created) > 0
     assert os.path.exists(outfile)
@@ -234,7 +234,7 @@ def test_copy_static_file_modifies_file_if_exists(tmp_path):
     with open(outfile, "w") as fid:
         fid.write(CONTENTS)
     renderer._get_rel_path = MagicMock(return_value=outfile)
-    renderer.copy_static_file(filename)
+    renderer.copy_static_file(filename, context={})
 
     assert len(renderer._files_created) == 0
     assert len(renderer._files_modified) == 1
