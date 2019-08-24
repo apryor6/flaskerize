@@ -55,7 +55,21 @@ class SchematicRenderer:
 
         return FzArgumentParser(schema=schema_path or self.schema_path)
 
+    def get_static_files(self) -> List[str]:
+        """Get list of files to be copied unchanged"""
+
+        from pathlib import Path
+
+        filenames: List[str] = []
+        patterns = self.config.get("templateFilePatterns", [])
+        all_files = list(str(p) for p in Path(self.schematic_files_path).glob("**/*"))
+        static_files = list(set(all_files) - set(self.get_template_files()))
+
+        return static_files
+
     def get_template_files(self) -> List[str]:
+        """Get list of templated files to be rendered via Jinja"""
+
         from pathlib import Path
 
         filenames = []
@@ -79,13 +93,17 @@ class SchematicRenderer:
             )
         return ignore_filenames
 
+    def _get_rel_path(self, full_path: str, rel_to: str) -> str:
+        full_path = path.join(
+            rel_to, path.relpath(full_path, self.schematic_files_path)
+        )
+        outfile = "".join(full_path.rsplit(".template"))
+        return outfile
+
     def _generate_outfile(
         self, template_file: str, root: str, context: Optional[Dict] = None
     ) -> str:
-        full_path = path.join(
-            root, path.relpath(template_file, self.schematic_files_path)
-        )
-        outfile_name = "".join(full_path.rsplit(".template"))
+        outfile_name = self._get_rel_path(full_path=template_file, rel_to=root)
         tpl = self.env.from_string(outfile_name)
         if context is None:
             context = {}
@@ -119,6 +137,24 @@ class SchematicRenderer:
                         fout.write(tpl.render(**context))
                 else:
                     print(tpl.render(**context))
+
+    def copy_static_file(self, filename: str):
+        from shutil import copy
+
+        outpath = self._get_rel_path(full_path=filename, rel_to=self.root)
+        outdir, outfile = path.split(outpath)
+        outdir = outdir or "."
+        if not path.exists(outdir):
+            self._directories_created.append(outdir)
+            if not self.dry_run:
+                makedirs(outdir)
+        if path.exists(outpath):
+            self._files_modified.append(outpath)
+        else:
+            self._files_created.append(outpath)
+        if not self.dry_run:
+            if path.isfile(filename):
+                copy(filename, outpath)
 
     def print_summary(self):
         """Print summary of operations performed"""
@@ -220,7 +256,10 @@ def default_run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
     """Default run method"""
 
     template_files = renderer.get_template_files()
+    static_files = renderer.get_static_files()
 
     for filename in template_files:
         renderer.render_from_file(filename, context=context)
+    for filename in static_files:
+        renderer.copy_static_file(filename)
     renderer.print_summary()
