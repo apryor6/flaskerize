@@ -248,15 +248,21 @@ def test_copy_static_file(tmp_path):
 
 
 def test_render_from_file_when_outfile_exists(renderer, tmp_path):
-    filename = os.path.join(tmp_path, "my_template.py.template")
+    filename = os.path.join(renderer.root, "my_template.py")
+
+    # TODO remove this
+    if not os.path.exists(os.path.dirname(filename)):
+        os.makedirs(os.path.dirname(filename))
     CONTENTS = "some existing content"
     with open(filename, "w") as fid:
         fid.write(CONTENTS)
-    outdir = os.path.join(tmp_path, "doodad/")
-    os.makedirs(outdir)
-    outfile = os.path.join(outdir, "my_template.py")
-    with open(outfile, "w") as fid:
-        fid.write(CONTENTS)
+    # outdir = os.path.join(tmp_path, "doodad/")
+    # outfile = os.path.join(outdir, "my_template.py")
+
+    # os.makedirs(outdir)
+    # outfile = "my_template.py"
+    # with open(outfile, "w") as fid:
+    #     fid.write(CONTENTS)
     renderer._generate_outfile = MagicMock(return_value="my_template.py")
     renderer.render_from_file(filename, context={"secret": "42"})
 

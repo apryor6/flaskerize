@@ -44,8 +44,9 @@ class StagedFileSystem:
         self.src_fs = srcfs_factory(root)
         if not dry_run and dst_root and not os.path.isdir(os.path.dirname(dst_root)):
             os.makedirs(os.path.dirname(dst_root))
-        if not dry_run:  # during a dry run, don't even create a dst_fs
-            self.dst_fs = dstfs_factory(dst_root or root)
+        # if not dry_run:  # during a dry run, don't even create a dst_fs
+        # self.dst_fs = dstfs_factory(dst_root or root)
+        self.dst_fs = dstfs_factory(dst_root or root)
         self.stg_fs = fs.open_fs(f"mem://")
         self.root = root
         self.dry_run = dry_run

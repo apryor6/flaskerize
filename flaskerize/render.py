@@ -145,9 +145,8 @@ class SchematicRenderer:
             with open(template_path, "r") as fid:
                 tpl = self.env.from_string(fid.read())
 
-                # Update status of creation, modification, etc
-                # TODO: This behavior does not belong in this method or this class at that
-                if os.path.exists(outpath):
+                # TODO: change this to drop dst_fs and directly consolidate
+                if self.fs.dst_fs.exists(outpath):
                     self._files_modified.append(rendered_outpath)
                 else:
                     self._files_created.append(rendered_outpath)
