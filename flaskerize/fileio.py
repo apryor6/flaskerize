@@ -73,13 +73,6 @@ class StagedFileSystem:
             self.sch_fs, src_path, self.stg_fs, dst_path or src_path
         )
 
-    def copy_from_src(self, src_path: str, dst_path: str = None) -> None:
-        """Copy a file from src_path to dst_path in the staging file system"""
-
-        return fs.copy.copy_file(
-            self.src_fs, src_path, self.stg_fs, dst_path or src_path
-        )
-
     def makedirs(self, dirname: str):
         return self.stg_fs.makedirs(dirname)
 
