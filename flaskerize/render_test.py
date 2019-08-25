@@ -15,6 +15,18 @@ def renderer(tmp_path):
     os.makedirs(schematic_path)
     os.makedirs(schematic_files_path)
     yield SchematicRenderer(
+        schematic_path=schematic_path, src_path=src_path, dry_run=True
+    )
+
+
+@fixture
+def renderer_no_dry_run(tmp_path):
+    schematic_path = path.join(tmp_path, "schematics/doodad/")
+    schematic_files_path = path.join(schematic_path, "files/")
+    src_path = path.join(tmp_path, "render/test/results/")
+    os.makedirs(schematic_path)
+    os.makedirs(schematic_files_path)
+    yield SchematicRenderer(
         schematic_path=schematic_path, src_path=src_path, dry_run=False
     )
 
@@ -195,7 +207,8 @@ def test_render_from_file(renderer, tmp_path):
     assert len(renderer._directories_created) > 0
 
 
-def test_copy_static_file_dry_run(renderer, tmp_path):
+def test_copy_static_file_dry_run(renderer_no_dry_run, tmp_path):
+    renderer = renderer_no_dry_run
     rel_filename = "doodad/my_file.txt"
     filename_in_sch = os.path.join(renderer.schematic_files_path, rel_filename)
     filename_in_src = os.path.join(renderer.src_path, rel_filename)
@@ -203,7 +216,6 @@ def test_copy_static_file_dry_run(renderer, tmp_path):
     os.makedirs(os.path.dirname(filename_in_sch))
     with open(filename_in_sch, "w") as fid:
         fid.write(CONTENTS)
-    # outfile = os.path.join(renderer.src_path)
     renderer._generate_outfile = MagicMock(return_value=rel_filename)
     renderer.copy_static_file(rel_filename, context={})
     renderer.fs.commit()  # TODO: create a context manager to handle committing on success
@@ -212,50 +224,46 @@ def test_copy_static_file_dry_run(renderer, tmp_path):
     assert os.path.exists(filename_in_src)
 
 
-# def test_copy_static_file(tmp_path):
-#     schematic_path = path.join(tmp_path, "schematics/doodad/")
-#     src_path = path.join(tmp_path, "out/path/")
-#     os.makedirs(schematic_path)
-#     renderer = SchematicRenderer(schematic_path=schematic_path, src_path=src_path)
+def test_copy_static_file_dry_run_true(renderer, tmp_path):
+    rel_filename = "doodad/my_file.txt"
+    filename_in_sch = os.path.join(renderer.schematic_files_path, rel_filename)
+    filename_in_src = os.path.join(renderer.src_path, rel_filename)
+    CONTENTS = "some static content"
+    os.makedirs(os.path.dirname(filename_in_sch))
+    with open(filename_in_sch, "w") as fid:
+        fid.write(CONTENTS)
+    renderer._generate_outfile = MagicMock(return_value=rel_filename)
+    renderer.copy_static_file(rel_filename, context={})
+    renderer.fs.commit()  # TODO: create a context manager to handle committing on success
 
-#     filename = os.path.join(renderer.schematic_files_path, "out/path/my_file.txt")
-#     os.makedirs(os.path.dirname(filename))
-#     CONTENTS = "some static content"
-#     with open(filename, "w") as fid:
-#         fid.write(CONTENTS)
-
-#     rel_output_path = "out/path/my_file.txt"
-#     renderer._get_rel_path = MagicMock(return_value=rel_output_path)
-#     renderer.copy_static_file(filename, context={})
-#     renderer.fs.commit()
-#     # assert len(renderer._files_created) > 0
-
-#     full_output_path = os.path.join(src_path, "my_file.txt")
-
-#     assert os.path.exists(full_output_path)
+    assert len(renderer._files_created) > 0
+    assert not os.path.exists(filename_in_src)
 
 
-# # def test_copy_static_file_modifies_file_if_exists(tmp_path):
-# #     os.makedirs(path.join(tmp_path, "schematics/doodad/"))
-# #     renderer = SchematicRenderer(
-# #         schematic_path=path.join(tmp_path, "schematics/doodad"),
-# #         src_path=path.join(tmp_path, "out/path/"),
-# #     )
+def test_copy_static_file_modifies_file_if_exists(tmp_path):
+    rel_filename = "my_file.txt"
+    schematic_path = path.join(tmp_path, "schematics/doodad/")
+    schematic_files_path = path.join(schematic_path, "files/")
+    src_path = path.join(tmp_path, "out/path/")
+    os.makedirs(schematic_path)
+    os.makedirs(schematic_files_path)
+    os.makedirs(src_path)
 
-# #     filename = os.path.join(tmp_path, "my_file.txt")
-# #     CONTENTS = "some static content"
-# #     with open(filename, "w") as fid:
-# #         fid.write(CONTENTS)
-# #     outfile = os.path.join(path.join(tmp_path, "out/path/"), "doodad/my_file.txt")
-# #     os.makedirs(path.join(tmp_path, "out/path/doodad/"))
-# #     with open(outfile, "w") as fid:
-# #         fid.write(CONTENTS)
-# #     renderer._get_rel_path = MagicMock(return_value="doodad/my_file.txt")
-# #     renderer.copy_static_file(filename, context={})
-# #     renderer.fs.commit()
-# #     assert len(renderer._files_created) == 0
-# #     assert len(renderer._files_modified) == 1
-# #     assert os.path.exists(outfile)
+    renderer = SchematicRenderer(schematic_path=schematic_path, src_path=src_path)
+
+    filename_in_sch = os.path.join(schematic_files_path, rel_filename)
+    CONTENTS = "some static content"
+    with open(filename_in_sch, "w") as fid:
+        fid.write(CONTENTS)
+    filename_in_src = os.path.join(src_path, rel_filename)
+    with open(filename_in_src, "w") as fid:
+        fid.write(CONTENTS)
+    renderer._generate_outfile = MagicMock(return_value=rel_filename)
+    renderer.copy_static_file(rel_filename, context={})
+    renderer.fs.commit()
+    assert len(renderer._files_created) == 0
+    assert len(renderer._files_modified) == 1
+    assert os.path.exists(filename_in_src)
 
 
 # def test_render_from_file_when_outfile_exists(renderer, tmp_path):
@@ -581,3 +589,25 @@ def test_copy_static_file_dry_run(renderer, tmp_path):
 #         contents = fid.read()
 #     assert contents == "Hello th!"
 
+
+# def test_copy_static_file(tmp_path):
+#     schematic_path = path.join(tmp_path, "schematics/doodad/")
+#     src_path = path.join(tmp_path, "out/path/")
+#     os.makedirs(schematic_path)
+#     renderer = SchematicRenderer(schematic_path=schematic_path, src_path=src_path)
+
+#     filename = os.path.join(renderer.schematic_files_path, "out/path/my_file.txt")
+#     os.makedirs(os.path.dirname(filename))
+#     CONTENTS = "some static content"
+#     with open(filename, "w") as fid:
+#         fid.write(CONTENTS)
+
+#     rel_output_path = "out/path/my_file.txt"
+#     renderer._get_rel_path = MagicMock(return_value=rel_output_path)
+#     renderer.copy_static_file(filename, context={})
+#     renderer.fs.commit()
+#     # assert len(renderer._files_created) > 0
+
+#     full_output_path = os.path.join(src_path, "my_file.txt")
+
+#     assert os.path.exists(full_output_path)

@@ -27,7 +27,7 @@ class StagedFileSystem:
     def __init__(
         self,
         schematic_path: str,
-        src_path: str = None,
+        src_path: str,
         sch_fs_factory: Callable[..., FS] = default_nocreate_fs_factory,
         src_fs_factory: Callable[..., FS] = default_fs_factory,
         dry_run: bool = False,
@@ -42,12 +42,16 @@ class StagedFileSystem:
                 PyFileSystem object. Defaults to default_nocreate_fs_factory.
         """
         schematic_files_path = os.path.join(schematic_path, "files/")
+        if not os.path.isdir(schematic_files_path):
+            from flaskerize.exceptions import InvalidSchema
+
+            raise InvalidSchema("No files/ directory found")
         self.sch_fs = sch_fs_factory(schematic_files_path)
         if not dry_run and src_path and not os.path.isdir(os.path.dirname(src_path)):
             os.makedirs(os.path.dirname(src_path))
         # if not dry_run:  # during a dry run, don't even create a src_fs
         # self.src_fs = src_fs_factory(src_path or root)
-        self.src_fs = src_fs_factory(src_path or schematic_path)
+        self.src_fs = src_fs_factory(src_path or ".")
         self.stg_fs = fs.open_fs(f"mem://")
         self.root = schematic_path
         self.dry_run = dry_run
