@@ -6,13 +6,13 @@ from fs.base import FS
 from _io import _IOBase
 
 
-def default_src_fs_factory(path: str) -> FS:
+def default_nocreate_fs_factory(path: str) -> FS:
     from fs import open_fs
 
     return open_fs(path)
 
 
-def default_dst_fs_factory(path: str) -> FS:
+def default_fs_factory(path: str) -> FS:
     from fs import open_fs
 
     return open_fs(path, create=True)
@@ -26,38 +26,50 @@ class StagedFileSystem:
 
     def __init__(
         self,
-        root: str,
-        dst_root: str = None,
-        srcfs_factory: Callable[..., FS] = default_src_fs_factory,
-        dstfs_factory: Callable[..., FS] = default_dst_fs_factory,
+        schematic_path: str,
+        src_path: str = None,
+        sch_fs_factory: Callable[..., FS] = default_nocreate_fs_factory,
+        src_fs_factory: Callable[..., FS] = default_fs_factory,
         dry_run: bool = False,
     ):
         """
         
         Args:
-            root (str): Root path of src file system
-            srcfs_factory (Callable[..., FS], optional): Factory method for returning
-                PyFileSystem object. Defaults to default_src_fs_factory.
-            dstfs_factory (Callable[..., FS], optional): Factory method for returning
-                PyFileSystem object. Defaults to default_src_fs_factory.
+            schematic_path (str): Root path of schematic
+            sch_fs_factory (Callable[..., FS], optional): Factory method for returning
+                PyFileSystem object. Defaults to default_nocreate_fs_factory.
+            src_fs_factory (Callable[..., FS], optional): Factory method for returning
+                PyFileSystem object. Defaults to default_nocreate_fs_factory.
         """
-        self.src_fs = srcfs_factory(root)
-        if not dry_run and dst_root and not os.path.isdir(os.path.dirname(dst_root)):
-            os.makedirs(os.path.dirname(dst_root))
-        # if not dry_run:  # during a dry run, don't even create a dst_fs
-        # self.dst_fs = dstfs_factory(dst_root or root)
-        self.dst_fs = dstfs_factory(dst_root or root)
+        schematic_files_path = os.path.join(schematic_path, "files/")
+        self.sch_fs = sch_fs_factory(schematic_files_path)
+        if not dry_run and src_path and not os.path.isdir(os.path.dirname(src_path)):
+            os.makedirs(os.path.dirname(src_path))
+        # if not dry_run:  # during a dry run, don't even create a src_fs
+        # self.src_fs = src_fs_factory(src_path or root)
+        self.src_fs = src_fs_factory(src_path or schematic_path)
         self.stg_fs = fs.open_fs(f"mem://")
-        self.root = root
+        self.root = schematic_path
         self.dry_run = dry_run
 
     def commit(self) -> None:
         """Commit the in-memory staging file system to the destination"""
 
         if not self.dry_run:
-            return fs.copy.copy_fs(self.stg_fs, self.dst_fs)
+            return fs.copy.copy_fs(self.stg_fs, self.src_fs)
 
-    def copy(self, src_path: str, dst_path: str = None) -> None:
+    def copy_from_sch(self, src_path: str, dst_path: str = None) -> None:
+        """Copy a file from src_path to dst_path in the staging file system"""
+
+        dst_path = dst_path or src_path
+        dst_dir = os.path.dirname(dst_path)
+        if not self.stg_fs.exists(dst_dir):
+            self.stg_fs.makedirs(dst_dir)
+        return fs.copy.copy_file(
+            self.sch_fs, src_path, self.stg_fs, dst_path or src_path
+        )
+
+    def copy_from_src(self, src_path: str, dst_path: str = None) -> None:
         """Copy a file from src_path to dst_path in the staging file system"""
 
         return fs.copy.copy_file(
@@ -85,11 +97,11 @@ class StagedFileSystem:
 
         if (
             not self.stg_fs.exists(path)
-            and self.src_fs.exists(path)
+            and self.sch_fs.exists(path)
             and "r" in mode.lower()
         ):
             # Copy from the source fs
-            self.copy(path)
+            self.copy_from_sch(path)
         return self.stg_fs.open(path, mode=mode)
 
 

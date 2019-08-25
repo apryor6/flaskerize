@@ -14,7 +14,7 @@ def test_file_not_copied_until_commit(fs):
     outfile = path.join(fs.root, "my_file.txt")
     assert not fs.src_fs.exists(outfile)
     assert not fs.stg_fs.exists(outfile)
-    assert not fs.dst_fs.exists(outfile)
+    assert not fs.src_fs.exists(outfile)
 
     fs.stg_fs.makedirs(path.dirname(outfile))
     with fs.open(outfile, "w") as fid:
@@ -24,7 +24,7 @@ def test_file_not_copied_until_commit(fs):
 
     fs.commit()
     assert fs.stg_fs.exists(outfile)
-    assert fs.dst_fs.exists(outfile)
+    assert fs.src_fs.exists(outfile)
 
 
 def test_existing_file_copied_to_staging_on_open(fs):

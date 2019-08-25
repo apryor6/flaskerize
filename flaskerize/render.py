@@ -15,25 +15,27 @@ class SchematicRenderer:
     def __init__(
         self,
         schematic_path: str,
-        render_root: str = ".",
+        src_path: str = ".",
         fs_root: str = ".",
         dry_run: bool = False,
     ):
         from jinja2 import Environment
         from flaskerize.fileio import StagedFileSystem
 
+        self.src_path = src_path
         self.schematic_path = schematic_path
         self.schematic_files_path = os.path.join(
             self.schematic_path, self.DEFAULT_FILES_DIRNAME
         )
-        self.root = render_root
 
         self.schema_path = self._get_schema_path()
         self._load_schema()
 
         self.arg_parser = self._check_get_arg_parser()
         self.env = Environment()
-        self.fs = StagedFileSystem(root=".", dst_root=render_root, dry_run=dry_run)
+        self.fs = StagedFileSystem(
+            src_path=self.src_path, schematic_path=self.schematic_path, dry_run=dry_run
+        )
         self.dry_run = dry_run
         self._directories_created: List[str] = []
         self._files_created: List[str] = []
@@ -119,9 +121,9 @@ class SchematicRenderer:
         return tpl.render(**context)
 
     def render_from_file(self, template_path: str, context: Dict) -> None:
-        outpath = self._generate_outfile(template_path, self.root, context=context)
+        outpath = self._generate_outfile(template_path, self.src_path, context=context)
         outdir, outfile = os.path.split(outpath)
-        rendered_outpath = os.path.join(self.root, outpath)
+        rendered_outpath = os.path.join(self.src_path, outpath)
         rendered_outdir = os.path.join(rendered_outpath, outdir)
         # outdir = outdir or "."
 
@@ -129,7 +131,7 @@ class SchematicRenderer:
         if outdir and not self.fs.isdir(outdir):
             print("MAKING A DIR")
             print("outpath = ", outpath)
-            print("self.root = ", self.root)
+            print("self.src_path = ", self.src_path)
             print("rendered_outpath = ", rendered_outpath)
             print("rendered_outdir = ", rendered_outdir)
             print("template_path = ", template_path)
@@ -145,8 +147,8 @@ class SchematicRenderer:
             with open(template_path, "r") as fid:
                 tpl = self.env.from_string(fid.read())
 
-                # TODO: change this to drop dst_fs and directly consolidate
-                if self.fs.dst_fs.exists(outpath):
+                # TODO: change this to drop src_fs and directly consolidate
+                if self.fs.src_fs.exists(outpath):
                     self._files_modified.append(rendered_outpath)
                 else:
                     self._files_created.append(rendered_outpath)
@@ -160,7 +162,10 @@ class SchematicRenderer:
     def copy_static_file(self, filename: str, context: Dict[str, Any]):
         from shutil import copy
 
-        outpath = self._generate_outfile(filename, self.root, context=context)
+        #TODO: can just use filename instead of generating another variable as the 
+        # pyfilesystem stuff takes care of relative path prefixes. Still need to render
+        # through Jinja, however.
+        outpath = self._generate_outfile(filename, self.src_path, context=context)
         outdir, outfile = os.path.split(outpath)
         # outdir = outdir or "."
 
@@ -169,15 +174,15 @@ class SchematicRenderer:
             if not self.dry_run:
                 # os.makedirs(outdir)
                 self.fs.makedirs(outdir)
-        if self.fs.exists(outpath):
+        if self.fs.src_fs.exists(outpath):
             self._files_modified.append(outpath)
         else:
             self._files_created.append(outpath)
-        if os.path.isfile(filename):
-            # self.fs.copy(filename, outpath)
-            if not os.path.isdir(os.path.dirname(outpath)):
-                os.makedirs(os.path.dirname(outpath))
-            copy(filename, outpath)
+        # if self.fs.sch_fs.isfile(filename):
+        self.fs.copy_from_sch(filename, outpath)
+        # if not os.path.isdir(os.path.dirname(outpath)):
+        #     os.makedirs(os.path.dirname(outpath))
+        # copy(filename, outpath)
 
     def print_summary(self):
         """Print summary of operations performed"""

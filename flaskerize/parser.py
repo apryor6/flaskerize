@@ -265,7 +265,7 @@ class Flaskerize(object):
     ) -> None:
         from flaskerize.render import SchematicRenderer
 
-        SchematicRenderer(schematic_path, render_root=root, dry_run=dry_run).render(
+        SchematicRenderer(schematic_path, src_path=root, dry_run=dry_run).render(
             name, args
         )
 
