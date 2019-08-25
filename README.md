@@ -8,7 +8,7 @@
 
 Use `flaskerize` for tasks including:
 
-    - Generating Flask resources such as Dockerfiles, blueprints, SQLAlchemy entites, or even entire applications, all with functioning tests
+    - Generating resources such as Dockerfiles, new `flaskerize` schematics, blueprints, yaml configs, SQLAlchemy entities, or even entire applications, all with functioning tests
 	- Upgrading between breaking versions of projects that provide flaskerize upgrade schematics with one command
     - Bundling and serving static web applications such as Angular, React, Gatsby, Jekyll, etc within a new or existing Flask app.
     - Registering Flask resources as new routes within an existing application 
@@ -53,6 +53,12 @@ Simple, `pip install flaskerize`
 ### Schematics that ship with flaskerize
 
 For a list of the schematics that are available by default, see [here](https://github.com/apryor6/flaskerize/tree/master/flaskerize/schematics)
+
+### Creating your own schematics
+
+You can easily create your own schematics through use of `fz generate schematic <path/to/schematics/folder/schematic_name>`. This will create a new, blank schematic with the necessary files, and you can then render this new schematic with `fz generate <path/to/schematics/folder/schematic_name> [args]`
+
+Custom arguments, run functionality, and functions can then be provided in schema.json, run.py, and custom_functions.py, respectively. See the other sections of this README for specific details on each of these.
 
 ### Schematics in third-party packages
 
