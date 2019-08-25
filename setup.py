@@ -10,7 +10,7 @@ setup(
     author_email="apryor6@gmail.com",
     url="http://alanpryorjr.com/",
     packages=find_packages(),
-    install_requires=["Flask>=1.1.1", "termcolor>=1.1.0"],
+    install_requires=["Flask>=1.1.1", "termcolor>=1.1.0", "fs>=2.4.10"],
     include_package_data=True,
     scripts=["bin/fz"],
 )
