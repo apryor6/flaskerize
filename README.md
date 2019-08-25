@@ -8,7 +8,7 @@
 
 Use `flaskerize` for tasks including:
 
-    - Generating Flask resources such as Dockerfiles, blueprints, SQLAlchemy entites, or even entire applications, all with functioning tests
+    - Generating resources such as Dockerfiles, new `flaskerize` schematics, blueprints, yaml configs, SQLAlchemy entities, or even entire applications, all with functioning tests
 	- Upgrading between breaking versions of projects that provide flaskerize upgrade schematics with one command
     - Bundling and serving static web applications such as Angular, React, Gatsby, Jekyll, etc within a new or existing Flask app.
     - Registering Flask resources as new routes within an existing application 

@@ -34,6 +34,31 @@ path
             └── service_test.py
 ```
 
+### Schematic
+
+Flaskerize would be remiss if there was not a schematic for generating new, blank schematics.
+
+_Additional parameters:_
+
+- None (only uses the default/required `name` parameter)
+
+_Example Usage_
+
+The command `fz generate schematic path/to/schematics/new_schematic` would produce a new schematic with the following directory structure.
+
+
+```
+path
+└── to
+    └── schematics
+        └── new_schematic
+            ├── custom_functions.py
+            ├── files
+            ├── new_schematic
+            ├── run.py
+            └── schema.json
+```
+
 ### setup
 
 `setup` creates a `setup.py` file.
