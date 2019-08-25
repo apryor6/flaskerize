@@ -54,6 +54,12 @@ Simple, `pip install flaskerize`
 
 For a list of the schematics that are available by default, see [here](https://github.com/apryor6/flaskerize/tree/master/flaskerize/schematics)
 
+### Creating your own schematics
+
+You can easily create your own schematics through use of `fz generate schematic <path/to/schematics/folder/schematic_name>`. This will create a new, blank schematic with the necessary files, and you can then render this new schematic with `fz generate <path/to/schematics/folder/schematic_name> [args]`
+
+Custom arguments, run functionality, and functions can then be provided in schema.json, run.py, and custom_functions.py, respectively. See the other sections of this README for specific details on each of these.
+
 ### Schematics in third-party packages
 
 `flaskerize` is fully extensible and supports schematics provided by external libraries. To target a schematic from another package, simply use the syntax `fz generate <package_name>:<schematic_name> [OPTIONS]`
