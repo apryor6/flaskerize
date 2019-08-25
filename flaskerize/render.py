@@ -12,20 +12,28 @@ class SchematicRenderer:
     # Path to schematic files to copy, relative to top-level schematic_path
     DEFAULT_FILES_DIRNAME = "files"
 
-    def __init__(self, schematic_path: str, root: str = "./", dry_run: bool = False):
+    def __init__(
+        self,
+        schematic_path: str,
+        render_root: str = ".",
+        fs_root: str = ".",
+        dry_run: bool = False,
+    ):
         from jinja2 import Environment
+        from flaskerize.fileio import StagedFileSystem
 
         self.schematic_path = schematic_path
         self.schematic_files_path = path.join(
             self.schematic_path, self.DEFAULT_FILES_DIRNAME
         )
-        self.root = root
+        self.root = render_root
 
         self.schema_path = self._get_schema_path()
         self._load_schema()
 
         self.arg_parser = self._check_get_arg_parser()
         self.env = Environment()
+        self.fs = StagedFileSystem(root=".", dry_run=dry_run)
         self.dry_run = dry_run
         self._directories_created: List[str] = []
         self._files_created: List[str] = []
