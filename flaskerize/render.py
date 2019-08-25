@@ -82,7 +82,8 @@ class SchematicRenderer:
         from pathlib import Path
 
         filenames = []
-        patterns = self.config.get("templateFilePatterns", [])
+        # patterns = self.config.get("templateFilePatterns", [])
+        patterns = self.config.get("templateFilePatterns")
         for pattern in patterns:
             filenames.extend(
                 [str(p) for p in Path(self.schematic_files_path).glob(pattern)]
@@ -115,11 +116,6 @@ class SchematicRenderer:
         # TODO: remove the redundant parameter template file that is copied
         # outfile_name = self._get_rel_path(full_path=template_file, rel_to=root)
         outfile_name = "".join(template_file.rsplit(".template"))
-        # outfile_name = template_file
-        # outfile_name = template_file
-        print("_generate_outfile outfile = ", outfile_name)
-        print("_generate_outfile template_file = ", template_file)
-        print("_generate_outfile rel_to = ", root)
         tpl = self.env.from_string(outfile_name)
         if context is None:
             context = {}
@@ -157,24 +153,27 @@ class SchematicRenderer:
     def copy_static_file(self, filename: str, context: Dict[str, Any]):
         from shutil import copy
 
-        # TODO: can just use filename instead of generating another variable as the
-        # pyfilesystem stuff takes care of relative path prefixes. Still need to render
-        # through Jinja, however.
+        # If the path is a directory, need to ensure trailing slash so it does not get
+        # split incorrectly
+        if self.fs.sch_fs.isdir(filename):
+            filename = os.path.join(filename, "")
         outpath = self._generate_outfile(filename, self.src_path, context=context)
         outdir, outfile = os.path.split(outpath)
-        # outdir = outdir or "."
+
+        rendered_outpath = os.path.join(self.src_path, outpath)
+        rendered_outdir = os.path.join(rendered_outpath, outdir)
 
         if outdir and not self.fs.exists(outdir):
-            self._directories_created.append(outdir)
+            self._directories_created.append(rendered_outdir)
             if not self.dry_run:
                 # os.makedirs(outdir)
                 self.fs.makedirs(outdir)
         if self.fs.src_fs.exists(outpath):
-            self._files_modified.append(outpath)
+            self._files_modified.append(rendered_outpath)
         else:
-            self._files_created.append(outpath)
-        # if self.fs.sch_fs.isfile(filename):
-        self.fs.copy_from_sch(filename, outpath)
+            self._files_created.append(rendered_outpath)
+        if self.fs.sch_fs.isfile(filename):
+            self.fs.copy_from_sch(filename, outpath)
         # if not os.path.isdir(os.path.dirname(outpath)):
         #     os.makedirs(os.path.dirname(outpath))
         # copy(filename, outpath)
