@@ -23,6 +23,7 @@ class StagedFileSystem:
         root: str,
         srcfs_factory: Callable[..., FS] = default_fs_factory,
         dstfs_factory: Callable[..., FS] = default_fs_factory,
+        dry_run: bool = False,
     ):
         """
         
@@ -35,14 +36,15 @@ class StagedFileSystem:
         """
         self.src_fs = srcfs_factory(root)
         self.dst_fs = dstfs_factory(root)
-        # self.stg_fs = fs.open_fs(f"mem://{root}")
         self.stg_fs = fs.open_fs(f"mem://")
         self.root = root
+        self.dry_run = dry_run
 
     def commit(self) -> None:
         """Commit the in-memory staging file system to the destination"""
 
-        return fs.copy.copy_fs(self.stg_fs, self.dst_fs)
+        if not self.dry_run:
+            return fs.copy.copy_fs(self.stg_fs, self.dst_fs)
 
     def copy(self, src_path: str, dst_path: str = None) -> None:
         """Copy a file from src_path to dst_path in the staging file system"""
@@ -78,16 +80,3 @@ def md5(fhandle_getter):
         for chunk in iter(lambda: f.read(4096), b""):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
-
-
-# mem_fs = fs.open_fs("mem://")
-# home_fs = fs.open_fs("osfs://.")
-# path = "pytest.ini"
-# fs.copy.copy_file(home_fs, path, mem_fs, path)
-
-# on_disk = md5(lambda: home_fs.open(path, "rb"))
-# in_mmry = md5(lambda: mem_fs.open(path, "rb"))
-
-# assert on_disk == in_mmry
-
-# print(f"Hash value: {in_mmry}")
