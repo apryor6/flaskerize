@@ -187,20 +187,91 @@ def test_render_from_file(renderer, tmp_path):
     assert len(renderer._directories_created) > 0
 
 
+def test_copy_static_file_dry_run(renderer, tmp_path):
+    filename = os.path.join(tmp_path, "my_file.txt")
+    CONTENTS = "some static content"
+    with open(filename, "w") as fid:
+        fid.write(CONTENTS)
+    outfile = os.path.join(tmp_path, "doodad/my_file.txt")
+    renderer._generate_outfile = MagicMock(return_value=outfile)
+    renderer.copy_static_file(filename, context={})
+
+    assert len(renderer._files_created) > 0
+
+
+def test_copy_static_file(tmp_path):
+    os.makedirs(path.join(tmp_path, "schematics/doodad"))
+    renderer = SchematicRenderer(
+        schematic_path=path.join(tmp_path, "schematics/doodad"),
+        root=path.join(tmp_path, "out/path"),
+    )
+
+    filename = os.path.join(tmp_path, "my_file.txt")
+    CONTENTS = "some static content"
+    with open(filename, "w") as fid:
+        fid.write(CONTENTS)
+    outfile = os.path.join(tmp_path, "doodad/my_file.txt")
+    renderer._get_rel_path = MagicMock(return_value=outfile)
+    renderer.copy_static_file(filename, context={})
+
+    assert len(renderer._files_created) > 0
+    assert os.path.exists(outfile)
+
+
+def test_copy_static_file_modifies_file_if_exists(tmp_path):
+    os.makedirs(path.join(tmp_path, "schematics/doodad"))
+    renderer = SchematicRenderer(
+        schematic_path=path.join(tmp_path, "schematics/doodad"),
+        root=path.join(tmp_path, "out/path"),
+    )
+
+    filename = os.path.join(tmp_path, "my_file.txt")
+    CONTENTS = "some static content"
+    with open(filename, "w") as fid:
+        fid.write(CONTENTS)
+    outfile = os.path.join(path.join(tmp_path, "out/path"), "doodad/my_file.txt")
+    os.makedirs(path.join(tmp_path, "out/path/doodad"))
+    with open(outfile, "w") as fid:
+        fid.write(CONTENTS)
+    renderer._get_rel_path = MagicMock(return_value=outfile)
+    renderer.copy_static_file(filename, context={})
+
+    assert len(renderer._files_created) == 0
+    assert len(renderer._files_modified) == 1
+    assert os.path.exists(outfile)
+
+
 def test_render_from_file_when_outfile_exists(renderer, tmp_path):
     filename = os.path.join(tmp_path, "my_template.py.template")
-    CONTENTS = "{{ secret }}"
+    CONTENTS = "some existing content"
     with open(filename, "w") as fid:
         fid.write(CONTENTS)
     outdir = os.path.join(tmp_path, "doodad")
     os.makedirs(outdir)
     outfile = os.path.join(outdir, "my_template.py")
     with open(outfile, "w") as fid:
-        fid.write("some existing content")
+        fid.write(CONTENTS)
     renderer._generate_outfile = MagicMock(return_value=outfile)
     renderer.render_from_file(filename, context={"secret": "42"})
 
     assert len(renderer._files_modified) > 0
+
+
+def test_run_with_static_files(renderer, tmp_path):
+    from flaskerize.render import default_run
+
+    filename = os.path.join(renderer.schematic_files_path, "my_file.txt")
+    os.makedirs(renderer.schematic_files_path)
+    CONTENTS = "some existing content"
+    with open(filename, "w") as fid:
+        fid.write(CONTENTS)
+    outdir = os.path.join(tmp_path, "doodad")
+    outfile = os.path.join(outdir, "my_file.txt")
+
+    renderer._generate_outfile = MagicMock(return_value=outfile)
+    default_run(renderer=renderer, context={})
+
+    assert len(renderer._files_created) > 0
 
 
 def test__load_run_function_raises_if_colliding_parameter_provided(tmp_path):
