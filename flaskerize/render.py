@@ -70,12 +70,11 @@ class SchematicRenderer:
 
         from pathlib import Path
 
-        filenames: List[str] = []
         patterns = self.config.get("templateFilePatterns", [])
         all_files = list(str(p) for p in Path(self.schematic_files_path).glob("**/*"))
-        static_files = list(set(all_files) - set(self.get_template_files()))
-
-        return static_files
+        filenames = list(set(all_files) - set(self.get_template_files()))
+        filenames = [os.path.relpath(s, self.schematic_files_path) for s in filenames]
+        return filenames
 
     def get_template_files(self) -> List[str]:
         """Get list of templated files to be rendered via Jinja"""
@@ -90,6 +89,7 @@ class SchematicRenderer:
             )
         ignore_filenames = self._get_ignore_files()
         filenames = list(set(filenames) - set(ignore_filenames))
+
         return filenames
 
     def _get_ignore_files(self) -> List[str]:
@@ -125,20 +125,11 @@ class SchematicRenderer:
         outdir, outfile = os.path.split(outpath)
         rendered_outpath = os.path.join(self.src_path, outpath)
         rendered_outdir = os.path.join(rendered_outpath, outdir)
-        # outdir = outdir or "."
 
-        # if not os.path.exists(outdir):
         if outdir and not self.fs.isdir(outdir):
-            print("MAKING A DIR")
-            print("outpath = ", outpath)
-            print("self.src_path = ", self.src_path)
-            print("rendered_outpath = ", rendered_outpath)
-            print("rendered_outdir = ", rendered_outdir)
-            print("template_path = ", template_path)
-            print("outdir = ", outdir)
+
             self._directories_created.append(rendered_outdir)
             if not self.dry_run:
-                print("\n\n==== OUTDIR = ", outdir)
                 self.fs.makedirs(outdir)
 
         if os.path.isfile(template_path):
@@ -162,7 +153,7 @@ class SchematicRenderer:
     def copy_static_file(self, filename: str, context: Dict[str, Any]):
         from shutil import copy
 
-        #TODO: can just use filename instead of generating another variable as the 
+        # TODO: can just use filename instead of generating another variable as the
         # pyfilesystem stuff takes care of relative path prefixes. Still need to render
         # through Jinja, however.
         outpath = self._generate_outfile(filename, self.src_path, context=context)
