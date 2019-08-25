@@ -176,6 +176,8 @@ class SchematicRenderer:
             self._files_created.append(outpath)
         if os.path.isfile(filename):
             # self.fs.copy(filename, outpath)
+            if not os.path.isdir(os.path.dirname(outpath)):
+                os.makedirs(os.path.dirname(outpath))
             copy(filename, outpath)
 
     def print_summary(self):

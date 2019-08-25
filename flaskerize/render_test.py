@@ -10,9 +10,9 @@ from .render import SchematicRenderer
 @fixture
 def renderer(tmp_path):
     os.makedirs(path.join(tmp_path, "schematics/doodad/"))
-    return SchematicRenderer(
+    yield SchematicRenderer(
         schematic_path=path.join(tmp_path, "schematics/doodad/"),
-        render_root="./",
+        render_root=path.join(tmp_path, "render/test/results/"),
         dry_run=True,
     )
 
@@ -271,7 +271,7 @@ def test_run_with_static_files(renderer, tmp_path):
     CONTENTS = "some existing content"
     with open(filename, "w") as fid:
         fid.write(CONTENTS)
-    outdir = os.path.join(tmp_path, "doodad/")
+    outdir = os.path.join(renderer.root, "doodad/")
     outfile = os.path.join(outdir, "my_file.txt")
 
     renderer._generate_outfile = MagicMock(return_value=outfile)

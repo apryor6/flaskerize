@@ -64,13 +64,13 @@ class StagedFileSystem:
         )
 
     def makedirs(self, dirname: str):
-        self.stg_fs.makedirs(dirname)
+        return self.stg_fs.makedirs(dirname)
 
     def exists(self, name: str):
-        self.stg_fs.exists(name)
+        return self.stg_fs.exists(name)
 
     def isdir(self, name: str):
-        self.stg_fs.isdir(name)
+        return self.stg_fs.isdir(name)
 
     def open(self, path: str, mode: str = "r") -> _IOBase:
         """
