@@ -9,9 +9,9 @@ from .render import SchematicRenderer
 
 @fixture
 def renderer(tmp_path):
-    os.makedirs(path.join(tmp_path, "schematics/doodad"))
+    os.makedirs(path.join(tmp_path, "schematics/doodad/"))
     return SchematicRenderer(
-        schematic_path=path.join(tmp_path, "schematics/doodad"),
+        schematic_path=path.join(tmp_path, "schematics/doodad/"),
         render_root="./",
         dry_run=True,
     )
@@ -31,7 +31,7 @@ def test__check_get_arg_parser_returns_parser_with_schema_file(
           }
         ]
     }
-      
+
     """
     schema_path = path.join(renderer.schematic_path, "schema.json")
     with open(schema_path, "w") as fid:
@@ -73,9 +73,9 @@ def test_get_template_files(tmp_path):
         "templateFilePatterns": ["**/*.template"],
         "options": []
     }
-      
+
     """
-    schematic_path = path.join(tmp_path, "schematics/doodad")
+    schematic_path = path.join(tmp_path, "schematics/doodad/")
     schematic_files_path = path.join(schematic_path, "files/")
     os.makedirs(schematic_files_path)
     schema_path = path.join(schematic_path, "schema.json")
@@ -102,10 +102,10 @@ def test_ignoreFilePatterns_is_respected(tmp_path):
         "ignoreFilePatterns": ["**/b.txt.template"],
         "options": []
     }
-      
+
     """
-    schematic_path = path.join(tmp_path, "schematics/doodad")
-    schematic_files_path = path.join(schematic_path, "files")
+    schematic_path = path.join(tmp_path, "schematics/doodad/")
+    schematic_files_path = path.join(schematic_path, "files/")
     os.makedirs(schematic_files_path)
     schema_path = path.join(schematic_path, "schema.json")
     with open(schema_path, "w") as fid:
@@ -206,10 +206,10 @@ def test_copy_static_file_dry_run(renderer, tmp_path):
 
 
 def test_copy_static_file(tmp_path):
-    os.makedirs(path.join(tmp_path, "schematics/doodad"))
+    os.makedirs(path.join(tmp_path, "schematics/doodad/"))
     renderer = SchematicRenderer(
         schematic_path=path.join(tmp_path, "schematics/doodad"),
-        render_root=path.join(tmp_path, "out/path"),
+        render_root=path.join(tmp_path, "out/path/"),
     )
 
     filename = os.path.join(tmp_path, "my_file.txt")
@@ -225,18 +225,18 @@ def test_copy_static_file(tmp_path):
 
 
 def test_copy_static_file_modifies_file_if_exists(tmp_path):
-    os.makedirs(path.join(tmp_path, "schematics/doodad"))
+    os.makedirs(path.join(tmp_path, "schematics/doodad/"))
     renderer = SchematicRenderer(
         schematic_path=path.join(tmp_path, "schematics/doodad"),
-        render_root=path.join(tmp_path, "out/path"),
+        render_root=path.join(tmp_path, "out/path/"),
     )
 
     filename = os.path.join(tmp_path, "my_file.txt")
     CONTENTS = "some static content"
     with open(filename, "w") as fid:
         fid.write(CONTENTS)
-    outfile = os.path.join(path.join(tmp_path, "out/path"), "doodad/my_file.txt")
-    os.makedirs(path.join(tmp_path, "out/path/doodad"))
+    outfile = os.path.join(path.join(tmp_path, "out/path/"), "doodad/my_file.txt")
+    os.makedirs(path.join(tmp_path, "out/path/doodad/"))
     with open(outfile, "w") as fid:
         fid.write(CONTENTS)
     renderer._get_rel_path = MagicMock(return_value=outfile)
@@ -252,7 +252,7 @@ def test_render_from_file_when_outfile_exists(renderer, tmp_path):
     CONTENTS = "some existing content"
     with open(filename, "w") as fid:
         fid.write(CONTENTS)
-    outdir = os.path.join(tmp_path, "doodad")
+    outdir = os.path.join(tmp_path, "doodad/")
     os.makedirs(outdir)
     outfile = os.path.join(outdir, "my_template.py")
     with open(outfile, "w") as fid:
@@ -271,7 +271,7 @@ def test_run_with_static_files(renderer, tmp_path):
     CONTENTS = "some existing content"
     with open(filename, "w") as fid:
         fid.write(CONTENTS)
-    outdir = os.path.join(tmp_path, "doodad")
+    outdir = os.path.join(tmp_path, "doodad/")
     outfile = os.path.join(outdir, "my_file.txt")
 
     renderer._generate_outfile = MagicMock(return_value=outfile)
@@ -293,7 +293,7 @@ def test__load_run_function_raises_if_colliding_parameter_provided(tmp_path):
     }
 
     """
-    os.makedirs(path.join(tmp_path, "schematics/doodad"))
+    os.makedirs(path.join(tmp_path, "schematics/doodad/"))
     schematic_path = path.join(tmp_path, "schematics/doodad")
     schema_path = path.join(schematic_path, "schema.json")
     with open(schema_path, "w") as fid:
@@ -307,7 +307,7 @@ def test__load_run_function_raises_if_colliding_parameter_provided(tmp_path):
 
 def test__load_run_function_raises_if_invalid_run_py(tmp_path):
     SCHEMA_CONTENTS = """{"options": []}"""
-    os.makedirs(path.join(tmp_path, "schematics/doodad"))
+    os.makedirs(path.join(tmp_path, "schematics/doodad/"))
     schematic_path = path.join(tmp_path, "schematics/doodad")
     schema_path = path.join(schematic_path, "schema.json")
     with open(schema_path, "w") as fid:
@@ -334,8 +334,8 @@ def wrong_named_run(renderer: SchematicRenderer, context: Dict[str, Any]) -> Non
 
 def test__load_run_function_uses_custom_run(tmp_path):
     SCHEMA_CONTENTS = """{"options": []}"""
-    os.makedirs(path.join(tmp_path, "schematics/doodad"))
-    schematic_path = path.join(tmp_path, "schematics/doodad")
+    os.makedirs(path.join(tmp_path, "schematics/doodad/"))
+    schematic_path = path.join(tmp_path, "schematics/doodad/")
     schema_path = path.join(schematic_path, "schema.json")
     with open(schema_path, "w") as fid:
         fid.write(SCHEMA_CONTENTS)
@@ -364,8 +364,8 @@ def run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
 
 def test__load_run_function_uses_custom_run_with_context_correctly(tmp_path):
     SCHEMA_CONTENTS = """{"options": []}"""
-    os.makedirs(path.join(tmp_path, "schematics/doodad"))
-    schematic_path = path.join(tmp_path, "schematics/doodad")
+    os.makedirs(path.join(tmp_path, "schematics/doodad/"))
+    schematic_path = path.join(tmp_path, "schematics/doodad/")
     schema_path = path.join(schematic_path, "schema.json")
     with open(schema_path, "w") as fid:
         fid.write(SCHEMA_CONTENTS)
@@ -395,8 +395,8 @@ def run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
 @patch("flaskerize.render.default_run")
 def test_default_run_executed_if_no_custom_run(mock: MagicMock, tmp_path):
     SCHEMA_CONTENTS = """{"options": []}"""
-    os.makedirs(path.join(tmp_path, "schematics/doodad"))
-    schematic_path = path.join(tmp_path, "schematics/doodad")
+    os.makedirs(path.join(tmp_path, "schematics/doodad/"))
+    schematic_path = path.join(tmp_path, "schematics/doodad/")
     schema_path = path.join(schematic_path, "schema.json")
     with open(schema_path, "w") as fid:
         fid.write(SCHEMA_CONTENTS)
@@ -410,7 +410,7 @@ def test_default_run_executed_if_no_custom_run(mock: MagicMock, tmp_path):
 
 
 def test_render(tmp_path: str):
-    schematic_path = path.join(tmp_path, "schematic/doodad")
+    schematic_path = path.join(tmp_path, "schematic/doodad/")
     schematic_files_path = path.join(schematic_path, "files")
     os.makedirs(schematic_files_path)
     SCHEMA_CONTENTS = """
@@ -437,7 +437,7 @@ def test_render(tmp_path: str):
 
     renderer = SchematicRenderer(
         schematic_path=schematic_path,
-        render_root=path.join(tmp_path, "results"),
+        render_root=path.join(tmp_path, "results/"),
         dry_run=False,
     )
     renderer.render(name="Test schematic", args=["there"])
@@ -451,8 +451,8 @@ def test_render(tmp_path: str):
 
 def test_render_with_custom_function(tmp_path: str):
 
-    schematic_path = path.join(tmp_path, "schematic/doodad")
-    schematic_files_path = path.join(schematic_path, "files")
+    schematic_path = path.join(tmp_path, "schematic/doodad/")
+    schematic_files_path = path.join(schematic_path, "files/")
     os.makedirs(schematic_files_path)
     SCHEMA_CONTENTS = """
     {
@@ -500,7 +500,7 @@ def derp_case(val: str) -> str:
 
     renderer = SchematicRenderer(
         schematic_path=schematic_path,
-        render_root=path.join(tmp_path, "results"),
+        render_root=path.join(tmp_path, "results/"),
         dry_run=False,
     )
     renderer.render(name="Test schematic", args=["there"])
@@ -553,7 +553,7 @@ def truncate(val: str, max_length: int) -> str:
 
     renderer = SchematicRenderer(
         schematic_path=schematic_path,
-        render_root=path.join(tmp_path, "results"),
+        render_root=path.join(tmp_path, "results/"),
         dry_run=False,
     )
     renderer.render(name="Test schematic", args=["there"])

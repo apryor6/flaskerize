@@ -6,10 +6,16 @@ from fs.base import FS
 from _io import _IOBase
 
 
-def default_fs_factory(path: str) -> FS:
+def default_src_fs_factory(path: str) -> FS:
     from fs import open_fs
 
     return open_fs(path)
+
+
+def default_dst_fs_factory(path: str) -> FS:
+    from fs import open_fs
+
+    return open_fs(path, create=True)
 
 
 class StagedFileSystem:
@@ -21,8 +27,9 @@ class StagedFileSystem:
     def __init__(
         self,
         root: str,
-        srcfs_factory: Callable[..., FS] = default_fs_factory,
-        dstfs_factory: Callable[..., FS] = default_fs_factory,
+        dst_root: str = None,
+        srcfs_factory: Callable[..., FS] = default_src_fs_factory,
+        dstfs_factory: Callable[..., FS] = default_dst_fs_factory,
         dry_run: bool = False,
     ):
         """
@@ -30,12 +37,15 @@ class StagedFileSystem:
         Args:
             root (str): Root path of src file system
             srcfs_factory (Callable[..., FS], optional): Factory method for returning
-                PyFileSystem object. Defaults to default_fs_factory.
+                PyFileSystem object. Defaults to default_src_fs_factory.
             dstfs_factory (Callable[..., FS], optional): Factory method for returning
-                PyFileSystem object. Defaults to default_fs_factory.
+                PyFileSystem object. Defaults to default_src_fs_factory.
         """
         self.src_fs = srcfs_factory(root)
-        self.dst_fs = dstfs_factory(root)
+        if not dry_run and dst_root and not os.path.isdir(os.path.dirname(dst_root)):
+            os.makedirs(os.path.dirname(dst_root))
+        if not dry_run:  # during a dry run, don't even create a dst_fs
+            self.dst_fs = dstfs_factory(dst_root or root)
         self.stg_fs = fs.open_fs(f"mem://")
         self.root = root
         self.dry_run = dry_run
@@ -59,14 +69,15 @@ class StagedFileSystem:
         system if the file exists on the source but not yet in memory.
         """
 
+        dirname, pathname = os.path.split(path)
+        if not self.stg_fs.isdir(dirname):
+            self.stg_fs.makedirs(dirname)
+
         if (
             not self.stg_fs.exists(path)
             and self.src_fs.exists(path)
             and "r" in mode.lower()
         ):
-            dirname, pathname = os.path.split(path)
-            if not self.stg_fs.isdir(dirname):
-                self.stg_fs.makedirs(dirname)
             # Copy from the source fs
             self.copy(path)
         return self.stg_fs.open(path, mode=mode)

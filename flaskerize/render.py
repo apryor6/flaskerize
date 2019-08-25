@@ -33,7 +33,7 @@ class SchematicRenderer:
 
         self.arg_parser = self._check_get_arg_parser()
         self.env = Environment()
-        self.fs = StagedFileSystem(root=".", dry_run=dry_run)
+        self.fs = StagedFileSystem(root=".", dst_root=render_root, dry_run=dry_run)
         self.dry_run = dry_run
         self._directories_created: List[str] = []
         self._files_created: List[str] = []
@@ -102,9 +102,7 @@ class SchematicRenderer:
         return ignore_filenames
 
     def _get_rel_path(self, full_path: str, rel_to: str) -> str:
-        full_path = path.join(
-            rel_to, path.relpath(full_path, self.schematic_files_path)
-        )
+        full_path = path.relpath(full_path, self.schematic_files_path)
         outfile = "".join(full_path.rsplit(".template"))
         return outfile
 
@@ -141,7 +139,7 @@ class SchematicRenderer:
                     self._files_created.append(outpath)
 
                 if not self.dry_run:
-                    with open(outpath, "w") as fout:
+                    with self.fs.open(outpath, "w") as fout:
                         fout.write(tpl.render(**context))
                 else:
                     print(tpl.render(**context))
@@ -259,6 +257,7 @@ Flaskerize job summary:
         except (ImportError, ValueError, FileNotFoundError) as e:
             run = default_run
         run(renderer=self, context=context)
+        self.fs.commit()
 
 
 def default_run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
