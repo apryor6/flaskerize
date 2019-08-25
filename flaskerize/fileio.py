@@ -63,6 +63,15 @@ class StagedFileSystem:
             self.src_fs, src_path, self.stg_fs, dst_path or src_path
         )
 
+    def makedirs(self, dirname: str):
+        self.stg_fs.makedirs(dirname)
+
+    def exists(self, name: str):
+        self.stg_fs.exists(name)
+
+    def isdir(self, name: str):
+        self.stg_fs.isdir(name)
+
     def open(self, path: str, mode: str = "r") -> _IOBase:
         """
         Open a file in the staging file system, lazily copying it from the source file

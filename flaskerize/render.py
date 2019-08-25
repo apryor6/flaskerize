@@ -1,4 +1,4 @@
-from os import path, makedirs
+import os
 import argparse
 from typing import Any, Callable, Dict, List, Optional
 from termcolor import colored
@@ -23,7 +23,7 @@ class SchematicRenderer:
         from flaskerize.fileio import StagedFileSystem
 
         self.schematic_path = schematic_path
-        self.schematic_files_path = path.join(
+        self.schematic_files_path = os.path.join(
             self.schematic_path, self.DEFAULT_FILES_DIRNAME
         )
         self.root = render_root
@@ -51,8 +51,8 @@ class SchematicRenderer:
 
     def _get_schema_path(self) -> Optional[str]:
 
-        schema_path = path.join(self.schematic_path, "schema.json")
-        if not path.isfile(schema_path):
+        schema_path = os.path.join(self.schematic_path, "schema.json")
+        if not os.path.isfile(schema_path):
             return None
         return schema_path
 
@@ -102,7 +102,7 @@ class SchematicRenderer:
         return ignore_filenames
 
     def _get_rel_path(self, full_path: str, rel_to: str) -> str:
-        full_path = path.relpath(full_path, self.schematic_files_path)
+        full_path = os.path.relpath(full_path, self.schematic_files_path)
         outfile = "".join(full_path.rsplit(".template"))
         return outfile
 
@@ -110,6 +110,9 @@ class SchematicRenderer:
         self, template_file: str, root: str, context: Optional[Dict] = None
     ) -> str:
         outfile_name = self._get_rel_path(full_path=template_file, rel_to=root)
+        print("_generate_outfile outfile = ", outfile_name)
+        print("_generate_outfile template_file = ", template_file)
+        print("_generate_outfile rel_to = ", root)
         tpl = self.env.from_string(outfile_name)
         if context is None:
             context = {}
@@ -117,15 +120,26 @@ class SchematicRenderer:
 
     def render_from_file(self, template_path: str, context: Dict) -> None:
         outpath = self._generate_outfile(template_path, self.root, context=context)
-        outdir, outfile = path.split(outpath)
-        outdir = outdir or "."
+        outdir, outfile = os.path.split(outpath)
+        rendered_outpath = os.path.join(self.root, outpath)
+        rendered_outdir = os.path.join(rendered_outpath, outdir)
+        # outdir = outdir or "."
 
-        if not path.exists(outdir):
-            self._directories_created.append(outdir)
+        # if not os.path.exists(outdir):
+        if outdir and not self.fs.isdir(outdir):
+            print("MAKING A DIR")
+            print("outpath = ", outpath)
+            print("self.root = ", self.root)
+            print("rendered_outpath = ", rendered_outpath)
+            print("rendered_outdir = ", rendered_outdir)
+            print("template_path = ", template_path)
+            print("outdir = ", outdir)
+            self._directories_created.append(rendered_outdir)
             if not self.dry_run:
-                makedirs(outdir)
+                print("\n\n==== OUTDIR = ", outdir)
+                self.fs.makedirs(outdir)
 
-        if path.isfile(template_path):
+        if os.path.isfile(template_path):
             # TODO: Refactor dry-run and file system interactions to a composable object
             # passed into this class rather than it containing the write logic
             with open(template_path, "r") as fid:
@@ -133,10 +147,10 @@ class SchematicRenderer:
 
                 # Update status of creation, modification, etc
                 # TODO: This behavior does not belong in this method or this class at that
-                if path.exists(outpath):
-                    self._files_modified.append(outpath)
+                if os.path.exists(outpath):
+                    self._files_modified.append(rendered_outpath)
                 else:
-                    self._files_created.append(outpath)
+                    self._files_created.append(rendered_outpath)
 
                 if not self.dry_run:
                     with self.fs.open(outpath, "w") as fout:
@@ -148,20 +162,21 @@ class SchematicRenderer:
         from shutil import copy
 
         outpath = self._generate_outfile(filename, self.root, context=context)
-        outdir, outfile = path.split(outpath)
-        outdir = outdir or "."
+        outdir, outfile = os.path.split(outpath)
+        # outdir = outdir or "."
 
-        if not path.exists(outdir):
+        if outdir and not self.fs.exists(outdir):
             self._directories_created.append(outdir)
             if not self.dry_run:
-                makedirs(outdir)
-        if path.exists(outpath):
+                # os.makedirs(outdir)
+                self.fs.makedirs(outdir)
+        if self.fs.exists(outpath):
             self._files_modified.append(outpath)
         else:
             self._files_created.append(outpath)
-        if not self.dry_run:
-            if path.isfile(filename):
-                copy(filename, outpath)
+        if os.path.isfile(filename):
+            # self.fs.copy(filename, outpath)
+            copy(filename, outpath)
 
     def print_summary(self):
         """Print summary of operations performed"""
@@ -250,10 +265,12 @@ Flaskerize job summary:
         context = {**context, "name": name}
 
         self._load_custom_functions(
-            path=path.join(self.schematic_path, "custom_functions.py")
+            path=os.path.join(self.schematic_path, "custom_functions.py")
         )
         try:
-            run = self._load_run_function(path=path.join(self.schematic_path, "run.py"))
+            run = self._load_run_function(
+                path=os.path.join(self.schematic_path, "run.py")
+            )
         except (ImportError, ValueError, FileNotFoundError) as e:
             run = default_run
         run(renderer=self, context=context)
