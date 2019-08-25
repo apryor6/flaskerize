@@ -72,8 +72,8 @@ class SchematicRenderer:
 
         patterns = self.config.get("templateFilePatterns", [])
         all_files = list(str(p) for p in Path(self.schematic_files_path).glob("**/*"))
-        filenames = list(set(all_files) - set(self.get_template_files()))
-        filenames = [os.path.relpath(s, self.schematic_files_path) for s in filenames]
+        filenames = [os.path.relpath(s, self.schematic_files_path) for s in all_files]
+        filenames = list(set(filenames) - set(self.get_template_files()))
         return filenames
 
     def get_template_files(self) -> List[str]:
@@ -89,6 +89,7 @@ class SchematicRenderer:
             )
         ignore_filenames = self._get_ignore_files()
         filenames = list(set(filenames) - set(ignore_filenames))
+        filenames = [os.path.relpath(s, self.schematic_files_path) for s in filenames]
 
         return filenames
 
@@ -103,15 +104,19 @@ class SchematicRenderer:
             )
         return ignore_filenames
 
-    def _get_rel_path(self, full_path: str, rel_to: str) -> str:
-        full_path = os.path.relpath(full_path, self.schematic_files_path)
-        outfile = "".join(full_path.rsplit(".template"))
-        return outfile
+    # def _get_rel_path(self, full_path: str, rel_to: str) -> str:
+    #     full_path = os.path.relpath(full_path, self.schematic_files_path)
+    #     outfile = "".join(full_path.rsplit(".template"))
+    #     return outfile
 
     def _generate_outfile(
         self, template_file: str, root: str, context: Optional[Dict] = None
     ) -> str:
-        outfile_name = self._get_rel_path(full_path=template_file, rel_to=root)
+        # TODO: remove the redundant parameter template file that is copied
+        # outfile_name = self._get_rel_path(full_path=template_file, rel_to=root)
+        outfile_name = "".join(template_file.rsplit(".template"))
+        # outfile_name = template_file
+        # outfile_name = template_file
         print("_generate_outfile outfile = ", outfile_name)
         print("_generate_outfile template_file = ", template_file)
         print("_generate_outfile rel_to = ", root)
@@ -132,10 +137,13 @@ class SchematicRenderer:
             if not self.dry_run:
                 self.fs.makedirs(outdir)
 
-        if os.path.isfile(template_path):
+        # if os.path.isfile(template_path):
+        if self.fs.sch_fs.isfile(template_path):
             # TODO: Refactor dry-run and file system interactions to a composable object
             # passed into this class rather than it containing the write logic
-            with open(template_path, "r") as fid:
+            # with open(template_path, "r") as fid:
+            with self.fs.sch_fs.open(template_path, "r") as fid:
+
                 tpl = self.env.from_string(fid.read())
 
                 # TODO: change this to drop src_fs and directly consolidate
@@ -143,12 +151,8 @@ class SchematicRenderer:
                     self._files_modified.append(rendered_outpath)
                 else:
                     self._files_created.append(rendered_outpath)
-
-                if not self.dry_run:
-                    with self.fs.open(outpath, "w") as fout:
-                        fout.write(tpl.render(**context))
-                else:
-                    print(tpl.render(**context))
+                with self.fs.open(outpath, "w") as fout:
+                    fout.write(tpl.render(**context))
 
     def copy_static_file(self, filename: str, context: Dict[str, Any]):
         from shutil import copy
@@ -279,6 +283,8 @@ def default_run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
 
     template_files = renderer.get_template_files()
     static_files = renderer.get_static_files()
+
+    # TODO: add test that static files are correctly removed from template_files, etc
 
     for filename in template_files:
         renderer.render_from_file(filename, context=context)
