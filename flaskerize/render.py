@@ -5,6 +5,8 @@ from termcolor import colored
 
 from flaskerize.parser import FzArgumentParser
 
+DEFAULT_TEMPLATE_PATTERN = ["**/*.template"]
+
 
 class SchematicRenderer:
     """Render Flaskerize schematics"""
@@ -70,7 +72,7 @@ class SchematicRenderer:
 
         from pathlib import Path
 
-        patterns = self.config.get("templateFilePatterns", [])
+        patterns = self.config.get("templateFilePatterns", DEFAULT_TEMPLATE_PATTERN)
         all_files = list(str(p) for p in Path(self.schematic_files_path).glob("**/*"))
         filenames = [os.path.relpath(s, self.schematic_files_path) for s in all_files]
         filenames = list(set(filenames) - set(self.get_template_files()))
@@ -82,8 +84,7 @@ class SchematicRenderer:
         from pathlib import Path
 
         filenames = []
-        # patterns = self.config.get("templateFilePatterns", [])
-        patterns = self.config.get("templateFilePatterns")
+        patterns = self.config.get("templateFilePatterns", DEFAULT_TEMPLATE_PATTERN)
         for pattern in patterns:
             filenames.extend(
                 [str(p) for p in Path(self.schematic_files_path).glob(pattern)]
@@ -105,11 +106,6 @@ class SchematicRenderer:
             )
         return ignore_filenames
 
-    # def _get_rel_path(self, full_path: str, rel_to: str) -> str:
-    #     full_path = os.path.relpath(full_path, self.schematic_files_path)
-    #     outfile = "".join(full_path.rsplit(".template"))
-    #     return outfile
-
     def _generate_outfile(
         self, template_file: str, root: str, context: Optional[Dict] = None
     ) -> str:
@@ -127,13 +123,10 @@ class SchematicRenderer:
         rendered_outpath = os.path.join(self.src_path, outpath)
         rendered_outdir = os.path.join(rendered_outpath, outdir)
 
-        if outdir and not self.fs.isdir(outdir):
+        if outdir and not self.fs.src_fs.isdir(outdir):
 
             self._directories_created.append(rendered_outdir)
-            if not self.dry_run:
-                self.fs.makedirs(outdir)
 
-        # if os.path.isfile(template_path):
         if self.fs.sch_fs.isfile(template_path):
             # TODO: Refactor dry-run and file system interactions to a composable object
             # passed into this class rather than it containing the write logic
@@ -163,20 +156,14 @@ class SchematicRenderer:
         rendered_outpath = os.path.join(self.src_path, outpath)
         rendered_outdir = os.path.join(rendered_outpath, outdir)
 
-        if outdir and not self.fs.exists(outdir):
+        if outdir and not self.fs.src_fs.exists(outdir):
             self._directories_created.append(rendered_outdir)
-            if not self.dry_run:
-                # os.makedirs(outdir)
-                self.fs.makedirs(outdir)
         if self.fs.src_fs.exists(outpath):
             self._files_modified.append(rendered_outpath)
         else:
             self._files_created.append(rendered_outpath)
         if self.fs.sch_fs.isfile(filename):
             self.fs.copy_from_sch(filename, outpath)
-        # if not os.path.isdir(os.path.dirname(outpath)):
-        #     os.makedirs(os.path.dirname(outpath))
-        # copy(filename, outpath)
 
     def print_summary(self):
         """Print summary of operations performed"""
