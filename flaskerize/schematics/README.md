@@ -86,7 +86,6 @@ my_app
 │   │   └── view.py
 │   └── templates
 │       ├── base.html
-│       ├── demo.html
 │       └── plotly-chart.html
 ├── requirements.txt
 └── wsgi.py
