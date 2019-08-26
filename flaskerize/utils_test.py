@@ -39,16 +39,6 @@ def test_split_file_factory_respects_explicity_path_over_a_default_path():
     assert app == "bake"
 
 
-def test_split_file_factory_adds_extension(tmp_path):
-    filename = path.join(tmp_path, "my_app.py")
-    with open(filename, "w") as fid:
-        fid.write("")
-
-    root, app = utils.split_file_factory(path.join(tmp_path, "my_app"))
-
-    assert "my_app.py" in root
-
-
 def test_split_file_factory_handles_packages(tmp_path):
     import os
 
