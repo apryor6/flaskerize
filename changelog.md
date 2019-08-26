@@ -32,3 +32,7 @@
 0.6.0
 
 - Implement schematic schematic
+
+0.8.0
+
+- Implement a schematic for creating basic plotly + Flask application
