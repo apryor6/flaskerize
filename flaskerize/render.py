@@ -2,6 +2,7 @@ import os
 import argparse
 from typing import Any, Callable, Dict, List, Optional
 from termcolor import colored
+import fs
 
 from flaskerize.parser import FzArgumentParser
 
@@ -35,9 +36,8 @@ class SchematicRenderer:
 
         self.arg_parser = self._check_get_arg_parser()
         self.env = Environment()
-        self.fs = StagedFileSystem(
-            src_path=self.src_path, schematic_path=self.schematic_path, dry_run=dry_run
-        )
+        self.fs = StagedFileSystem(src_path=self.src_path, dry_run=dry_run)
+        self.sch_fs = fs.open_fs(f"osfs://{self.schematic_files_path}")
         self.dry_run = dry_run
         self._directories_created: List[str] = []
         self._files_created: List[str] = []
@@ -66,6 +66,17 @@ class SchematicRenderer:
         """Load argument parser from schema.json, if provided"""
 
         return FzArgumentParser(schema=schema_path or self.schema_path)
+
+    def copy_from_sch(self, src_path: str, dst_path: str = None) -> None:
+        """Copy a file from the schematic root to to the staging file system"""
+
+        dst_path = dst_path or src_path
+        dst_dir = os.path.dirname(dst_path)
+        if not self.fs.stg_fs.exists(dst_dir):
+            self.fs.stg_fs.makedirs(dst_dir)
+        return fs.copy.copy_file(
+            self.sch_fs, src_path, self.fs.stg_fs, dst_path or src_path
+        )
 
     def get_static_files(self) -> List[str]:
         """Get list of files to be copied unchanged"""
@@ -127,11 +138,11 @@ class SchematicRenderer:
 
             self._directories_created.append(rendered_outdir)
 
-        if self.fs.sch_fs.isfile(template_path):
+        if self.sch_fs.isfile(template_path):
             # TODO: Refactor dry-run and file system interactions to a composable object
             # passed into this class rather than it containing the write logic
             # with open(template_path, "r") as fid:
-            with self.fs.sch_fs.open(template_path, "r") as fid:
+            with self.sch_fs.open(template_path, "r") as fid:
 
                 tpl = self.env.from_string(fid.read())
 
@@ -148,7 +159,7 @@ class SchematicRenderer:
 
         # If the path is a directory, need to ensure trailing slash so it does not get
         # split incorrectly
-        if self.fs.sch_fs.isdir(filename):
+        if self.sch_fs.isdir(filename):
             filename = os.path.join(filename, "")
         outpath = self._generate_outfile(filename, self.src_path, context=context)
         outdir, outfile = os.path.split(outpath)
@@ -162,8 +173,8 @@ class SchematicRenderer:
             self._files_modified.append(rendered_outpath)
         else:
             self._files_created.append(rendered_outpath)
-        if self.fs.sch_fs.isfile(filename):
-            self.fs.copy_from_sch(filename, outpath)
+        if self.sch_fs.isfile(filename):
+            self.copy_from_sch(filename, outpath)
 
     def print_summary(self):
         """Print summary of operations performed"""
