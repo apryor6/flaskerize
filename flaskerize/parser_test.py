@@ -153,7 +153,6 @@ def test__check_render_schematic(fz):
         full_schematic_path="some_path",
         dry_run=True,
     )
-    print("result = ", result)
     mock.assert_called_with(
         "some_path", root="test", name="test", dry_run=True, args=[]
     )

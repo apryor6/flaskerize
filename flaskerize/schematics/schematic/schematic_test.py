@@ -1,7 +1,7 @@
 import os
 
 
-def test_schematic_from_Flaskerize():
+def test_schematic_from_Flaskerize(tmp_path):
     from flaskerize.parser import Flaskerize
 
-    assert Flaskerize("fz generate schematic ./bla/schematic/test".split())
+    assert Flaskerize(f"fz generate schematic {tmp_path}".split())

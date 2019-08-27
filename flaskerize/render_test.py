@@ -146,20 +146,20 @@ def test__generate_outfile(renderer: SchematicRenderer):
     assert file == "file.txt"
 
 
-@patch("flaskerize.render.colored")
+@patch("flaskerize.fileio.colored")
 class TestColorizingPrint:
     def test__print_created(self, colored: MagicMock, renderer: SchematicRenderer):
-        renderer._print_created("print me!")
+        renderer.fs._print_created("print me!")
 
         colored.assert_called_once()
 
     def test__print_modified(self, colored: MagicMock, renderer: SchematicRenderer):
-        renderer._print_modified("print me!")
+        renderer.fs._print_modified("print me!")
 
         colored.assert_called_once()
 
     def test__print_deleted(self, colored: MagicMock, renderer: SchematicRenderer):
-        renderer._print_deleted("print me!")
+        renderer.fs._print_deleted("print me!")
 
         colored.assert_called_once()
 
@@ -170,18 +170,6 @@ class TestColorizingPrint:
 
         # One extra call if dry run is enabled
         colored.call_count == int(renderer.dry_run)
-
-    def test_print_summary_with_updates(
-        self, colored: MagicMock, renderer: SchematicRenderer
-    ):
-        renderer._files_created.append("some file I made")
-        renderer._files_modified.append("some file I modified")
-        renderer._files_deleted.append("some file I deleted")
-        renderer._directories_created.append("some directory I made/")
-        renderer.print_summary()
-
-        # One extra call if dry run is enabled
-        assert colored.call_count >= 4 + int(renderer.dry_run)
 
 
 @patch("flaskerize.render.colored")

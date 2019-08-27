@@ -1,8 +1,8 @@
 import os
 import argparse
 from typing import Any, Callable, Dict, List, Optional
-from termcolor import colored
 import fs
+from termcolor import colored
 
 from flaskerize.parser import FzArgumentParser
 
@@ -39,6 +39,7 @@ class SchematicRenderer:
         self.fs = StagedFileSystem(src_path=self.src_path, dry_run=dry_run)
         self.sch_fs = fs.open_fs(f"osfs://{self.schematic_files_path}")
         self.dry_run = dry_run
+
         self._directories_created: List[str] = []
         self._files_created: List[str] = []
         self._files_deleted: List[str] = []
@@ -185,43 +186,9 @@ Flaskerize job summary:
 
         {colored("Schematic generation successful!", "green")}
         Full schematic path: {colored(self.schematic_path, "yellow")}
-
-        {len(self._directories_created)} directories created
-        {len(self._files_created)} files created
-        {len(self._files_deleted)} files deleted
-        {len(self._files_modified)} files modified
         """
         )
-        for dirname in self._directories_created:
-            self._print_created(dirname)
-        for filename in self._files_created:
-            self._print_created(filename)
-        for filename in self._files_deleted:
-            self._print_deleted(filename)
-        for filename in self._files_modified:
-            self._print_modified(filename)
-        if self.dry_run:
-            print(
-                f'\n{colored("Dry run (--dry-run) enabled. No files were actually written.", "yellow")}'
-            )
-
-    def _print_created(self, value: str) -> None:
-
-        COLOR = "green"
-        BASE = "CREATED"
-        print(f"{colored(BASE, COLOR)}: {value}")
-
-    def _print_modified(self, value: str) -> None:
-
-        COLOR = "blue"
-        BASE = "MODIFIED"
-        print(f"{colored(BASE, COLOR)}: {value}")
-
-    def _print_deleted(self, value: str) -> None:
-
-        COLOR = "red"
-        BASE = "DELETED"
-        print(f"{colored(BASE, COLOR)}: {value}")
+        self.fs.print_fs_diff()
 
     def _load_run_function(self, path: str) -> Callable:
         from importlib.util import spec_from_file_location, module_from_spec
