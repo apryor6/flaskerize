@@ -135,9 +135,9 @@ from flaskerize import SchematicRenderer
 
 def run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
     for filename in renderer.get_template_files():
-		dirname, fname = path.split(filename)
-		if fname == 'app-engine.yaml' and context.get('no_app_engine', False):
-			continue
+	dirname, fname = path.split(filename)
+	if fname == 'app-engine.yaml' and context.get('no_app_engine', False):
+	    continue
         renderer.render_from_file(filename, context=context)
 ```
 

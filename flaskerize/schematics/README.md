@@ -59,6 +59,38 @@ path
             └── schema.json
 ```
 
+### flask-plotly
+
+A basic Flask app that renders a plotly chart via a blueprint
+
+_Example usage_
+
+```
+fz generate flask-plotly my_app/
+cd my_app
+virtualenv -p python3 venv
+source venv/bin/activate
+pip install -r requirements.txt
+python wsgi.py
+```
+
+Creates:
+
+```
+my_app
+├── app
+│   ├── __init__.py
+│   ├── config.py
+│   ├── main
+│   │   ├── __init__.py
+│   │   └── view.py
+│   └── templates
+│       ├── base.html
+│       └── plotly-chart.html
+├── requirements.txt
+└── wsgi.py
+```
+
 ### setup
 
 `setup` creates a `setup.py` file.
