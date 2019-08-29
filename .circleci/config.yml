@@ -21,7 +21,7 @@ jobs:
       - run:
           command: |
             . venv/bin/activate
-            pytest --cov=flask_accepts --cov-report xml --cov-report html
+            pytest --cov=flaskerize --cov-report xml --cov-report html
       - store_artifacts:
           path: htmlcov
       - store_test_results:
