@@ -138,7 +138,7 @@ def run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
         dirname, fname = path.split(filename)
         if fname == 'app-engine.yaml' and context.get('no_app_engine', False):
             continue
-            renderer.render_from_file(filename, context=context)
+        renderer.render_from_file(filename, context=context)
 ```
 
 Although rendering templates is the most common operation, you can perform arbitrary code execution inside of `run` methods, including modification/deletion of existing files, logging, API requests, test execution, etc. As such, it is important to be security minded with regard to executing third-party schematics, just like any other script.
