@@ -143,17 +143,23 @@ def test__split_pkg_schematic(fz, tmp_path):
         pkg, schematic = fz._split_pkg_schematic(":schematic")
 
 
-def test__check_render_schematic(fz):
+def test__check_render_schematic(fz, tmp_path):
     mock = fz.render_schematic = MagicMock()
     result = fz._check_render_schematic(
         pkg_schematic="test",
         render_dirname="test",
+        src_path=str(tmp_path),
         name="test",
         args=[],
         full_schematic_path="some_path",
         dry_run=True,
     )
     mock.assert_called_with(
-        "some_path", render_dirname="test", name="test", dry_run=True, args=[]
+        "some_path",
+        render_dirname="test",
+        src_path=str(tmp_path),
+        name="test",
+        dry_run=True,
+        args=[],
     )
 

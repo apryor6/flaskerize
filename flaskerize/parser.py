@@ -164,6 +164,7 @@ class Flaskerize(object):
         schematic = parsed.schematic
         root_name = parsed.name
         dry_run = parsed.dry_run
+        from_dir = parsed.from_dir
         render_dirname, name = path.split(root_name)
 
         # TODO: cleanup logic for when full schematic path is passed versus providing a
@@ -174,6 +175,7 @@ class Flaskerize(object):
                 schematic,
                 name=name,
                 render_dirname=render_dirname,
+                src_path=from_dir,
                 dry_run=dry_run,
                 full_schematic_path=parsed.schematic_path,
                 args=rest,
@@ -182,6 +184,7 @@ class Flaskerize(object):
             self._check_render_schematic(
                 schematic,
                 render_dirname=render_dirname,
+                src_path=from_dir,
                 name=name,
                 dry_run=dry_run,
                 args=rest,
@@ -239,6 +242,7 @@ class Flaskerize(object):
         self,
         pkg_schematic: str,
         render_dirname: str,
+        src_path: str,
         name: str,
         args: List[Any],
         full_schematic_path: Optional[str] = None,
@@ -258,6 +262,7 @@ class Flaskerize(object):
         self.render_schematic(
             schematic_path,
             render_dirname=render_dirname,
+            src_path=src_path,
             name=name,
             dry_run=dry_run,
             args=args,
@@ -269,11 +274,21 @@ class Flaskerize(object):
         render_dirname: str,
         name: str,
         args: List[Any],
+        src_path: str = ".",
         dry_run: bool = False,
     ) -> None:
         from flaskerize.render import SchematicRenderer
 
+        print(
+            f"\nschematic_path={schematic_path}",
+            f"\nsrc_path={src_path}",
+            f"\noutput_prefix={render_dirname}",
+            f"\ndry_run={dry_run}",
+        )
         SchematicRenderer(
-            schematic_path, src_path=render_dirname, dry_run=dry_run
+            schematic_path,
+            src_path=src_path,
+            output_prefix=render_dirname,
+            dry_run=dry_run,
         ).render(name, args)
 

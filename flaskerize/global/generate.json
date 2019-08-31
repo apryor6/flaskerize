@@ -13,7 +13,13 @@
     {
       "arg": "name",
       "type": "str",
-      "help": "Output name of the resource including path to use as rendering root"
+      "help": "Relative name of the resource including path to use as rendering basename. This path is considered relative to --from-dir"
+    },
+    {
+      "arg": "--from-dir",
+      "type": "str",
+      "default": ".",
+      "help": "Path to directory from which to base schematic operations"
     },
     {
       "arg": "--dry-run",

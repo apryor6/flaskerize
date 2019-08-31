@@ -11,11 +11,15 @@ from .render import SchematicRenderer
 def renderer(tmp_path):
     schematic_path = path.join(tmp_path, "schematics/doodad/")
     schematic_files_path = path.join(schematic_path, "files/")
-    src_path = path.join(tmp_path, "render/test/results/")
+    src_path = str(tmp_path)
+    output_prefix = "render/test/results/"
     os.makedirs(schematic_path)
     os.makedirs(schematic_files_path)
     yield SchematicRenderer(
-        schematic_path=schematic_path, src_path=src_path, dry_run=True
+        schematic_path=schematic_path,
+        src_path=src_path,
+        output_prefix=output_prefix,
+        dry_run=True,
     )
 
 
@@ -23,11 +27,15 @@ def renderer(tmp_path):
 def renderer_no_dry_run(tmp_path):
     schematic_path = path.join(tmp_path, "schematics/doodad/")
     schematic_files_path = path.join(schematic_path, "files/")
-    src_path = path.join(tmp_path, "render/test/results/")
+    src_path = str(tmp_path)
+    output_prefix = "render/test/results/"
     os.makedirs(schematic_path)
     os.makedirs(schematic_files_path)
     yield SchematicRenderer(
-        schematic_path=schematic_path, src_path=src_path, dry_run=False
+        schematic_path=schematic_path,
+        src_path=src_path,
+        output_prefix=output_prefix,
+        dry_run=False,
     )
 
 
@@ -203,7 +211,9 @@ def test_copy_static_file_no_dry_run(renderer_no_dry_run, tmp_path):
     renderer = renderer_no_dry_run
     rel_filename = "doodad/my_file.txt"
     filename_in_sch = os.path.join(renderer.schematic_files_path, rel_filename)
-    filename_in_src = os.path.join(renderer.src_path, rel_filename)
+    filename_in_src = os.path.join(
+        renderer.src_path, renderer.output_prefix, rel_filename
+    )
     CONTENTS = "some static content"
     os.makedirs(os.path.dirname(filename_in_sch))
     with open(filename_in_sch, "w") as fid:
@@ -219,7 +229,9 @@ def test_copy_static_file_no_dry_run(renderer_no_dry_run, tmp_path):
 def test_copy_static_file_dry_run_true(renderer, tmp_path):
     rel_filename = "doodad/my_file.txt"
     filename_in_sch = os.path.join(renderer.schematic_files_path, rel_filename)
-    filename_in_src = os.path.join(renderer.src_path, rel_filename)
+    filename_in_src = os.path.join(
+        renderer.src_path, renderer.output_prefix, rel_filename
+    )
     CONTENTS = "some static content"
     os.makedirs(os.path.dirname(filename_in_sch))
     with open(filename_in_sch, "w") as fid:

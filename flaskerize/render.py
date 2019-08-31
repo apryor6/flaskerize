@@ -18,14 +18,15 @@ class SchematicRenderer:
     def __init__(
         self,
         schematic_path: str,
-        src_path: str = ".",  # TODO: rename this to render_root_path
-        fs_root: str = ".",
+        src_path: str = ".",
+        output_prefix: str = "",
         dry_run: bool = False,
     ):
         from jinja2 import Environment
         from flaskerize.fileio import StagedFileSystem
 
         self.src_path = src_path
+        self.output_prefix = output_prefix
         self.schematic_path = schematic_path
         self.schematic_files_path = os.path.join(
             self.schematic_path, self.DEFAULT_FILES_DIRNAME
@@ -36,7 +37,9 @@ class SchematicRenderer:
 
         self.arg_parser = self._check_get_arg_parser()
         self.env = Environment()
-        self.fs = StagedFileSystem(src_path=self.src_path, dry_run=dry_run)
+        self.fs = StagedFileSystem(
+            src_path=self.src_path, output_prefix=output_prefix, dry_run=dry_run
+        )
         # self.fs = StagedFileSystem(src_path=".", dry_run=dry_run)
         self.sch_fs = fs.open_fs(f"osfs://{self.schematic_files_path}")
         self.dry_run = dry_run
