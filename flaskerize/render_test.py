@@ -183,19 +183,23 @@ def test_render_colored(colored, renderer):
     mock.assert_called_once()
 
 
-def test_render_from_file(renderer, tmp_path):
-    filename = os.path.join(tmp_path, "my_template.py.template")
+def test_render_from_file_creates_directories(renderer, tmp_path):
+    os.makedirs(os.path.join(renderer.schematic_files_path, "thingy/"))
+    filename = os.path.join(
+        renderer.schematic_files_path, "thingy/my_template.py.template"
+    )
     CONTENTS = "{{ secret }}"
     with open(filename, "w") as fid:
         fid.write(CONTENTS)
-    outfile = os.path.join(tmp_path, "doodad/my_template.py")
-    renderer._generate_outfile = MagicMock(return_value=outfile)
-    renderer.render_from_file(filename, context={"secret": "42"})
+    renderer._generate_outfile = MagicMock(return_value=filename)
+    renderer.render_from_file(
+        "thingy/my_template.py.template", context={"secret": "42"}
+    )
 
-    assert len(renderer._directories_created) > 0
+    assert len(renderer.fs.get_created_directories()) > 0
 
 
-def test_copy_static_file_dry_run(renderer_no_dry_run, tmp_path):
+def test_copy_static_file_no_dry_run(renderer_no_dry_run, tmp_path):
     renderer = renderer_no_dry_run
     rel_filename = "doodad/my_file.txt"
     filename_in_sch = os.path.join(renderer.schematic_files_path, rel_filename)
@@ -206,9 +210,9 @@ def test_copy_static_file_dry_run(renderer_no_dry_run, tmp_path):
         fid.write(CONTENTS)
     renderer._generate_outfile = MagicMock(return_value=rel_filename)
     renderer.copy_static_file(rel_filename, context={})
-    renderer.fs.commit()  # TODO: create a context manager to handle committing on success
+    assert len(renderer.fs.get_created_files()) > 0
 
-    assert len(renderer._files_created) > 0
+    renderer.fs.commit()  # TODO: create a context manager to handle committing on success
     assert os.path.exists(filename_in_src)
 
 
@@ -224,7 +228,7 @@ def test_copy_static_file_dry_run_true(renderer, tmp_path):
     renderer.copy_static_file(rel_filename, context={})
     renderer.fs.commit()  # TODO: create a context manager to handle committing on success
 
-    assert len(renderer._files_created) > 0
+    assert len(renderer.fs.get_created_files()) > 0
     assert not os.path.exists(filename_in_src)
 
 
@@ -249,49 +253,23 @@ def test_copy_static_file_modifies_file_if_exists(tmp_path):
     renderer._generate_outfile = MagicMock(return_value=rel_filename)
     renderer.copy_static_file(rel_filename, context={})
     renderer.fs.commit()
-    assert len(renderer._files_created) == 0
-    assert len(renderer._files_modified) == 1
+    assert len(renderer.fs.get_created_files()) == 0
+    assert len(renderer.fs.get_modified_files()) == 1
     assert os.path.exists(filename_in_src)
-
-
-# def test_render_from_file_when_outfile_exists(renderer, tmp_path):
-#     filename = os.path.join(renderer.root, "my_template.py")
-
-#     # TODO remove this
-#     if not os.path.exists(os.path.dirname(filename)):
-#         os.makedirs(os.path.dirname(filename))
-#     CONTENTS = "some existing content"
-#     with open(filename, "w") as fid:
-#         fid.write(CONTENTS)
-#     # outdir = os.path.join(tmp_path, "doodad/")
-#     # outfile = os.path.join(outdir, "my_template.py")
-
-#     # os.makedirs(outdir)
-#     # outfile = "my_template.py"
-#     # with open(outfile, "w") as fid:
-#     #     fid.write(CONTENTS)
-#     renderer._generate_outfile = MagicMock(return_value="my_template.py")
-#     renderer.render_from_file(filename, context={"secret": "42"})
-
-#     assert len(renderer._files_modified) > 0
 
 
 def test_run_with_static_files(renderer, tmp_path):
     from flaskerize.render import default_run
 
     filename = os.path.join(renderer.schematic_files_path, "my_file.txt")
-    # os.makedirs(renderer.schematic_files_path)
     CONTENTS = "some existing content"
     with open(filename, "w") as fid:
         fid.write(CONTENTS)
-    # outdir = os.path.join(renderer.root, "doodad/")
-    # outfile = os.path.join(outdir, "my_file.txt")
 
     renderer._generate_outfile = MagicMock(return_value="my_file.txt")
     default_run(renderer=renderer, context={})
-    # renderer.fs.commit()
 
-    assert len(renderer._files_created) > 0
+    assert len(renderer.fs.get_created_files()) > 0
 
 
 def test__load_run_function_raises_if_colliding_parameter_provided(tmp_path):

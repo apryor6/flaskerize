@@ -18,7 +18,7 @@ class SchematicRenderer:
     def __init__(
         self,
         schematic_path: str,
-        src_path: str = ".",
+        src_path: str = ".",  # TODO: rename this to render_root_path
         fs_root: str = ".",
         dry_run: bool = False,
     ):
@@ -37,13 +37,9 @@ class SchematicRenderer:
         self.arg_parser = self._check_get_arg_parser()
         self.env = Environment()
         self.fs = StagedFileSystem(src_path=self.src_path, dry_run=dry_run)
+        # self.fs = StagedFileSystem(src_path=".", dry_run=dry_run)
         self.sch_fs = fs.open_fs(f"osfs://{self.schematic_files_path}")
         self.dry_run = dry_run
-
-        self._directories_created: List[str] = []
-        self._files_created: List[str] = []
-        self._files_deleted: List[str] = []
-        self._files_modified: List[str] = []
 
     def _load_schema(self) -> None:
         if self.schema_path:
@@ -135,10 +131,6 @@ class SchematicRenderer:
         rendered_outpath = os.path.join(self.src_path, outpath)
         rendered_outdir = os.path.join(rendered_outpath, outdir)
 
-        if outdir and not self.fs.src_fs.isdir(outdir):
-
-            self._directories_created.append(rendered_outdir)
-
         if self.sch_fs.isfile(template_path):
             # TODO: Refactor dry-run and file system interactions to a composable object
             # passed into this class rather than it containing the write logic
@@ -147,11 +139,6 @@ class SchematicRenderer:
 
                 tpl = self.env.from_string(fid.read())
 
-                # TODO: change this to drop src_fs and directly consolidate
-                if self.fs.src_fs.exists(outpath):
-                    self._files_modified.append(rendered_outpath)
-                else:
-                    self._files_created.append(rendered_outpath)
                 with self.fs.open(outpath, "w") as fout:
                     fout.write(tpl.render(**context))
 
@@ -168,12 +155,6 @@ class SchematicRenderer:
         rendered_outpath = os.path.join(self.src_path, outpath)
         rendered_outdir = os.path.join(rendered_outpath, outdir)
 
-        if outdir and not self.fs.src_fs.exists(outdir):
-            self._directories_created.append(rendered_outdir)
-        if self.fs.src_fs.exists(outpath):
-            self._files_modified.append(rendered_outpath)
-        else:
-            self._files_created.append(rendered_outpath)
         if self.sch_fs.isfile(filename):
             self.copy_from_sch(filename, outpath)
 

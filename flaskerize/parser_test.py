@@ -147,13 +147,13 @@ def test__check_render_schematic(fz):
     mock = fz.render_schematic = MagicMock()
     result = fz._check_render_schematic(
         pkg_schematic="test",
-        root="test",
+        render_dirname="test",
         name="test",
         args=[],
         full_schematic_path="some_path",
         dry_run=True,
     )
     mock.assert_called_with(
-        "some_path", root="test", name="test", dry_run=True, args=[]
+        "some_path", render_dirname="test", name="test", dry_run=True, args=[]
     )
 

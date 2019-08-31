@@ -34,9 +34,8 @@ def default_fs_factory(path: str) -> FS:
         """
         self.dry_run = dry_run
         self._deleted_files: List[str] = []
-        if not dry_run and src_path and not os.path.isdir(os.path.dirname(src_path)):
-            os.makedirs(os.path.dirname(src_path))
         self.src_path = src_path
+        # self.src_fs = src_fs_factory(".")
         self.src_fs = src_fs_factory(src_path or ".")
         self.stg_fs = fs.open_fs(f"mem://")
 
@@ -109,7 +108,7 @@ def default_fs_factory(path: str) -> FS:
         candidates_for_modification = staged_files & existing_files
         modified_files = []
         for filename in candidates_for_modification:
-            if _check_hashes_equal(filename):
+            if self._check_hashes_equal(filename):
                 modified_files.append(filename)
         return self.get_rel_path_names(modified_files)
 
