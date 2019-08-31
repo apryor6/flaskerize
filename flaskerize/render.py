@@ -69,10 +69,10 @@ class SchematicRenderer:
 
         dst_path = dst_path or src_path
         dst_dir = os.path.dirname(dst_path)
-        if not self.fs.stg_fs.exists(dst_dir):
-            self.fs.stg_fs.makedirs(dst_dir)
+        if not self.fs.render_fs.exists(dst_dir):
+            self.fs.render_fs.makedirs(dst_dir)
         return fs.copy.copy_file(
-            self.sch_fs, src_path, self.fs.stg_fs, dst_path or src_path
+            self.sch_fs, src_path, self.fs.render_fs, dst_path or src_path
         )
 
     def get_static_files(self) -> List[str]:

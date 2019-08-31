@@ -22,6 +22,7 @@ class StagedFileSystem:
         self,
         src_path: str,
         src_fs_factory: Callable[..., FS] = default_fs_factory,
+        output_prefix: str = "",
         dry_run: bool = False,
     ):
         """
@@ -37,22 +38,27 @@ def default_fs_factory(path: str) -> FS:
         self.src_path = src_path
         # self.src_fs = src_fs_factory(".")
         self.src_fs = src_fs_factory(src_path or ".")
-        self.stg_fs = fs.open_fs(f"mem://")
+        self._stg_fs = fs.open_fs(f"mem://")
+        if not self._stg_fs.isdir(output_prefix):
+            self._stg_fs.makedirs(output_prefix)
+
+        # Rendering file system is from the frame-of-reference of the output_prefix
+        self.render_fs = self._stg_fs.opendir(output_prefix)
 
     def commit(self) -> None:
         """Commit the in-memory staging file system to the destination"""
 
         if not self.dry_run:
-            return fs.copy.copy_fs(self.stg_fs, self.src_fs)
+            return fs.copy.copy_fs(self._stg_fs, self.src_fs)
 
     def makedirs(self, dirname: str):
-        return self.stg_fs.makedirs(dirname)
+        return self.render_fs.makedirs(dirname)
 
     def exists(self, name: str):
-        return self.stg_fs.exists(name)
+        return self.render_fs.exists(name)
 
     def isdir(self, name: str):
-        return self.stg_fs.isdir(name)
+        return self.render_fs.isdir(name)
 
     def open(self, path: str, mode: str = "r") -> _IOBase:
         """
@@ -61,20 +67,20 @@ def default_fs_factory(path: str) -> FS:
         """
 
         dirname, pathname = os.path.split(path)
-        if not self.stg_fs.isdir(dirname):
-            self.stg_fs.makedirs(dirname)
-        return self.stg_fs.open(path, mode=mode)
+        if not self.render_fs.isdir(dirname):
+            self.render_fs.makedirs(dirname)
+        return self.render_fs.open(path, mode=mode)
 
     def delete(self, path: str) -> None:
-        if self.stg_fs.isdir(path):
+        if self._stg_fs.isdir(path):
             raise NotImplementedError("Support for deleting directories not available.")
-        self.stg_fs.rmfile(path)
+        self._stg_fs.rmfile(path)
         self._deleted_files.append(path)
 
     def get_created_directories(self) -> List[str]:
         """Get a list of the directories that are staged for creation"""
 
-        all_directories = {x[0] for x in self.stg_fs.walk()}
+        all_directories = {x[0] for x in self._stg_fs.walk()}
         existing_directories = {x[0] for x in self.src_fs.walk()}
         created_directories = sorted(list(all_directories - existing_directories))
         return self.get_full_sys_path(created_directories)
@@ -90,7 +96,7 @@ def default_fs_factory(path: str) -> FS:
     def get_created_files(self) -> List[str]:
         """Get a list of the files that are staged for creation"""
 
-        staged_files = {f.path for f in self.stg_fs.glob("**/*") if f.info.is_file}
+        staged_files = {f.path for f in self._stg_fs.glob("**/*") if f.info.is_file}
         existing_files = {f.path for f in self.src_fs.glob("**/*") if f.info.is_file}
         created_files = sorted(list(staged_files - existing_files))
         return self.get_rel_path_names(created_files)
@@ -103,7 +109,7 @@ def default_fs_factory(path: str) -> FS:
     def get_modified_files(self) -> List[str]:
         """Get a list of the files that are staged for modification"""
 
-        staged_files = {f.path for f in self.stg_fs.glob("**/*") if f.info.is_file}
+        staged_files = {f.path for f in self._stg_fs.glob("**/*") if f.info.is_file}
         existing_files = {f.path for f in self.src_fs.glob("**/*") if f.info.is_file}
         candidates_for_modification = staged_files & existing_files
         modified_files = []
@@ -114,7 +120,7 @@ def default_fs_factory(path: str) -> FS:
 
     def _check_hashes_equal(self, src_file: str, dst_file: str = None):
         left = md5(lambda: self.src_fs.open(src_file, "rb"))
-        right = md5(lambda: self.stg_fs.open(dst_file or src_file, "rb"))
+        right = md5(lambda: self._stg_fs.open(dst_file or src_file, "rb"))
         return left == right
 
     def print_fs_diff(self):
