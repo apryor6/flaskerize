@@ -1,3 +1,4 @@
+from unittest.mock import patch, MagicMock
 import pytest
 from os import path, makedirs
 
@@ -53,4 +54,32 @@ def test_md5(tmp_path):
 
     expected = "b53227da4280f0e18270f21dd77c91d0"
     assert result == expected
+
+
+def test_makedirs(tmp_path, fs):
+    mock = MagicMock()
+    fs.render_fs.makedirs = mock
+    fs.makedirs(tmp_path)
+    mock.assert_called_with(tmp_path)
+
+
+def test_exists(tmp_path, fs):
+    mock = MagicMock()
+    fs.render_fs.exists = mock
+    fs.exists(tmp_path)
+    mock.assert_called_with(tmp_path)
+
+
+def test_isdir(tmp_path, fs):
+    mock = MagicMock()
+    fs.render_fs.isdir = mock
+    fs.isdir(tmp_path)
+    mock.assert_called_with(tmp_path)
+
+
+def test_delete(tmp_path, fs):
+    dirname = path.join(tmp_path, "my/dir")
+    fs.stg_fs.makedirs(dirname)
+    with pytest.raises(NotImplementedError):
+        fs.delete(dirname)
 
