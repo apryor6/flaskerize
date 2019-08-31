@@ -19,7 +19,7 @@
       "arg": "--from-dir",
       "type": "str",
       "default": ".",
-      "help": "Path to directory from which to base schematic operations"
+      "help": "Path to directory from which to base schematic operations. Defaults to current working directory."
     },
     {
       "arg": "--dry-run",

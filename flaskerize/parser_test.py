@@ -6,6 +6,19 @@ from flaskerize.exceptions import InvalidSchema
 from flaskerize.parser import FzArgumentParser, Flaskerize
 
 
+@pytest.fixture
+def test_flaskerize_args(tmp_path):
+    return [
+        "fz",
+        "generate",
+        "app",
+        "test.py",
+        "--from-dir",
+        str(tmp_path),
+        "--dry-run",
+    ]
+
+
 def test_flaskerize_generate():
 
     status = os.system("fz generate --dry-run app my/test/app")
@@ -91,7 +104,7 @@ def test_bundle(tmp_path):
         <title>Test</title>
       </head>
       <body>
-    
+
       </body>
     </html>"""
     site_dir = tmp_path
@@ -103,34 +116,27 @@ def test_bundle(tmp_path):
     assert status == 0
 
 
-def test__check_validate_package(tmp_path):
+def test__check_validate_package(test_flaskerize_args, tmp_path):
     tmp_app_path = os.path.join(tmp_path, "test.py")
-    fz = Flaskerize(["fz", "generate", "app", tmp_app_path])
+    fz = Flaskerize(test_flaskerize_args)
 
     with pytest.raises(ModuleNotFoundError):
         fz._check_validate_package(os.path.join(tmp_path, "pkg that does not exist"))
 
 
-def test__check_get_schematic_dirname(tmp_path):
+def test__check_get_schematic_dirname(test_flaskerize_args, tmp_path):
     tmp_pkg_path = os.path.join(tmp_path, "some/pkg")
     os.makedirs(tmp_pkg_path)
-    fz = Flaskerize(["fz", "generate", "app", tmp_pkg_path])
+    fz = Flaskerize(test_flaskerize_args)
 
     with pytest.raises(ValueError):
         fz._check_get_schematic_dirname(tmp_pkg_path)
 
 
-@pytest.fixture
-def fz(tmp_path):
-    tmp_app_path = os.path.join(tmp_path, "test.py")
-    fz = Flaskerize(["fz", "generate", "app", tmp_app_path])
-    return fz
-
-
-def test__check_get_schematic_path(tmp_path):
+def test__check_get_schematic_path(test_flaskerize_args, tmp_path):
     tmp_schematic_path = os.path.join(tmp_path, "some/pkg")
     os.makedirs(tmp_schematic_path)
-    fz = Flaskerize(["fz", "generate", "app", tmp_schematic_path])
+    fz = Flaskerize(test_flaskerize_args)
 
     with pytest.raises(ValueError):
         fz._check_get_schematic_path(
@@ -138,12 +144,16 @@ def test__check_get_schematic_path(tmp_path):
         )
 
 
-def test__split_pkg_schematic(fz, tmp_path):
+def test__split_pkg_schematic(test_flaskerize_args, tmp_path):
     with pytest.raises(ValueError):
+        tmp_app_path = os.path.join(tmp_path, "test.py")
+        fz = Flaskerize(test_flaskerize_args)
         pkg, schematic = fz._split_pkg_schematic(":schematic")
 
 
-def test__check_render_schematic(fz, tmp_path):
+def test__check_render_schematic(test_flaskerize_args, tmp_path):
+    tmp_app_path = os.path.join(tmp_path)
+    fz = Flaskerize(test_flaskerize_args)
     mock = fz.render_schematic = MagicMock()
     result = fz._check_render_schematic(
         pkg_schematic="test",
