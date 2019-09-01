@@ -34,6 +34,15 @@ def test_bundle_calls_attach(tmp_path):
         mock.assert_called_once()
 
 
+def test_bundle_calls_does_not_call_attach_w_dry_run(tmp_path):
+    with patch.object(Flaskerize, "attach") as mock:
+        fz = Flaskerize(
+            "fz bundle --from test/build/ --to app:create_app --dry-run".split()
+        )
+
+        mock.assert_not_called()
+
+
 def test__load_schema(tmp_path):
     from flaskerize.parser import _load_schema
 

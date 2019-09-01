@@ -40,7 +40,6 @@ class SchematicRenderer:
         self.fs = StagedFileSystem(
             src_path=self.src_path, output_prefix=output_prefix, dry_run=dry_run
         )
-        # self.fs = StagedFileSystem(src_path=".", dry_run=dry_run)
         self.sch_fs = fs.open_fs(f"osfs://{self.schematic_files_path}")
         self.dry_run = dry_run
 
