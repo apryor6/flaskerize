@@ -77,9 +77,76 @@ def test_isdir(tmp_path, fs):
     mock.assert_called_with(tmp_path)
 
 
-def test_delete(tmp_path, fs):
+def test_delete_raises_for_directories(tmp_path, fs):
     dirname = path.join(tmp_path, "my/dir")
     fs.stg_fs.makedirs(dirname)
     with pytest.raises(NotImplementedError):
         fs.delete(dirname)
 
+
+def test_delete_correctly_removes_file(tmp_path, fs):
+    dirname = path.join(tmp_path, "my/dir")
+    file = path.join(dirname, "test_file.txt")
+    fs.stg_fs.makedirs(dirname)
+    fs.stg_fs.touch(file)
+    assert fs.stg_fs.exists(file)
+    fs.delete(file)
+    assert not fs.stg_fs.exists(file)
+
+
+def test_delete_correctly_appends_to_deleted(tmp_path, fs):
+    dirname = path.join(tmp_path, "my/dir")
+    file = path.join(dirname, "test_file.txt")
+    fs.stg_fs.makedirs(dirname)
+    fs.stg_fs.touch(file)
+    fs.delete(file)
+    assert file in fs._deleted_files
+
+
+def test_print_fs_diff_created(fs):
+    mock__print_created = MagicMock()
+    mock__print_deleted = MagicMock()
+    mock__print_modified = MagicMock()
+    fs.get_created_directories = MagicMock(return_value=["test_dir"])
+    fs.get_created_files = MagicMock(return_value=["test_create_file"])
+    fs._print_created = mock__print_created
+    fs._print_deleted = mock__print_deleted
+    fs._print_modified = mock__print_modified
+
+    fs.print_fs_diff()
+
+    mock__print_created.call_count == 2
+    mock__print_modified.assert_not_called()
+    mock__print_deleted.assert_not_called()
+
+
+def test_print_fs_diff_modified(fs):
+    mock__print_created = MagicMock()
+    mock__print_deleted = MagicMock()
+    mock__print_modified = MagicMock()
+    fs.get_modified_files = MagicMock(return_value=["test_modified_file"])
+    fs._print_created = mock__print_created
+    fs._print_deleted = mock__print_deleted
+    fs._print_modified = mock__print_modified
+
+    fs.print_fs_diff()
+
+    mock__print_modified.assert_called_with("test_modified_file")
+    mock__print_created.assert_not_called()
+    mock__print_deleted.assert_not_called()
+
+
+def test_print_fs_diff_delete(fs):
+    mock__print_created = MagicMock()
+    mock__print_deleted = MagicMock()
+    mock__print_modified = MagicMock()
+    fs.get_deleted_files = MagicMock(return_value=["test_delete_file"])
+    fs._print_created = mock__print_created
+    fs._print_deleted = mock__print_deleted
+    fs._print_modified = mock__print_modified
+
+    fs.print_fs_diff()
+
+    mock__print_deleted.assert_called_once_with("test_delete_file")
+    mock__print_created.assert_not_called()
+    mock__print_modified.assert_not_called()

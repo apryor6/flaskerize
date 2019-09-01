@@ -80,7 +80,7 @@ def default_fs_factory(path: str) -> FS:
     def delete(self, path: str) -> None:
         if self.stg_fs.isdir(path):
             raise NotImplementedError("Support for deleting directories not available.")
-        self.stg_fs.rmfile(path)
+        self.stg_fs.remove(path)
         self._deleted_files.append(path)
 
     def get_created_directories(self) -> List[str]:
