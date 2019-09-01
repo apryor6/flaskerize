@@ -19,7 +19,6 @@ setup(
     from_dir = str(tmp_path)
     name = "test"
     COMMAND = f"""fz generate setup {name} --from-dir {from_dir} --install-requires 'thingy>0.3.0' 'widget>=2.4.3' 'doodad>4.1.0' --author 'AJ Pryor' --author-email 'apryor6@gmail.com'"""
-    print("command = ", COMMAND)
     os.system(COMMAND)
 
     outfile = os.path.join(tmp_path, "setup.py")
