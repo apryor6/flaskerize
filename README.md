@@ -8,11 +8,11 @@
 
 Use `flaskerize` for tasks including:
 
-    - Generating resources such as Dockerfiles, new `flaskerize` schematics, blueprints, yaml configs, SQLAlchemy entities, or even entire applications, all with functioning tests
-	- Upgrading between breaking versions of projects that provide flaskerize upgrade schematics with one command
-    - Bundling and serving static web applications such as Angular, React, Gatsby, Jekyll, etc within a new or existing Flask app.
-    - Registering Flask resources as new routes within an existing application 
-    - Creating new schematics for your own library or organization
+- Generating resources such as Dockerfiles, new `flaskerize` schematics, blueprints, yaml configs, SQLAlchemy entities, or even entire applications, all with functioning tests
+- Upgrading between breaking versions of projects that provide flaskerize upgrade schematics with one command
+- Bundling and serving static web applications such as Angular, React, Gatsby, Jekyll, etc within a new or existing Flask app.
+- Registering Flask resources as new routes within an existing application 
+- Creating new schematics for your own library or organization
 
 ### What about cookiecutter?
 
@@ -26,13 +26,13 @@ _At the time of this writing, the `flaskerize` project is somewhat of a experime
 
 Currently, there is nothing even remotely close to the Angular CLI descried previously in the Python community, but we would benefit from it immensely. This is the reason for `flaskerize`. The vision is to create a generalized and extensible CLI for generation of new code and modification of existing code. This functionality could include, but is not limited to, things such as generating:
 
-	- Flask API resources, such as those described [in this blog post](http://alanpryorjr.com/2019-05-20-flask-api-example/) (multi-file templates)
-	- SQLAlchemy models
-	- Marshmallow schemas
-	- Typed interfaces
-	- Flask/Django views and other Jinja templates
-	- Data science modeling pipelines
-	- Anything else the community wants to provide templates for
+- Flask API resources, such as those described [in this blog post](http://alanpryorjr.com/2019-05-20-flask-api-example/) (multi-file templates)
+- SQLAlchemy models
+- Marshmallow schemas
+- Typed interfaces
+- Flask/Django views and other Jinja templates
+- Data science modeling pipelines
+- Anything else the community wants to provide templates for
 
 This last one is important, as providing a hook to make the system extensible opens an entire ecosystem of possibilities. Imagine being able to `pip install <some_custom_templates>` and then being able to use `flaskerize` to generate a bunch of custom code that is specific to your organization, personal project, enthusiast group, etc.
 
@@ -66,9 +66,9 @@ Custom arguments, run functionality, and functions can then be provided in schem
 
 Flaskerize expects to find a couple of things when using this syntax:
 
-	- The package `<package_name>` should be installed from the current python environment
-	- The top-level source directory of `<package_name>` should contain a `schematics/` package. Inside of that directory should be one or more directories, each corresponding to a single schematic. See the section "Structure of a schematic" for details on schematic contents.
-	- A `schematics/__init__.py` file, just so that schematics can be found as a package
+- The package `<package_name>` should be installed from the current python environment
+- The top-level source directory of `<package_name>` should contain a `schematics/` package. Inside of that directory should be one or more directories, each corresponding to a single schematic. See the section "Structure of a schematic" for details on schematic contents.
+- A `schematics/__init__.py` file, just so that schematics can be found as a package
 
 > For schematics that are built into `flaskerize`, you can drop the `<package_name>` piece of the schematic name. Thus the command `fz generate flaskerize:app new_app` is _exactly equivalent_ to `fz generate app new_app`. For all third-party schematics, you must provide both the package and schematic name.
 
@@ -135,9 +135,9 @@ from flaskerize import SchematicRenderer
 
 def run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
     for filename in renderer.get_template_files():
-	dirname, fname = path.split(filename)
-	if fname == 'app-engine.yaml' and context.get('no_app_engine', False):
-	    continue
+        dirname, fname = path.split(filename)
+        if fname == 'app-engine.yaml' and context.get('no_app_engine', False):
+            continue
         renderer.render_from_file(filename, context=context)
 ```
 
