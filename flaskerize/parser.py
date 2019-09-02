@@ -279,12 +279,6 @@ class Flaskerize(object):
     ) -> None:
         from flaskerize.render import SchematicRenderer
 
-        print(
-            f"\nschematic_path={schematic_path}",
-            f"\nsrc_path={src_path}",
-            f"\noutput_prefix={render_dirname}",
-            f"\ndry_run={dry_run}",
-        )
         SchematicRenderer(
             schematic_path,
             src_path=src_path,

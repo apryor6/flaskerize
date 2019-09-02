@@ -120,7 +120,7 @@ def default_fs_factory(path: str) -> FS:
         candidates_for_modification = staged_files & existing_files
         modified_files = []
         for filename in candidates_for_modification:
-            if self._check_hashes_equal(filename):
+            if not self._check_hashes_equal(filename):
                 modified_files.append(filename)
         return self.get_rel_path_names(modified_files)
 
