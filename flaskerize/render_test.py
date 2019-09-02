@@ -244,7 +244,7 @@ def test_copy_static_file_dry_run_true(renderer, tmp_path):
     assert not os.path.exists(filename_in_src)
 
 
-def test_copy_static_file_modifies_file_if_exists(tmp_path):
+def test_copy_static_file_does_not_modify_if_exists_and_contents_unchanged(tmp_path):
     rel_filename = "my_file.txt"
     schematic_path = path.join(tmp_path, "schematics/doodad/")
     schematic_files_path = path.join(schematic_path, "files/")
@@ -253,8 +253,6 @@ def test_copy_static_file_modifies_file_if_exists(tmp_path):
     os.makedirs(schematic_files_path)
     os.makedirs(src_path)
 
-    renderer = SchematicRenderer(schematic_path=schematic_path, src_path=src_path)
-
     filename_in_sch = os.path.join(schematic_files_path, rel_filename)
     CONTENTS = "some static content"
     with open(filename_in_sch, "w") as fid:
@@ -262,11 +260,37 @@ def test_copy_static_file_modifies_file_if_exists(tmp_path):
     filename_in_src = os.path.join(src_path, rel_filename)
     with open(filename_in_src, "w") as fid:
         fid.write(CONTENTS)
+    renderer = SchematicRenderer(schematic_path=schematic_path, src_path=src_path)
     renderer._generate_outfile = MagicMock(return_value=rel_filename)
     renderer.copy_static_file(rel_filename, context={})
+    assert len(renderer.fs.get_created_files()) == 0
+    assert len(renderer.fs.get_modified_files()) == 0
     renderer.fs.commit()
+    assert os.path.exists(filename_in_src)
+
+
+def test_copy_static_file_modifies_file_if_exists_and_contents_changes(tmp_path):
+    rel_filename = "my_file.txt"
+    schematic_path = path.join(tmp_path, "schematics/doodad/")
+    schematic_files_path = path.join(schematic_path, "files/")
+    src_path = path.join(tmp_path, "out/path/")
+    os.makedirs(schematic_path)
+    os.makedirs(schematic_files_path)
+    os.makedirs(src_path)
+
+    filename_in_sch = os.path.join(schematic_files_path, rel_filename)
+    CONTENTS = "some static content"
+    with open(filename_in_sch, "w") as fid:
+        fid.write(CONTENTS)
+    filename_in_src = os.path.join(src_path, rel_filename)
+    with open(filename_in_src, "w") as fid:
+        fid.write(CONTENTS + "...")
+    renderer = SchematicRenderer(schematic_path=schematic_path, src_path=src_path)
+    renderer._generate_outfile = MagicMock(return_value=rel_filename)
+    renderer.copy_static_file(rel_filename, context={})
     assert len(renderer.fs.get_created_files()) == 0
     assert len(renderer.fs.get_modified_files()) == 1
+    renderer.fs.commit()
     assert os.path.exists(filename_in_src)
 
 
