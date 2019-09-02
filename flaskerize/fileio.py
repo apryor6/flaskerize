@@ -124,6 +124,18 @@ def default_fs_factory(path: str) -> FS:
                 modified_files.append(filename)
         return self.get_rel_path_names(modified_files)
 
+    def get_unchanged_files(self) -> List[str]:
+        """Get a list of the files that are unchanged"""
+
+        staged_files = {f.path for f in self.stg_fs.glob("**/*") if f.info.is_file}
+        existing_files = {f.path for f in self.src_fs.glob("**/*") if f.info.is_file}
+        candidates_for_modification = staged_files & existing_files
+        unchanged_files = []
+        for filename in candidates_for_modification:
+            if self._check_hashes_equal(filename):
+                unchanged_files.append(filename)
+        return self.get_rel_path_names(unchanged_files)
+
     def _check_hashes_equal(self, src_file: str, dst_file: str = None):
         left = md5(lambda: self.src_fs.open(src_file, "rb"))
         right = md5(lambda: self.stg_fs.open(dst_file or src_file, "rb"))
@@ -134,14 +146,16 @@ def default_fs_factory(path: str) -> FS:
         created_files = self.get_created_files()
         deleted_files = self.get_deleted_files()
         modified_files = self.get_modified_files()
+        unchanged_files = self.get_unchanged_files()
 
         print(
             f"""
 
         {len(created_dirs)} directories created
-        {len(created_files)} files created
-        {len(deleted_files)} files deleted
-        {len(modified_files)} files modified
+        {len(created_files)} file(s) created
+        {len(deleted_files)} file(s) deleted
+        {len(modified_files)} file(s) modified
+        {len(unchanged_files)} file(s) unchanged
         """
         )
 

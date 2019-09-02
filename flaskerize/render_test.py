@@ -265,6 +265,7 @@ def test_copy_static_file_does_not_modify_if_exists_and_contents_unchanged(tmp_p
     renderer.copy_static_file(rel_filename, context={})
     assert len(renderer.fs.get_created_files()) == 0
     assert len(renderer.fs.get_modified_files()) == 0
+    assert len(renderer.fs.get_unchanged_files()) == 1
     renderer.fs.commit()
     assert os.path.exists(filename_in_src)
 
