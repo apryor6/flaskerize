@@ -11,7 +11,6 @@ def test_flaskerize_generate():
 
     status = os.system("fz bundle --dry-run --from test/build/ --to app:create_app")
     assert status == 0
-    assert not os.path.isfile("should_not_create.py")
 
 
 def test_flaskerize_attach_from_cli(tmp_path):
@@ -52,6 +51,37 @@ def test_flaskerize_attach_from_cli(tmp_path):
     status = os.system(f"fz attach --dry-run --to {app_file} {bp_name}")
     assert status == 0
     assert not os.path.isfile("should_not_create.py")
+
+
+def test_attach_with_no_dry_run(tmp_path):
+    CONTENTS = """import os
+    from flask import Flask
+
+    def create_app():
+        app = Flask(__name__)
+
+        @app.route("/health")
+        def serve():
+            return "{{ name }} online!"
+
+        return app
+
+    if __name__ == "__main__":
+        app = create_app()
+        app.run()"""
+
+    app_file = path.join(tmp_path, "app.py")
+    with open(app_file, "w") as fid:
+        fid.write(CONTENTS)
+
+    @dataclass
+    class Args:
+        to: str = path.join(tmp_path, app_file)
+        bp: str = path.join(tmp_path, "_fz_bp.py")
+        dry_run: bool = False
+
+    attach(Args())
+    assert path.isfile(path.join(tmp_path, app_file))
 
 
 def test_attach_with_dry_run(tmp_path):
