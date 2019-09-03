@@ -5,6 +5,8 @@ import sys
 from typing import Any, Dict, List, Tuple, Optional
 from importlib.machinery import ModuleSpec
 
+import flaskerize.attach
+
 
 def _convert_types(cfg: Dict) -> Dict:
     for option in cfg["options"]:
@@ -70,8 +72,6 @@ class Flaskerize(object):
         getattr(self, parsed.command[0])(args[2:])
 
     def attach(self, args):
-        from flaskerize.attach import attach
-
         arg_parser = FzArgumentParser()
         arg_parser.add_argument(
             "--to",
@@ -86,7 +86,7 @@ class Flaskerize(object):
         )
         arg_parser.add_argument("bp", type=str, help="Blueprint to attach")
         parse = arg_parser.parse_args(args)
-        attach(parse)
+        flaskerize.attach.attach(parse)
 
     def bundle(self, args):
         """
