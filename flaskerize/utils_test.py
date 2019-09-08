@@ -25,6 +25,18 @@ def test_split_file_factory_with_path():
     assert app == "app"
 
 
+def test_split_file_factory_with_py_file_existing(tmp_path):
+    import os
+
+    filename = os.path.join(tmp_path, "wsgi.py")
+    with open(filename, "w") as fid:
+        fid.write("")
+    root, app = utils.split_file_factory(f"{filename[:-3]}:app")
+
+    assert root == filename
+    assert app == "app"
+
+
 def test_split_file_factory_with_a_default_path():
     root, app = utils.split_file_factory("shake/and", default_func_name="bake")
 
