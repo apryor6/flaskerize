@@ -40,3 +40,7 @@
 0.8.1
 
 - Remove a file
+
+0.9.0
+
+- Substantially refactor internal file manipulation mechanism to use a staging, in-memory filesystem. See [here](https://github.com/apryor6/flaskerize/pull/31) for more discussion

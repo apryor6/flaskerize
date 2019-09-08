@@ -4,7 +4,6 @@ from flaskerize import SchematicRenderer
 
 
 def run(renderer: SchematicRenderer, context: Dict[str, Any]) -> None:
-    print("\n\nCONTEXT = ", context)
     template_files = renderer.get_template_files()
 
     for filename in template_files:
