@@ -286,6 +286,7 @@ Install [yarn](https://yarnpkg.com/lang/en/docs/install/) and [the Angular CLI](
 ng new
 cd <project name>
 yarn build --prod
+fz generate app ng_app
 fz generate app --from dist/<project name>/ app.py
 ```
 
