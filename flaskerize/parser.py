@@ -98,8 +98,6 @@ class Flaskerize(object):
         from flaskerize import generate
 
         DEFAULT_BP_NAME = "_fz_bp.py"
-        DEFAULT_WSGI_NAME = "wsgi.py"
-        DEFAULT_GUNICORN_ENTRY = f"{DEFAULT_WSGI_NAME.replace('.py', '')}:app"
 
         arg_parser = FzArgumentParser()
         arg_parser.add_argument(

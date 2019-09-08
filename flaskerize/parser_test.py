@@ -26,12 +26,12 @@ def test_flaskerize_generate():
     assert not os.path.isfile("should_not_create.py")
 
 
-@patch.dict("flaskerize.generate.a", {"blueprint": lambda params: None})
-def test_bundle_calls_attach(tmp_path):
-    with patch.object(Flaskerize, "attach") as mock:
-        fz = Flaskerize("fz bundle --from test/build/ --to app:create_app".split())
+# @patch.dict("flaskerize.generate.a", {"blueprint": lambda params: None})
+# def test_bundle_calls_attach(tmp_path):
+#     with patch.object(Flaskerize, "attach") as mock:
+#         fz = Flaskerize("fz bundle --from test/build/ --to app:create_app".split())
 
-        mock.assert_called_once()
+#         mock.assert_called_once()
 
 
 @patch.dict("flaskerize.generate.a", {"blueprint": lambda params: None})
@@ -48,6 +48,51 @@ def test_bundle_calls_does_not_call_attach_w_dry_run(tmp_path):
         )
 
         mock.assert_not_called()
+
+
+def test_attach(tmp_path):
+    APP_CONTENTS = """import os
+from flask import Flask
+
+def create_app():
+    app = Flask(__name__)
+
+    @app.route("/health")
+    def serve():
+        app = Flaasdfasdfsk(__name__)
+        return "{{ name }} online!"
+
+    return app
+
+if __name__ == "__main__":
+    app = create_app()
+    app.run()
+"""
+    app_dir = os.path.join(tmp_path, "my_app")
+    os.makedirs(app_dir)
+    app_file = os.path.join(app_dir, "app.py")
+    with open(app_file, "w") as fid:
+        fid.write(APP_CONTENTS)
+
+    INDEX_CONTENTS = """<!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="utf-8" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>Test</title>
+      </head>
+      <body>
+
+      </body>
+    </html>"""
+    site_dir = os.path.join(tmp_path, "my_site")
+    os.makedirs(site_dir)
+    with open(os.path.join(site_dir, "index.html"), "w") as fid:
+        fid.write(INDEX_CONTENTS)
+    print(f"fz bundle --from {site_dir} --to {app_file}:create_app".split())
+    # fz = Flaskerize(f"fz bundle --from {site_dir} --to {app_file}:create_app".split())
+    # assert fz
 
 
 def test__load_schema(tmp_path):
