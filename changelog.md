@@ -44,3 +44,7 @@
 0.9.0
 
 - Substantially refactor internal file manipulation mechanism to use a staging, in-memory filesystem. See [here](https://github.com/apryor6/flaskerize/pull/31) for more discussion
+
+0.10.0
+
+- Internal refactor to use PyFilesystem with a two-step staging of file changes and modifications using an in-memory buffer followed by a commit step upon success at which time the changes are actually made to the file system, unless on a dry run
