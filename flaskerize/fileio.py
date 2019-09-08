@@ -103,7 +103,7 @@ def default_fs_factory(path: str) -> FS:
         """Get a list of the files that are staged for creation"""
 
         staged_files = {f.path for f in self.stg_fs.glob("**/*") if f.info.is_file}
-        existing_files = {f.path for f in self.src_fs.glob("**/*") if f.info.is_file}
+        existing_files = {f for f in staged_files if self.src_fs.exists(f)}
         created_files = sorted(list(staged_files - existing_files))
         return self.get_rel_path_names(created_files)
 
@@ -116,7 +116,7 @@ def default_fs_factory(path: str) -> FS:
         """Get a list of the files that are staged for modification"""
 
         staged_files = {f.path for f in self.stg_fs.glob("**/*") if f.info.is_file}
-        existing_files = {f.path for f in self.src_fs.glob("**/*") if f.info.is_file}
+        existing_files = {f for f in staged_files if self.src_fs.exists(f)}
         candidates_for_modification = staged_files & existing_files
         modified_files = []
         for filename in candidates_for_modification:
@@ -128,7 +128,7 @@ def default_fs_factory(path: str) -> FS:
         """Get a list of the files that are unchanged"""
 
         staged_files = {f.path for f in self.stg_fs.glob("**/*") if f.info.is_file}
-        existing_files = {f.path for f in self.src_fs.glob("**/*") if f.info.is_file}
+        existing_files = {f for f in staged_files if self.src_fs.exists(f)}
         candidates_for_modification = staged_files & existing_files
         unchanged_files = []
         for filename in candidates_for_modification:
