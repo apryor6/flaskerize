@@ -6,6 +6,19 @@ from flaskerize.exceptions import InvalidSchema
 from flaskerize.parser import FzArgumentParser, Flaskerize
 
 
+@pytest.fixture
+def test_flaskerize_args(tmp_path):
+    return [
+        "fz",
+        "generate",
+        "app",
+        "test.py",
+        "--from-dir",
+        str(tmp_path),
+        "--dry-run",
+    ]
+
+
 def test_flaskerize_generate():
 
     status = os.system("fz generate --dry-run app my/test/app")
@@ -13,19 +26,73 @@ def test_flaskerize_generate():
     assert not os.path.isfile("should_not_create.py")
 
 
-def test_flaskerize_generate_with_schematic_path():
+# @patch.dict("flaskerize.generate.a", {"blueprint": lambda params: None})
+# def test_bundle_calls_attach(tmp_path):
+#     with patch.object(Flaskerize, "attach") as mock:
+#         fz = Flaskerize("fz bundle --from test/build/ --to app:create_app".split())
 
-    status = os.system("fz generate --dry-run app --schematic-path app my/test/app")
-    assert status == 0
-    assert not os.path.isfile("should_not_create.py")
+#         mock.assert_called_once()
 
 
 @patch.dict("flaskerize.generate.a", {"blueprint": lambda params: None})
 def test_bundle_calls_attach(tmp_path):
-    with patch.object(Flaskerize, "attach") as mock:
+    with patch("flaskerize.attach.attach") as mock:
         fz = Flaskerize("fz bundle --from test/build/ --to app:create_app".split())
-
         mock.assert_called_once()
+
+
+def test_bundle_calls_does_not_call_attach_w_dry_run(tmp_path):
+    with patch.object(Flaskerize, "attach") as mock:
+        fz = Flaskerize(
+            "fz bundle --from test/build/ --to app:create_app --dry-run".split()
+        )
+
+        mock.assert_not_called()
+
+
+def test_attach(tmp_path):
+    APP_CONTENTS = """import os
+from flask import Flask
+
+def create_app():
+    app = Flask(__name__)
+
+    @app.route("/health")
+    def serve():
+        app = Flaasdfasdfsk(__name__)
+        return "{{ name }} online!"
+
+    return app
+
+if __name__ == "__main__":
+    app = create_app()
+    app.run()
+"""
+    app_dir = os.path.join(tmp_path, "my_app")
+    os.makedirs(app_dir)
+    app_file = os.path.join(app_dir, "app.py")
+    with open(app_file, "w") as fid:
+        fid.write(APP_CONTENTS)
+
+    INDEX_CONTENTS = """<!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="utf-8" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>Test</title>
+      </head>
+      <body>
+
+      </body>
+    </html>"""
+    site_dir = os.path.join(tmp_path, "my_site")
+    os.makedirs(site_dir)
+    with open(os.path.join(site_dir, "index.html"), "w") as fid:
+        fid.write(INDEX_CONTENTS)
+    print(f"fz bundle --from {site_dir} --to {app_file}:create_app".split())
+    # fz = Flaskerize(f"fz bundle --from {site_dir} --to {app_file}:create_app".split())
+    # assert fz
 
 
 def test__load_schema(tmp_path):
@@ -91,7 +158,7 @@ def test_bundle(tmp_path):
         <title>Test</title>
       </head>
       <body>
-    
+
       </body>
     </html>"""
     site_dir = tmp_path
@@ -103,34 +170,27 @@ def test_bundle(tmp_path):
     assert status == 0
 
 
-def test__check_validate_package(tmp_path):
+def test__check_validate_package(test_flaskerize_args, tmp_path):
     tmp_app_path = os.path.join(tmp_path, "test.py")
-    fz = Flaskerize(["fz", "generate", "app", tmp_app_path])
+    fz = Flaskerize(test_flaskerize_args)
 
     with pytest.raises(ModuleNotFoundError):
         fz._check_validate_package(os.path.join(tmp_path, "pkg that does not exist"))
 
 
-def test__check_get_schematic_dirname(tmp_path):
+def test__check_get_schematic_dirname(test_flaskerize_args, tmp_path):
     tmp_pkg_path = os.path.join(tmp_path, "some/pkg")
     os.makedirs(tmp_pkg_path)
-    fz = Flaskerize(["fz", "generate", "app", tmp_pkg_path])
+    fz = Flaskerize(test_flaskerize_args)
 
     with pytest.raises(ValueError):
         fz._check_get_schematic_dirname(tmp_pkg_path)
 
 
-@pytest.fixture
-def fz(tmp_path):
-    tmp_app_path = os.path.join(tmp_path, "test.py")
-    fz = Flaskerize(["fz", "generate", "app", tmp_app_path])
-    return fz
-
-
-def test__check_get_schematic_path(tmp_path):
+def test__check_get_schematic_path(test_flaskerize_args, tmp_path):
     tmp_schematic_path = os.path.join(tmp_path, "some/pkg")
     os.makedirs(tmp_schematic_path)
-    fz = Flaskerize(["fz", "generate", "app", tmp_schematic_path])
+    fz = Flaskerize(test_flaskerize_args)
 
     with pytest.raises(ValueError):
         fz._check_get_schematic_path(
@@ -138,23 +198,32 @@ def test__check_get_schematic_path(tmp_path):
         )
 
 
-def test__split_pkg_schematic(fz, tmp_path):
+def test__split_pkg_schematic(test_flaskerize_args, tmp_path):
     with pytest.raises(ValueError):
+        tmp_app_path = os.path.join(tmp_path, "test.py")
+        fz = Flaskerize(test_flaskerize_args)
         pkg, schematic = fz._split_pkg_schematic(":schematic")
 
 
-def test__check_render_schematic(fz):
+def test__check_render_schematic(test_flaskerize_args, tmp_path):
+    tmp_app_path = os.path.join(tmp_path)
+    fz = Flaskerize(test_flaskerize_args)
     mock = fz.render_schematic = MagicMock()
     result = fz._check_render_schematic(
         pkg_schematic="test",
-        root="test",
+        render_dirname="test",
+        src_path=str(tmp_path),
         name="test",
         args=[],
         full_schematic_path="some_path",
         dry_run=True,
     )
-    print("result = ", result)
     mock.assert_called_with(
-        "some_path", root="test", name="test", dry_run=True, args=[]
+        "some_path",
+        render_dirname="test",
+        src_path=str(tmp_path),
+        name="test",
+        dry_run=True,
+        args=[],
     )
 

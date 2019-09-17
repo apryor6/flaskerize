@@ -1,5 +1,6 @@
 [![codecov](https://codecov.io/gh/apryor6/flaskerize/branch/master/graph/badge.svg)](https://codecov.io/gh/apryor6/flaskerize)
 [![license](https://img.shields.io/github/license/apryor6/flaskerize)](https://img.shields.io/github/license/apryor6/flaskerize)
+[![code_style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://img.shields.io/badge/code%20style-black-000000.svg)
 
 
 # flaskerize
@@ -286,6 +287,7 @@ Install [yarn](https://yarnpkg.com/lang/en/docs/install/) and [the Angular CLI](
 ng new
 cd <project name>
 yarn build --prod
+fz generate app ng_app
 fz generate app --from dist/<project name>/ app.py
 ```
 

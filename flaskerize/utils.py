@@ -28,4 +28,7 @@ def split_file_factory(
                 f"Unable to parse factory input. Input file '{filename}' is a "
                 "directory, but not a package."
             )
+    if not os.path.exists(filename) and os.path.exists(filename + ".py"):
+        # Case where user provides filename without .py (gunicorn style)
+        filename = filename + ".py"
     return filename, func

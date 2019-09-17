@@ -5,6 +5,8 @@ import sys
 from typing import Any, Dict, List, Tuple, Optional
 from importlib.machinery import ModuleSpec
 
+import flaskerize.attach
+
 
 def _convert_types(cfg: Dict) -> Dict:
     for option in cfg["options"]:
@@ -70,8 +72,6 @@ class Flaskerize(object):
         getattr(self, parsed.command[0])(args[2:])
 
     def attach(self, args):
-        from flaskerize.attach import attach
-
         arg_parser = FzArgumentParser()
         arg_parser.add_argument(
             "--to",
@@ -86,7 +86,7 @@ class Flaskerize(object):
         )
         arg_parser.add_argument("bp", type=str, help="Blueprint to attach")
         parse = arg_parser.parse_args(args)
-        attach(parse)
+        flaskerize.attach.attach(parse)
 
     def bundle(self, args):
         """
@@ -98,8 +98,6 @@ class Flaskerize(object):
         from flaskerize import generate
 
         DEFAULT_BP_NAME = "_fz_bp.py"
-        DEFAULT_WSGI_NAME = "wsgi.py"
-        DEFAULT_GUNICORN_ENTRY = f"{DEFAULT_WSGI_NAME.replace('.py', '')}:app"
 
         arg_parser = FzArgumentParser()
         arg_parser.add_argument(
@@ -164,7 +162,8 @@ class Flaskerize(object):
         schematic = parsed.schematic
         root_name = parsed.name
         dry_run = parsed.dry_run
-        root, name = path.split(root_name)
+        from_dir = parsed.from_dir
+        render_dirname, name = path.split(root_name)
 
         # TODO: cleanup logic for when full schematic path is passed versus providing a
         # package name. Perhaps just use the same param but check if it is pathlike and
@@ -173,14 +172,20 @@ class Flaskerize(object):
             self._check_render_schematic(
                 schematic,
                 name=name,
-                root=root,
+                render_dirname=render_dirname,
+                src_path=from_dir,
                 dry_run=dry_run,
                 full_schematic_path=parsed.schematic_path,
                 args=rest,
             )
         else:
             self._check_render_schematic(
-                schematic, root=root, name=name, dry_run=dry_run, args=rest
+                schematic,
+                render_dirname=render_dirname,
+                src_path=from_dir,
+                name=name,
+                dry_run=dry_run,
+                args=rest,
             )
 
     def _split_pkg_schematic(
@@ -234,7 +239,8 @@ class Flaskerize(object):
     def _check_render_schematic(
         self,
         pkg_schematic: str,
-        root: str,
+        render_dirname: str,
+        src_path: str,
         name: str,
         args: List[Any],
         full_schematic_path: Optional[str] = None,
@@ -252,18 +258,29 @@ class Flaskerize(object):
             module_spec = self._check_validate_package(pkg)
             schematic_path = self._check_get_schematic(schematic, module_spec)
         self.render_schematic(
-            schematic_path, root=root, name=name, dry_run=dry_run, args=args
+            schematic_path,
+            render_dirname=render_dirname,
+            src_path=src_path,
+            name=name,
+            dry_run=dry_run,
+            args=args,
         )
 
     def render_schematic(
         self,
         schematic_path: str,
-        root: str,
+        render_dirname: str,
         name: str,
         args: List[Any],
+        src_path: str = ".",
         dry_run: bool = False,
     ) -> None:
         from flaskerize.render import SchematicRenderer
 
-        SchematicRenderer(schematic_path, root=root, dry_run=dry_run).render(name, args)
+        SchematicRenderer(
+            schematic_path,
+            src_path=src_path,
+            output_prefix=render_dirname,
+            dry_run=dry_run,
+        ).render(name, args)
 
