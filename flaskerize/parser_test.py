@@ -179,6 +179,19 @@ def test__check_get_schematic_dirname(test_flaskerize_args, tmp_path):
         fz._check_get_schematic_dirname(tmp_pkg_path)
 
 
+def test__check_get_schematic_dirname_doesnt_append_if_already_schematics(
+    test_flaskerize_args, tmp_path
+):
+    tmp_pkg_path = os.path.join(tmp_path, "some/pkg/schematics")
+    os.makedirs(tmp_pkg_path)
+    fz = Flaskerize(test_flaskerize_args)
+
+    dirname = fz._check_get_schematic_dirname(tmp_pkg_path)
+
+    expected = tmp_pkg_path
+    assert dirname == expected
+
+
 def test__check_get_schematic_path(test_flaskerize_args, tmp_path):
     tmp_schematic_path = os.path.join(tmp_path, "some/pkg")
     os.makedirs(tmp_schematic_path)

@@ -199,7 +199,11 @@ class Flaskerize(object):
         return spec
 
     def _check_get_schematic_dirname(self, pkg_path: str) -> str:
-        schematic_dirname = path.join(pkg_path, "schematics")
+        if os.path.split(pkg_path)[-1] != "schematics":
+            # Allow user to provide path to either root level or to schematics/ itself
+            schematic_dirname = path.join(pkg_path, "schematics")
+        else:
+            schematic_dirname = pkg_path
         if not path.isdir(schematic_dirname):
             raise ValueError(
                 f"Unable to locate directory 'schematics/' in path {schematic_dirname}"
