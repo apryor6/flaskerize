@@ -26,14 +26,6 @@ def test_flaskerize_generate():
     assert not os.path.isfile("should_not_create.py")
 
 
-# @patch.dict("flaskerize.generate.a", {"blueprint": lambda params: None})
-# def test_bundle_calls_attach(tmp_path):
-#     with patch.object(Flaskerize, "attach") as mock:
-#         fz = Flaskerize("fz bundle --from test/build/ --to app:create_app".split())
-
-#         mock.assert_called_once()
-
-
 @patch.dict("flaskerize.generate.a", {"blueprint": lambda params: None})
 def test_bundle_calls_attach(tmp_path):
     with patch("flaskerize.attach.attach") as mock:
