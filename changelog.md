@@ -48,3 +48,7 @@
 0.10.0
 
 - Internal refactor to use PyFilesystem with a two-step staging of file changes and modifications using an in-memory buffer followed by a commit step upon success at which time the changes are actually made to the file system, unless on a dry run
+
+0.11.0
+
+- Allow user to provide full path to schematics directory or the root level above it, such as for a library
