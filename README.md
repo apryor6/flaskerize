@@ -57,7 +57,7 @@ For a list of the schematics that are available by default, see [here](https://g
 
 ### Creating your own schematics
 
-You can easily create your own schematics through use of `fz generate schematic <path/to/schematics/folder/schematic_name>`. This will create a new, blank schematic with the necessary files, and you can then render this new schematic with `fz generate <path/to/schematics/folder/schematic_name> [args]`
+You can easily create your own schematics through use of `fz generate schematic path/to/schematics/schematic_name`. This will create a new, blank schematic with the necessary files, and you can then render this new schematic with `fz generate path/to/schematics/:schematic_name [args]`  -- note the `:` used to separate the schematic name when invoking. For simplicity, you can optionally drop the trailing `schematics/` from the path as this folder is always required by the convention in `flaskerize` (e.g. `fz generate /path/to:schematic_name [args]`)
 
 Custom arguments, run functionality, and functions can then be provided in schema.json, run.py, and custom_functions.py, respectively. See the other sections of this README for specific details on each of these.
 
