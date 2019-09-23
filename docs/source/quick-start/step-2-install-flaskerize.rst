@@ -41,4 +41,17 @@ This should show you something like this...
 
 .. note:: The exact versions shown above may differ from the ones you see
 
-You should now have access to the `fz` command, verify this with `fz --help`.
+You should now have access to the ``fz`` command, verify this with ``fz --help``, which should display something like the following:
+
+.. code-block:: bash
+
+  $ fz --help
+  Flaskerizing...
+  usage: fz [-h] {attach,bundle,generate} [{attach,bundle,generate} ...]
+
+  positional arguments:
+    {attach,bundle,generate}
+                          Generate a new resource
+
+  optional arguments:
+    -h, --help            show this help message and exit
