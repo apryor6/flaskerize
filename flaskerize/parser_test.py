@@ -219,27 +219,3 @@ def test__split_pkg_schematic_only_grabs_last_delim(test_flaskerize_args, tmp_pa
     pkg, schematic = fz._split_pkg_schematic("path/to/:my:/schematic:schematic")
     assert pkg == "path/to/:my:/schematic"
     assert schematic == "schematic"
-
-
-def test__check_render_schematic(test_flaskerize_args, tmp_path):
-    tmp_app_path = os.path.join(tmp_path)
-    fz = Flaskerize(test_flaskerize_args)
-    mock = fz.render_schematic = MagicMock()
-    result = fz._check_render_schematic(
-        pkg_schematic="test",
-        render_dirname="test",
-        src_path=str(tmp_path),
-        name="test",
-        args=[],
-        full_schematic_path="some_path",
-        dry_run=True,
-    )
-    mock.assert_called_with(
-        "some_path",
-        render_dirname="test",
-        src_path=str(tmp_path),
-        name="test",
-        dry_run=True,
-        args=[],
-    )
-
