@@ -197,6 +197,30 @@ def test__split_pkg_schematic(test_flaskerize_args, tmp_path):
         pkg, schematic = fz._split_pkg_schematic(":schematic")
 
 
+def test__split_pkg_schematic_works_with_pkg(test_flaskerize_args, tmp_path):
+    tmp_app_path = os.path.join(tmp_path, "test.py")
+    fz = Flaskerize(test_flaskerize_args)
+    pkg, schematic = fz._split_pkg_schematic("my_pkg:schematic")
+    assert pkg == "my_pkg"
+    assert schematic == "schematic"
+
+
+def test__split_pkg_schematic_works_with_full_path(test_flaskerize_args, tmp_path):
+    tmp_app_path = os.path.join(tmp_path, "test.py")
+    fz = Flaskerize(test_flaskerize_args)
+    pkg, schematic = fz._split_pkg_schematic("path/to/schematic:schematic")
+    assert pkg == "path/to/schematic"
+    assert schematic == "schematic"
+
+
+def test__split_pkg_schematic_only_grabs_last_delim(test_flaskerize_args, tmp_path):
+    tmp_app_path = os.path.join(tmp_path, "test.py")
+    fz = Flaskerize(test_flaskerize_args)
+    pkg, schematic = fz._split_pkg_schematic("path/to/:my:/schematic:schematic")
+    assert pkg == "path/to/:my:/schematic"
+    assert schematic == "schematic"
+
+
 def test__check_render_schematic(test_flaskerize_args, tmp_path):
     tmp_app_path = os.path.join(tmp_path)
     fz = Flaskerize(test_flaskerize_args)

@@ -142,12 +142,13 @@ def test__generate_with_adds_extension(tmp_path):
     assert path.isfile(output_name + ".py")
 
 
-def test_(tmp_path):
+def test_full_schematic_path(tmp_path):
     import os
 
     from flaskerize.parser import Flaskerize
 
-    schematic_path = os.path.join(tmp_path, "schematics/doodad/")
+    schematic_dir = os.path.join(tmp_path, "schematics")
+    schematic_path = os.path.join(schematic_dir, "doodad/")
     schema_filename = os.path.join(schematic_path, "schema.json")
     schematic_files_path = os.path.join(schematic_path, "files/")
     template_filename = os.path.join(schematic_files_path, "test_file.txt.template")
@@ -164,5 +165,30 @@ def test_(tmp_path):
     fz = Flaskerize(
         f"fz generate doodad name --schematic-path {schematic_path} --from-dir {outdir}".split()
     )
+
+    assert os.path.isfile(os.path.join(tmp_path, "test/test_file.txt"))
+
+
+def test_with_full_path(tmp_path):
+    import os
+
+    from flaskerize.parser import Flaskerize
+
+    schematic_dir = os.path.join(tmp_path, "schematics")
+    schematic_path = os.path.join(schematic_dir, "doodad/")
+    schema_filename = os.path.join(schematic_path, "schema.json")
+    schematic_files_path = os.path.join(schematic_path, "files/")
+    template_filename = os.path.join(schematic_files_path, "test_file.txt.template")
+    os.makedirs(schematic_path)
+    os.makedirs(schematic_files_path)
+    SCHEMA_CONTENTS = """{"options": []}"""
+    with open(schema_filename, "w") as fid:
+        fid.write(SCHEMA_CONTENTS)
+    CONTENTS = "{{ secret }}"
+    with open(template_filename, "w") as fid:
+        fid.write(CONTENTS)
+
+    outdir = os.path.join(tmp_path, "test/")
+    fz = Flaskerize(f"fz generate {tmp_path}:doodad name --from-dir {outdir}".split())
 
     assert os.path.isfile(os.path.join(tmp_path, "test/test_file.txt"))

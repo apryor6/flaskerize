@@ -229,9 +229,12 @@ class Flaskerize(object):
             )
         return schematic_path
 
-    def _check_get_schematic(self, schematic: str, spec: ModuleSpec) -> str:
+    def _get_pkg_path_from_spec(self, spec: ModuleSpec) -> str:
+        return path.dirname(spec.origin)
 
-        pkg_path: str = path.dirname(spec.origin)
+    def _check_get_schematic(self, schematic: str, pkg_path: str) -> str:
+
+        # pkg_path: str = path.dirname(spec.origin)
         schematic_dirname = self._check_get_schematic_dirname(pkg_path)
         schematic_path = self._check_get_schematic_path(schematic_dirname, schematic)
         return schematic_path
@@ -254,9 +257,16 @@ class Flaskerize(object):
         if full_schematic_path is not None:
             schematic_path = full_schematic_path
         else:
-            pkg, schematic = self._split_pkg_schematic(pkg_schematic, delim=delim)
-            module_spec = self._check_validate_package(pkg)
-            schematic_path = self._check_get_schematic(schematic, module_spec)
+            pkg_or_path, schematic = self._split_pkg_schematic(
+                pkg_schematic, delim=delim
+            )
+
+            if _is_pathlike(pkg_or_path):
+                pkg_path = pkg_or_path
+            else:
+                module_spec = self._check_validate_package(pkg_or_path)
+                pkg_path = self._get_pkg_path_from_spec(module_spec)
+            schematic_path = self._check_get_schematic(schematic, pkg_path)
         self.render_schematic(
             schematic_path,
             render_dirname=render_dirname,
@@ -284,3 +294,9 @@ class Flaskerize(object):
             dry_run=dry_run,
         ).render(name, args)
 
+
+def _is_pathlike(value: str) -> bool:
+    """Check if a string appears to be a path"""
+
+    seps: List[str] = ["/", "\\"]
+    return any(sep in value for sep in seps)
