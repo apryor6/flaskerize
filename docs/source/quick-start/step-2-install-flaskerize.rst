@@ -6,6 +6,7 @@ We're now ready to install Flaskeriez. Let's use `pip` to do just that...
 .. code-block:: bash
 
   pip install --upgrade pip
+  pip install flaskerize
 
 
 Once this command has completed you will have installed Flaskerize along
@@ -39,3 +40,5 @@ This should show you something like this...
   Werkzeug     0.15.6
 
 .. note:: The exact versions shown above may differ from the ones you see
+
+You should now have access to the `fz` command, verify this with `fz --help`.
