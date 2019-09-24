@@ -5,22 +5,24 @@ This guide is designed to get you up and running by showing you how
 to create a new Flask API using Flaskerize. We'll perform the following
 steps in this quick-start...
 
-1. Create a new folder and set up a virtual environment
-2. Install Flaskerize
-3. Use Flaskerize to create an initial Flask API
-4. Use Flaskerize to add an entity to your API
-
-It's assumed that you have Python 3.7 installed.
-The illustrations in this tutorial assume that you're using a bash terminal.
-They also assume you're comfortable using a command line.
-
-OK....let's start...
-
 .. toctree::
    :maxdepth: 2
-   :caption: Quick Start Steps:
 
    step-1-setup
    step-2-install-flaskerize
-   step-3-creating-an-api
-   step-4-adding-an-entity
+   step-3-creating-a-flask-app
+   step-4-creating-the-api
+   step-5-adding-an-entity
+
+
+Some Assumtions and Prerequisites
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+It's assumed that you have Python 3.7 installed. If not, go and install Python now.
+
+https://www.python.org/downloads/
+
+The instructions in this guide also assume you're comfortable using the command line. The illustrations that you'll see in this quick start are taken from a bash terminal. In general, the commands will work in your chosen terminal.
+
+OK....let's get started...
+
