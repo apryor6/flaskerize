@@ -1,11 +1,12 @@
-Step 3: Creating an API
-=======================
+Step 3: Creating a Flask App
+============================
 
-You're now ready to create your Flask API. 
-To make this simple, **flaskerize** has a number of :term:`generators` that will build code or you.
+You're we're now ready to create our Flask application.
+
+To make this simple, **flaskerize** has a number of :term:`generators` that will build code for us.
 These :term:`generators` used :term:`schematics` to define the code that's built.
 
-We're going to start by using the ``app`` generator to create the basics of our API application.
+We're going to start by using the ``app`` generator to create the basics of the Flask app.
 
 From the root of your project folder, run the following command:
 
@@ -33,7 +34,8 @@ You'll see output similar to the following:
 
   CREATED: wsgi.py
 
-As you can see, this has generated a file called ``wsgi.py``. This file should contain the following:
+As you can see, this has generated a file called ``wsgi.py``. 
+This file should contain the following:
 
 .. code-block:: python
 
@@ -57,7 +59,8 @@ As you can see, this has generated a file called ``wsgi.py``. This file should c
       app.run()
 
 
-This code is a very basic, but functioning, Flask app. 
+This code is a very basic, but functioning, Flask app.
+
 You can use the flask command line interface to confirm this by running ``flask routes``,
 which will print out the routes that Flask is aware of...
 

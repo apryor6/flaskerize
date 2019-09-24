@@ -9,7 +9,7 @@ We're now ready to install Flaskeriez. Let's use `pip` to do just that...
   pip install flaskerize
 
 
-Once this command has completed you will have installed Flaskerize along
+Once this command has completed we'll have installed Flaskerize along
 with its dependencies. If you want to see the packages that were installed,
 run the following command:
 

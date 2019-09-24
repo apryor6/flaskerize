@@ -1,9 +1,9 @@
 Step 1: Setting up flaskerize
 =============================
 
-Let's assume you're started from nothing.
+We're going to start from nothing, and over the course of this quickstart we'll end up with a simple API.
 
-First, let's create a folder for your Flask API to live in.
+First, let's create a folder for our Flask API to live in.
 
 .. code:: bash
 

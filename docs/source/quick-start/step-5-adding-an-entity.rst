@@ -1,7 +1,8 @@
-Step 4: Adding Entities to an API
+Step 5: Adding Entities to an API
 =================================
 
-Now that we have a **very** basic Flask app, we're going to add an :term:`entity` to it.
+Over the previous steps we've built a basic Flask app, and we've added some core API code to that application.
+Now we're going to add an :term:`entity` to the API.
 
 We'll use the command ``fz generate entity cake`` which will use the ``entity`` schematic to generate code
 for an entity called `cake`.
