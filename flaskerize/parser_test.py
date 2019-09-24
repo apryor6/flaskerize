@@ -26,14 +26,6 @@ def test_flaskerize_generate():
     assert not os.path.isfile("should_not_create.py")
 
 
-# @patch.dict("flaskerize.generate.a", {"blueprint": lambda params: None})
-# def test_bundle_calls_attach(tmp_path):
-#     with patch.object(Flaskerize, "attach") as mock:
-#         fz = Flaskerize("fz bundle --from test/build/ --to app:create_app".split())
-
-#         mock.assert_called_once()
-
-
 @patch.dict("flaskerize.generate.a", {"blueprint": lambda params: None})
 def test_bundle_calls_attach(tmp_path):
     with patch("flaskerize.attach.attach") as mock:
@@ -187,6 +179,19 @@ def test__check_get_schematic_dirname(test_flaskerize_args, tmp_path):
         fz._check_get_schematic_dirname(tmp_pkg_path)
 
 
+def test__check_get_schematic_dirname_doesnt_append_if_already_schematics(
+    test_flaskerize_args, tmp_path
+):
+    tmp_pkg_path = os.path.join(tmp_path, "some/pkg/schematics")
+    os.makedirs(tmp_pkg_path)
+    fz = Flaskerize(test_flaskerize_args)
+
+    dirname = fz._check_get_schematic_dirname(tmp_pkg_path)
+
+    expected = tmp_pkg_path
+    assert dirname == expected
+
+
 def test__check_get_schematic_path(test_flaskerize_args, tmp_path):
     tmp_schematic_path = os.path.join(tmp_path, "some/pkg")
     os.makedirs(tmp_schematic_path)
@@ -205,25 +210,25 @@ def test__split_pkg_schematic(test_flaskerize_args, tmp_path):
         pkg, schematic = fz._split_pkg_schematic(":schematic")
 
 
-def test__check_render_schematic(test_flaskerize_args, tmp_path):
-    tmp_app_path = os.path.join(tmp_path)
+def test__split_pkg_schematic_works_with_pkg(test_flaskerize_args, tmp_path):
+    tmp_app_path = os.path.join(tmp_path, "test.py")
     fz = Flaskerize(test_flaskerize_args)
-    mock = fz.render_schematic = MagicMock()
-    result = fz._check_render_schematic(
-        pkg_schematic="test",
-        render_dirname="test",
-        src_path=str(tmp_path),
-        name="test",
-        args=[],
-        full_schematic_path="some_path",
-        dry_run=True,
-    )
-    mock.assert_called_with(
-        "some_path",
-        render_dirname="test",
-        src_path=str(tmp_path),
-        name="test",
-        dry_run=True,
-        args=[],
-    )
+    pkg, schematic = fz._split_pkg_schematic("my_pkg:schematic")
+    assert pkg == "my_pkg"
+    assert schematic == "schematic"
 
+
+def test__split_pkg_schematic_works_with_full_path(test_flaskerize_args, tmp_path):
+    tmp_app_path = os.path.join(tmp_path, "test.py")
+    fz = Flaskerize(test_flaskerize_args)
+    pkg, schematic = fz._split_pkg_schematic("path/to/schematic:schematic")
+    assert pkg == "path/to/schematic"
+    assert schematic == "schematic"
+
+
+def test__split_pkg_schematic_only_grabs_last_delim(test_flaskerize_args, tmp_path):
+    tmp_app_path = os.path.join(tmp_path, "test.py")
+    fz = Flaskerize(test_flaskerize_args)
+    pkg, schematic = fz._split_pkg_schematic("path/to/:my:/schematic:schematic")
+    assert pkg == "path/to/:my:/schematic"
+    assert schematic == "schematic"
