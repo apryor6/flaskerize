@@ -60,9 +60,9 @@ path
 ```
 
 
-### flask-plotly
+### flask-api
 
-A basic Flask app that renders a plotly chart via a blueprint
+A basic Flask app with SQLAlchemy that follows the pattern [here](http://alanpryorjr.com/2019-05-20-flask-api-example/). This is intended to be used alongside the entity schematic for speedy development
 
 _Example usage_
 
