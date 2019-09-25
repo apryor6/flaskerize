@@ -52,3 +52,7 @@
 0.11.0
 
 - Allow user to provide full path to schematics directory or the root level above it, such as for a library
+
+0.12.0
+
+- Add the `flask-api` schematic for easy creation of a new Flask API project w/ SQL Alchemy that follows the pattern described [here](http://alanpryorjr.com/2019-05-20-flask-api-example/)
