@@ -4,7 +4,7 @@ The following is a summary/description of the various schematics that ship with 
 
 ### Entity
 
-An `entity` is a combination of a Marshmallow schema, type-annotated interface, SQLAlchemy model, Flask controller, and CRUD service as described [in this blog post](http://alanpryorjr.com/2019-05-20-flask-api-example/). It contains tests and provides functionality for being registered within an existing Flask application via its `register_routes` method in `__init__.py.
+An `entity` is a combination of a Marshmallow schema, type-annotated interface, SQLAlchemy model, Flask controller, and CRUD service as described [in this blog post](http://alanpryorjr.com/2019-05-20-flask-api-example/). It contains tests and provides functionality for being registered within an existing Flask application via its `register_routes` method in `__init__.py`.
 
 _Additional parameters:_
 
