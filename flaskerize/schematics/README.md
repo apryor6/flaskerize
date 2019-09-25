@@ -59,6 +59,67 @@ path
             └── schema.json
 ```
 
+
+### flask-plotly
+
+A basic Flask app that renders a plotly chart via a blueprint
+
+_Example usage_
+
+```
+fz generate flask-api my_app
+```
+
+Creates:
+
+```
+├── README.md
+├── app
+│   ├── __init__.py
+│   ├── __init__test.py
+│   ├── app-test.db
+│   ├── config.py
+│   ├── routes.py
+│   ├── test
+│   │   ├── __init__.py
+│   │   └── fixtures.py
+│   └── widget
+│       ├── __init__.py
+│       ├── controller.py
+│       ├── controller_test.py
+│       ├── interface.py
+│       ├── interface_test.py
+│       ├── model.py
+│       ├── model_test.py
+│       ├── schema.py
+│       ├── schema_test.py
+│       ├── service.py
+│       └── service_test.py
+├── commands
+│   ├── __init__.py
+│   └── seed_command.py
+├── manage.py
+├── requirements.txt
+└── wsgi.py
+```
+
+The app can then be run with the following steps (also documented in the README that is generated)
+
+```
+cd my_app
+virtualenv -p python3 venv
+source venv/bin/activate
+pip install -r requirements.txt
+python manage.py seed_db
+python wsgi.py
+```
+
+Navigating to http://localhost:5000 then should yield the swagger docs:
+
+![flask-api resulting app](flask-api.png)
+
+
+
 ### flask-plotly
 
 A basic Flask app that renders a plotly chart via a blueprint
