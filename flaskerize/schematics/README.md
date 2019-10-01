@@ -4,7 +4,7 @@ The following is a summary/description of the various schematics that ship with 
 
 ### Entity
 
-An `entity` is a combination of a Marshmallow schema, type-annotated interface, SQLAlchemy model, Flask controller, and CRUD service as described [in this blog post](http://alanpryorjr.com/2019-05-20-flask-api-example/). It contains tests and provides functionality for being registered within an existing Flask application via its `register_routes` method in `__init__.py.
+An `entity` is a combination of a Marshmallow schema, type-annotated interface, SQLAlchemy model, Flask controller, and CRUD service as described [in this blog post](http://alanpryorjr.com/2019-05-20-flask-api-example/). It contains tests and provides functionality for being registered within an existing Flask application via its `register_routes` method in `__init__.py`.
 
 _Additional parameters:_
 
@@ -58,6 +58,67 @@ path
             ├── run.py
             └── schema.json
 ```
+
+
+### flask-api
+
+A basic Flask app with SQLAlchemy that follows the pattern [here](http://alanpryorjr.com/2019-05-20-flask-api-example/). This is intended to be used alongside the entity schematic for speedy development
+
+_Example usage_
+
+```
+fz generate flask-api my_app
+```
+
+Creates:
+
+```
+├── README.md
+├── app
+│   ├── __init__.py
+│   ├── __init__test.py
+│   ├── app-test.db
+│   ├── config.py
+│   ├── routes.py
+│   ├── test
+│   │   ├── __init__.py
+│   │   └── fixtures.py
+│   └── widget
+│       ├── __init__.py
+│       ├── controller.py
+│       ├── controller_test.py
+│       ├── interface.py
+│       ├── interface_test.py
+│       ├── model.py
+│       ├── model_test.py
+│       ├── schema.py
+│       ├── schema_test.py
+│       ├── service.py
+│       └── service_test.py
+├── commands
+│   ├── __init__.py
+│   └── seed_command.py
+├── manage.py
+├── requirements.txt
+└── wsgi.py
+```
+
+The app can then be run with the following steps (also documented in the README that is generated)
+
+```
+cd my_app
+virtualenv -p python3 venv
+source venv/bin/activate
+pip install -r requirements.txt
+python manage.py seed_db
+python wsgi.py
+```
+
+Navigating to http://localhost:5000 then should yield the swagger docs:
+
+![flask-api resulting app](flask-api.png)
+
+
 
 ### flask-plotly
 
