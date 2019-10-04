@@ -5,9 +5,7 @@ We're now ready to install Flaskeriez. Let's use `pip` to do just that...
 
 .. code-block:: bash
 
-  pip install --upgrade pip
   pip install flaskerize
-
 
 Once this command has completed we'll have installed Flaskerize along
 with its dependencies. If you want to see the packages that were installed,
@@ -27,7 +25,7 @@ This should show you something like this...
   appdirs      1.4.3
   Click        7.0
   Flask        1.1.1
-  flaskerize   0.10.0
+  flaskerize   0.12.0
   fs           2.4.11
   itsdangerous 1.1.0
   Jinja2       2.10.1
@@ -37,9 +35,9 @@ This should show you something like this...
   setuptools   40.8.0
   six          1.12.0
   termcolor    1.1.0
-  Werkzeug     0.15.6
+  Werkzeug     0.16.0
 
-.. note:: The exact versions shown above may differ from the ones you see
+.. note:: The exact versions shown here may differ from the ones you see when you install **flaskerize**.
 
 You should now have access to the ``fz`` command, verify this with ``fz --help``, which should display something like the following:
 

@@ -20,4 +20,4 @@ and then upgrade ``pip`` within that environment.
     source venv/bin/activate
     pip install --upgrade pip
 
-
+.. note:: The last command, ``pip install --upgrade pip``, ensures that we have the latest version of ``pip`` installed.
