@@ -1,8 +1,7 @@
 Quick Start Guide
 =================
 
-This guide is designed to get you up and running by showing you how
-to create a new Flask API using Flaskerize.
+This guide is designed to get you up and running by showing you how to create a new Flask API using Flaskerize.
 
 .. toctree::
    :maxdepth: 1
