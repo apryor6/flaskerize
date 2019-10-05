@@ -3,7 +3,7 @@
 [![code_style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://img.shields.io/badge/code%20style-black-000000.svg)
 [![Documentation Status](https://readthedocs.org/projects/flaskerize/badge/?version=latest)](https://flaskerize.readthedocs.io/en/latest/?badge=latest)
 
-
+_Full documentation is available on [readthedocs](https://flaskerize.readthedocs.io/en/latest/)_
 
 # flaskerize
 
