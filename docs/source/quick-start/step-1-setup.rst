@@ -1,4 +1,4 @@
-Step 1: Setting up flaskerize
+Step 1: Setting up Flaskerize
 =============================
 
 We're going to start from nothing, and over the course of this quickstart we'll end up with a simple API.

@@ -1,4 +1,4 @@
-Step 3: Creating the Flask API
+Step 3: Creating a Flask API
 ==============================
 
 You're we're now ready to create our Flask API, and we're going to use **flaskerize** to do most of this for us.
