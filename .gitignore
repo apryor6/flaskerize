@@ -70,3 +70,6 @@ _fz_bp.py
 htmlcov/
 
 coverage.xml
+
+# pyenv
+.python-version
