@@ -10,6 +10,12 @@ project = 'flaskerize'
 copyright = '2019, AJ Pryor, Ph.D.'
 author = 'AJ Pryor, Ph.D.'
 
+# -- Documentation configuration ---------------------------------------------
+master_doc = 'index'
+extensions = [
+    'readthedocs_ext.readthedocs',
+]
+
 # -- Options for HTML output -------------------------------------------------
 
 html_theme = 'sphinx_rtd_theme'
