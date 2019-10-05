@@ -1,6 +1,8 @@
 [![codecov](https://codecov.io/gh/apryor6/flaskerize/branch/master/graph/badge.svg)](https://codecov.io/gh/apryor6/flaskerize)
 [![license](https://img.shields.io/github/license/apryor6/flaskerize)](https://img.shields.io/github/license/apryor6/flaskerize)
 [![code_style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://img.shields.io/badge/code%20style-black-000000.svg)
+[![Documentation Status](https://readthedocs.org/projects/flaskerize/badge/?version=latest)](https://flaskerize.readthedocs.io/en/latest/?badge=latest)
+
 
 
 # flaskerize
