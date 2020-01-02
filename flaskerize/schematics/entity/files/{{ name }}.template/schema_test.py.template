@@ -17,10 +17,10 @@ def test_{{ capitalize(name) }}Schema_create(schema: {{ capitalize(name) }}Schem
 def test_{{ capitalize(name) }}Schema_works(schema: {{ capitalize(name) }}Schema):
     params: {{ capitalize(name) }}Interface = schema.load(
         {"{{ lower(name) }}Id": 1, "name": "Test name", "description": "Test description"}
-    ).data
+    )
     {{ lower(name) }} = {{ capitalize(name) }}(**params)
 
     assert {{ lower(name) }}.{{ lower(name) }}_id == 1
-    assert {{ lower(name) }}.name == "Test description"
+    assert {{ lower(name) }}.name == "Test name"
     assert {{ lower(name) }}.description == "Test description"
 
