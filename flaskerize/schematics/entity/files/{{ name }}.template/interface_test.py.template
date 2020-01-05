@@ -1,6 +1,5 @@
 from pytest import fixture
 
-from app.product import Product
 from .model import {{ capitalize(name) }}
 from .interface import {{ capitalize(name) }}Interface
 
