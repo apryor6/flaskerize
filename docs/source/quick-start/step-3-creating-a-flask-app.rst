@@ -148,7 +148,7 @@ This will print out all of the routes supported by your Flask API:
   Widget_widget_resource     GET, POST         /api/widget/
   doc                        GET               /
   health                     GET               /health
-  restplus_doc.static        GET               /swaggerui/<path:filename>
+  restx_doc.static        GET               /swaggerui/<path:filename>
   root                       GET               /
   specs                      GET               /swagger.json
   static                     GET               /static/<path:filename>
