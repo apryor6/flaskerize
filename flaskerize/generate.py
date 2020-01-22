@@ -149,7 +149,7 @@ def namespace(args):
     """
 
     CONTENTS = f"""from flask import request, jsonify
-from flask_restplus import Namespace, Resource
+from flask_restx import Namespace, Resource
 from flask_accepts import accepts, responds
 import marshmallow as ma
 
