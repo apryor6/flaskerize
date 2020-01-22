@@ -56,3 +56,7 @@
 0.12.0
 
 - Add the `flask-api` schematic for easy creation of a new Flask API project w/ SQL Alchemy that follows the pattern described [here](http://alanpryorjr.com/2019-05-20-flask-api-example/)
+
+0.14.0
+
+- Update from Flask-RESTplus to flask-restx

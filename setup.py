@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="flaskerize",
-    version="0.13.0",
+    version="0.14.0",
     description="Python CLI build/dev tool for templated code generation and project modification. Think Angular schematics for Python.",
     author="AJ Pryor",
     author_email="apryor6@gmail.com",
