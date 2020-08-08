@@ -25,7 +25,7 @@ def test_update(db: SQLAlchemy):  # noqa
 
     db.session.add(yin)
     db.session.commit()
-    updates = dict({{ lower(name) }}="Yang")
+    updates = dict(name="Yang")
 
     {{ capitalize(name) }}Service.update(yin, updates)
 
