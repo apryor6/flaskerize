@@ -1,24 +1,34 @@
-from pytest import fixture
+from pytest import fixture, raises
 
-#from app.product import Product
+from .model_test import {{ lower(name) }}
+
 from .model import {{ capitalize(name) }}
 from .interface import {{ capitalize(name) }}Interface
-
 
 @fixture
 def interface() -> {{ capitalize(name) }}Interface:
 
     params: {{ capitalize(name) }}Interface = {
         "{{ lower(name) }}_id": 1,
-        "name": "Test name",
-        "description": "Test description",
+        "name": "interface name",
+        "description": "interface description"
     }
     return params
 
 
-def test_{{ capitalize(name) }}Interface_create(interface: {{ capitalize(name) }}Interface):
+def test_{{ capitalize(name) }}Interface_init(interface: {{ capitalize(name) }}Interface):
     assert interface
 
 
-def test_{{ capitalize(name) }}Interface_works(interface: {{ capitalize(name) }}Interface):
-    assert {{ capitalize(name) }}(**interface)
+def test_{{ capitalize(name) }}Interface_create(interface: {{ capitalize(name) }}Interface):
+    {{ lower(name) }} = {{ capitalize(name) }}(**interface)
+    assert {{ lower(name) }}
+    for k, v in interface.items():
+        assert getattr({{ lower(name) }}, k) == interface[k]
+
+
+def test_{{ capitalize(name) }}Interface_update({{ lower(name) }}: {{ capitalize(name) }}, interface: {{ capitalize(name) }}Interface):
+    {{ lower(name) }}.update(interface)
+    assert {{ lower(name) }}
+    for k, v in interface.items():
+        assert getattr({{ lower(name) }}, k) == interface[k]
