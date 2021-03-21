@@ -13,5 +13,6 @@ class {{ capitalize(name) }}(db.Model):
 
     def update(self, changes):
         for key, val in changes.items():
-            setattr(self, key, val)
+            if key in vars(self):
+                setattr(self, key, val)
         return

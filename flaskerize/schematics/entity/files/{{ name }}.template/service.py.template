@@ -41,4 +41,3 @@ class {{ capitalize(name) }}Service:
         db.session.commit()
 
         return new_{{ lower(name) }}
-

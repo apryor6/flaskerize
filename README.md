@@ -316,3 +316,4 @@ Next, attach the blueprint to your existing Flask app
 
 `fz a --to app.py:create_app _fz_blueprint.py`
 
+test
