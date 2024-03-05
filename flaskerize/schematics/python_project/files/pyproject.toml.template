@@ -1,0 +1,35 @@
+[project]
+name = "{{ name }}"
+version = "{{ version }}"
+authors = [ { name = "{{ author }}", email = "{{ author_email }}" } ]
+description = "{{ description }}"
+readme = "README.md"
+dependencies = {{ install_requires|default("[]", true) }}
+
+[project.urls]
+Homepage = "{{ url }}"
+Issues = "{{ url }}/-/issues"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.coverage.run]
+branch = true
+command_line = "-m pytest -rP --html=testing/pytest/index.html"
+source = ["src/{{ name }}/"]
+
+[tool.coverage.html]
+directory = "testing/coverage"
+
+[tool.pytest.ini_options]
+filterwarnings = [
+	"ignore::DeprecationWarning",
+	"ignore::PendingDeprecationWarning"
+]

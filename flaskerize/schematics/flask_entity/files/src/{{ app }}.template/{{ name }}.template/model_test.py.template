@@ -1,0 +1,63 @@
+from pytest import fixture
+from flask_sqlalchemy import SQLAlchemy
+
+from {{ app }}.test.fixtures import app, db  # noqa F401
+from .model import {{ capitalize(name) }}
+
+
+@fixture
+def {{ name }}() -> {{ capitalize(name) }}:
+    return {{ capitalize(name) }}(
+        {{ name }}_id=1,
+        name="model name",
+        description="model description"
+    )
+
+
+def test_{{ capitalize(name) }}_init({{ name }}: {{ capitalize(name) }}):
+    assert {{ name }}
+
+
+def test_{{ capitalize(name) }}_create({{ name }}: {{ capitalize(name) }}, db: SQLAlchemy):  # noqa F811
+    try:
+        db.session.add({{ name }})
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
+
+
+def test_{{ capitalize(name) }}_retrieve({{ name }}: {{ capitalize(name) }}, db: SQLAlchemy):  # noqa F811
+    try:
+        db.session.add({{ name }})
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
+
+    s = {{ capitalize(name) }}.query.first()
+    assert s.__dict__ == {{ name }}.__dict__
+
+
+def test_{{ capitalize(name) }}_update({{ name }}: {{ capitalize(name) }}, db: SQLAlchemy):  # noqa F811
+    for k in {{ name }}.__dict__:
+        if k not in ('_sa_instance_state', '{{ name }}_id', 'last_checked'):
+            if isinstance(k, str):
+                {{ name }}.update({k: 'Test Update'})
+            elif isinstance(k, int):
+                {{ name }}.update({k: 99999})
+
+    try:
+        db.session.add({{ name }})
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
+
+    for k in {{ capitalize(name) }}.query.all()[0].__dict__:
+        if k not in ('_sa_instance_state', '{{ name }}_id', 'last_checked'):
+            if isinstance(k, str):
+                assert getattr({{ name }}, k) == 'Test Update'
+            elif isinstance(k, int):
+                assert getattr({{ name }}, k) == 99999
+

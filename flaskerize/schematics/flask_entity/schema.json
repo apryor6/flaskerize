@@ -1,0 +1,12 @@
+{
+  "templateFilePatterns": ["**/*.template"],
+  "ignoreFilePatterns": [],
+  "options": [
+    {
+      "arg": "--app",
+      "type": "str",
+      "default": "app",
+      "help": "App name the entity is being attached to"
+    }
+  ]
+}

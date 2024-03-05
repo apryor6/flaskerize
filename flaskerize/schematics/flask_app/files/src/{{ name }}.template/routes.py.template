@@ -1,0 +1,9 @@
+def register_routes(api, app, root="api"):
+    pass
+    # Example Pattern
+    # from app.widget import register_routes as attach_widget
+
+    # Add routes
+    # Example Pattern
+    # attach_widget(api, app)
+

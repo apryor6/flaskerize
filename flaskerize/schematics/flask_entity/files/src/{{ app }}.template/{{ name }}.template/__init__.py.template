@@ -1,0 +1,10 @@
+# from .model import {{ capitalize(name) }}
+# from .schema import {{ capitalize(name) }}Schema
+
+
+def register_routes(root_api, app, root="/api"):
+    from .controller import api as {{ name }}_api
+
+    root_api.add_namespace({{ name }}_api, path=f"{root}/{{ name }}")
+    return root_api
+

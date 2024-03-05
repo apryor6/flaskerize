@@ -1,0 +1,5 @@
+#! /bin/bash
+python -m coverage run && python -m coverage html
+echo "---- flake8 output ----"
+python -m flake8
+echo "---- flake8 output end ----"

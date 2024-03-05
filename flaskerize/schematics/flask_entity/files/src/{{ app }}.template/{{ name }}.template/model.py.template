@@ -1,0 +1,21 @@
+import sqlalchemy as sa
+import sqlalchemy.orm as so
+
+from {{ app }} import db
+from .interface import {{ capitalize(name) }}Interface
+
+
+class {{ capitalize(name) }}(db.Model):
+    """A Flaskerific {{ capitalize(name) }}"""
+
+    __tablename__ = "{{ name }}"
+    {{ name }}_id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    name: so.Mapped[str] = so.mapped_column(sa.String())
+    description: so.Mapped[str] = so.mapped_column(sa.String())
+
+    def update(self, changes: {{ capitalize(name) }}Interface):
+        for key, val in changes.items():
+            if key in vars(self):
+                setattr(self, key, val)
+        return
+

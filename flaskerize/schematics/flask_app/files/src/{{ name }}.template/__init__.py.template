@@ -1,0 +1,32 @@
+from flask import Flask, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from flask_restx import Api
+from flask_migrate import Migrate
+
+db = SQLAlchemy()
+migrate = Migrate()
+
+
+def create_app(env=None):
+    from {{ name }}.config import config_by_name
+    from {{ name }}.routes import register_routes
+
+    app = Flask(__name__, instance_relative_config=True)
+    app.config.from_object(config_by_name[env or "test"])
+
+    db.init_app(app)
+    migrate.init_app(app, db)
+
+    @app.route("/health")
+    def health():
+        return jsonify("healthy")
+
+    api = Api(app, title="{{ name }}",
+              version="0.1",
+              doc="/doc/",
+              endpoint="/api/")
+
+    register_routes(api, app)
+
+    return app
+
