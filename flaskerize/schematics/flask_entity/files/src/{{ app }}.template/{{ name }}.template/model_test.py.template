@@ -81,3 +81,4 @@ def test_{{ capitalize(name) }}_update({{ name }}: {{ capitalize(name) }}, db: S
         if k not in ('_sa_instance_state', '{{ name }}_id', 'last_checked'):
             assert getattr({{ name }}, k) == u[k]
             assert getattr({{ name }}, k) != r[k]
+
