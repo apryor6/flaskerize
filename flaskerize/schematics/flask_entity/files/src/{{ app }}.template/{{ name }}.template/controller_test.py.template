@@ -78,9 +78,7 @@ class Test{{ capitalize(name) }}{{ capitalize(name) }}IdResource:
         with client:
             result: dict = client.get("/api/{{ name }}/123").get_json()
             expected = {{ capitalize(name) }}({{ name }}_id=123)
-            expected = {{ capitalize(name) }}({{ name }}_id=123)
             assert result["{{ name }}_id"] == expected.{{ name }}_id
-#            assert result["ID"] == expected.consul_id
 
     @patch.object(
         {{ capitalize(name) }}Service,
@@ -110,7 +108,6 @@ class Test{{ capitalize(name) }}{{ capitalize(name) }}IdResource:
             ).get_json()
             expected: dict = {{ capitalize(name) }}Schema().dump(
                 {{ capitalize(name) }}({{ name }}_id=123, name="New name")
-                # {{ capitalize(name) }}({{ name }}_id=123, consul_id="New name")
             )
             assert result == expected
 

@@ -7,7 +7,6 @@ from .interface import {{ capitalize(name) }}Interface
 @fixture
 def schema_input():
     return {
-        "{{ name }}_id": 1,
         "name": "Schema Test",
         "description": "Schema Description"
     }
@@ -16,7 +15,6 @@ def schema_input():
 @fixture
 def schema_output():
     return {{ capitalize(name) }}Interface({
-        "{{ name }}_id": 1,
         "name": "Schema Test",
         "description": "Schema Description"
     })

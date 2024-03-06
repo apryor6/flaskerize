@@ -34,11 +34,7 @@ class {{ capitalize(name) }}Service:
 
     @staticmethod
     def create(new_attrs: {{ capitalize(name) }}Interface) -> {{ capitalize(name) }}:
-        new_{{ name }} = {{ capitalize(name) }}(
-            {{ name }}_id=new_attrs["{{ name }}_id"],
-            name=new_attrs["name"],
-            description=new_attrs["description"],
-        )
+        new_{{ name }} = {{ capitalize(name) }}(**new_attrs)
 
         db.session.add(new_{{ name }})
         db.session.commit()

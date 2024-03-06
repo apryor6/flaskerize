@@ -8,7 +8,6 @@ from .interface import {{ capitalize(name) }}Interface
 @fixture
 def interface() -> {{ capitalize(name) }}Interface:
     params: {{ capitalize(name) }}Interface = {
-        "{{ name }}_id": 1,
         "name": "interface name",
         "description": "interface description"
     }
@@ -20,10 +19,10 @@ def test_{{ capitalize(name) }}Interface_init(interface: {{ capitalize(name) }}I
 
 
 def test_{{ capitalize(name) }}Interface_create(interface: {{ capitalize(name) }}Interface):
-    {{ name }} = {{ capitalize(name) }}(**interface)  # noqa F811
-    assert {{ name }}
+    r = {{ capitalize(name) }}(**interface)
+    assert r
     for k, v in interface.items():
-        assert getattr({{ name }}, k) == interface[k]
+        assert getattr(r, k) == interface[k]
 
 
 def test_{{ capitalize(name) }}Interface_update(

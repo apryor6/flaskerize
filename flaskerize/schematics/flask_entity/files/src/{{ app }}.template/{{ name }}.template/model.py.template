@@ -9,7 +9,10 @@ class {{ capitalize(name) }}(db.Model):
     """A Flaskerific {{ capitalize(name) }}"""
 
     __tablename__ = "{{ name }}"
+    # Whether you add additional constraints, do not modify
+    # {{ name }}_id. Functionality and tests rely on it.
     {{ name }}_id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    # Modifiable fields below
     name: so.Mapped[str] = so.mapped_column(sa.String())
     description: so.Mapped[str] = so.mapped_column(sa.String())
 

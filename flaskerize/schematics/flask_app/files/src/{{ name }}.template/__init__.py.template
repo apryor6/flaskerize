@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_restx import Api
@@ -12,7 +14,9 @@ def create_app(env=None):
     from {{ name }}.routes import register_routes
 
     app = Flask(__name__, instance_relative_config=True)
-    app.config.from_object(config_by_name[env or "test"])
+    app.config.from_object(config_by_name[env
+                                          or os.getenv("FLASK_ENV")
+                                          or "test"])
 
     db.init_app(app)
     migrate.init_app(app, db)
