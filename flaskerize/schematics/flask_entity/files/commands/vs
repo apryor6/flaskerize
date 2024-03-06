@@ -1,0 +1,2 @@
+#! /bin/bash
+vim -S src/{{ app }}/$1/.vim_session
