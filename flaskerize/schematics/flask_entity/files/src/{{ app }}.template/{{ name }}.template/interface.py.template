@@ -1,4 +1,5 @@
 class {{ capitalize(name) }}Interface(dict):
+    {{ name }}_id: int
     name: str
     description: str
 
