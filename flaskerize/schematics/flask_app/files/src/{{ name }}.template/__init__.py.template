@@ -1,9 +1,13 @@
 import os
 
+from pathlib import Path as p
+
 from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_restx import Api
 from flask_migrate import Migrate
+
+BASE_PATH = p(__file__).parent
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -19,7 +23,7 @@ def create_app(env=None):
                                           or "test"])
 
     db.init_app(app)
-    migrate.init_app(app, db)
+    migrate.init_app(app, db, BASE_PATH / "migrations")
 
     @app.route("/health")
     def health():
