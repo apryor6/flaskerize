@@ -18,6 +18,7 @@ class DevelopmentConfig(BaseConfig):
     )
     DEBUG = True
     TESTING = False
+    EXPLAIN_TEMPLATE_LOADING = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         "sqlite:///{0}/{{ name }}-dev.db".format(basedir)
 

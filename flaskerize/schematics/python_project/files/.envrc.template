@@ -1,3 +1,2 @@
 export PATH="$PATH:./commands"
-alias cov="python -m coverage run && python -m coverage html"
 

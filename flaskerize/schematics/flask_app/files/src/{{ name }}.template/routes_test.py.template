@@ -1,0 +1,10 @@
+from {{ name }}.test.fixtures import app, client  # noqa F401
+
+
+def test_app_health(app, client):  # noqa F811
+    with client:
+        resp = client.get("/health")
+        assert resp.status_code == 200
+        assert resp.is_json
+        assert resp.json == "healthy"
+

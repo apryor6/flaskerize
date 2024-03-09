@@ -2,7 +2,7 @@ import os
 
 from pathlib import Path as p
 
-from flask import Flask, jsonify
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_restx import Api
 from flask_migrate import Migrate
@@ -14,27 +14,25 @@ migrate = Migrate()
 
 
 def create_app(env=None):
-    from {{ name }}.config import config_by_name
-    from {{ name }}.routes import register_routes
+    from .config import config_by_name
+    from .routes import register_routes
 
-    app = Flask(__name__, instance_relative_config=True)
-    app.config.from_object(config_by_name[env
-                                          or os.getenv("FLASK_ENV")
-                                          or "test"])
+    app = Flask(__name__)
+
+    config = config_by_name[env or os.getenv("FLASK_ENV") or "test"]
+    app.config.from_object(config)
 
     db.init_app(app)
     migrate.init_app(app, db, BASE_PATH / "migrations")
 
-    @app.route("/health")
-    def health():
-        return jsonify("healthy")
+    api = Api(validate=True,
+              endpoint="/api/",
+              doc="/api/")
 
-    api = Api(app, title="{{ name }}",
-              version="0.1",
-              doc="/doc/",
-              endpoint="/api/")
+    # This must come before Api init - flask-restx seizes "/"
+    register_routes(app, api)
 
-    register_routes(api, app)
+    api.init_app(app, title="{{ name }}")
 
     return app
 
