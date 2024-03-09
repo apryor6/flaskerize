@@ -15,18 +15,32 @@
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 			<div class="container-fluid">
 				<a class="navbar-brand" href="/">
-					<img class="rounded float-left img-fluid" style="width: 32px; height: 32px" src="{{ url_for('static', filename='favicon.ico') }}">
+					<img class="rounded float-left img-fluid" style="width: 32px; height: 32px" alt="{{ title }}" src="{{ url_for('static', filename='favicon.ico') }}">
 				</a>
 		   		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
 		      			<span class="navbar-toggler-icon"></span>
 		    		</button>
-		    		<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-		      			<div class="navbar-nav">
-		        			<a class="nav-link" href="/" id="Home">Home</a>
-						<a class="nav-link" href="/status/" id="Status">Status</a>
-		        			<a class="nav-link" href="/vendor/" id="Vendors">Vendors</a>
-		        			<a class="nav-link" href="/" id="Jobs">Jobs</a>
-		      			</div>
+		    		<div class="collapse navbar-collapse" id="navbarNavDropdown">
+		      			<ul class="navbar-nav">
+						<li class="nav-item">
+							<a class="nav-link" href="/" aria-current="page" id="Home">Home</a>
+						</li>
+						{% for item in navbar_entries().main -%}
+						<li>
+							<a class="nav-link" href="/{{ item.lower() }}/" id="{{ item }}">{{ item }}</a>
+						</li>
+						{%- endfor %}
+						{% if navbar_entries().secondary -%}
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" id="otherDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Other</a>
+							<ul class="dropdown-menu" aria-labelledby="otherDropdown">
+								{% for item in navbar_entries().secondary -%}
+								<li><a class="dropdown-item" href="/{{ item.lower() }}/" id="{{ item }}">{{ item }}</a>
+								{%- endfor %}
+							</ul>
+						</li>
+						{%- endif %}
+					</ul>
 		      			<div class="navbar-nav ms-auto">
 		        			<a class="nav-link" href="/api">API Docs</a>
 		      			</div>

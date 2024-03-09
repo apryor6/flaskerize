@@ -13,3 +13,14 @@ def register_routes(app, api, root="api"):
     def health():
         return jsonify("healthy")
 
+    # Generate the list of navbar entries
+    @app.template_global()
+    def navbar_entries():
+        items = {
+            "main": [],
+            "secondary": []
+        }
+        items['main'].append("Status")
+
+        return items
+
