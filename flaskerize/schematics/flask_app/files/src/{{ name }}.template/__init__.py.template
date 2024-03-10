@@ -3,9 +3,9 @@ import os
 from pathlib import Path as p
 
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_restx import Api
 from flask_migrate import Migrate
+from flask_restx import Api
+from flask_sqlalchemy import SQLAlchemy
 
 BASE_PATH = p(__file__).parent
 
@@ -25,14 +25,9 @@ def create_app(env=None):
     db.init_app(app)
     migrate.init_app(app, db, BASE_PATH / "migrations")
 
-    api = Api(validate=True,
-              endpoint="/api/",
-              doc="/api/")
+    api = Api(title="{{ name }}", validate=True)
 
-    # This must come before Api init - flask-restx seizes "/"
     register_routes(app, api)
-
-    api.init_app(app, title="{{ name }}")
 
     return app
 

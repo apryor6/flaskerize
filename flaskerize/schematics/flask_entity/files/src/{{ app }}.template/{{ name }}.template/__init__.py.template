@@ -1,6 +1,5 @@
-def register_routes(root_api, app, root="/api"):
+def register_routes(app, root_api, root="/api"):
     from .controller import api as {{ name }}_api
 
     root_api.add_namespace({{ name }}_api, path=f"{root}/{{ name }}")
-    return root_api
 

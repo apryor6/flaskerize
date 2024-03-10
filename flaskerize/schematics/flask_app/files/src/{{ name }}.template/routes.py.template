@@ -1,14 +1,26 @@
-from flask import jsonify
+from flask import Blueprint, jsonify
+
+api_blueprint = Blueprint('api', __name__, url_prefix='/api')
 
 
-def register_routes(app, api, root="api"):
-    # from app.widget import register_routes as attach_widget
+def register_routes(app, api):
+    # Add the core application blueprints
     from .blueprints import register_routes as attach_bp
 
-    # Add routes
+    # Import entity attach functions
+    # from app.widget import register_routes as attach_widget
+    from .customer import register_routes as attach_customer
+
+    # Attach entities
     # attach_widget(api, app)
     attach_bp(app, api)
+    attach_customer(app, api)
 
+    # Initialize the api and register the api with the flask app
+    api.init_app(api_blueprint)
+    app.register_blueprint(api_blueprint)
+
+    # Add routes too stupid for a blueprint
     @app.route("/health")
     def health():
         return jsonify("healthy")
@@ -21,6 +33,7 @@ def register_routes(app, api, root="api"):
             "secondary": []
         }
         items['main'].append("Status")
+        items['secondary'].append("Customer")
 
         return items
 
