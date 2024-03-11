@@ -1,0 +1,5 @@
+recursive-include src/{{ name }}/templates *
+recursive-include src/{{ name }}/**/*static *
+recursive-exclude src/{{ name }}/**/migrations/ *
+recursive-exclude **/ *_test*
+recursive-exclude src/{{ name }}/test *

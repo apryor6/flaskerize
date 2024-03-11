@@ -1,7 +1,7 @@
 {{ '{% extends "base.html" %}' }}
 
 {{ '{% block content %}' }}
-<h1 class="text-start">{{ capitalize(name) }}:</h1><br>
+<h1 class="text-start">{{ capitalize(name) }} List:</h1><br>
 	<table class="table table-striped table-hover table-bordered">
 		<thead>
 			<tr>

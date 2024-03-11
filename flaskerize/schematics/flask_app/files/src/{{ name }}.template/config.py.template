@@ -20,7 +20,7 @@ class DevelopmentConfig(BaseConfig):
     TESTING = False
     EXPLAIN_TEMPLATE_LOADING = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        "sqlite:///{0}/{{ name }}-dev.db".format(basedir)
+        f"sqlite:///{basedir}/databases/{{ name }}-dev.db"
 
 
 class TestingConfig(BaseConfig):
@@ -29,7 +29,7 @@ class TestingConfig(BaseConfig):
     DEBUG = True
     TESTING = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        "sqlite:///{0}/{{ name }}-test.db".format(basedir)
+        f"sqlite:///{basedir}/databases/{{ name }}-test.db"
 
 
 class ProductionConfig(BaseConfig):
@@ -38,7 +38,7 @@ class ProductionConfig(BaseConfig):
     DEBUG = False
     TESTING = False
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        "sqlite:///{0}/{{ name }}-prod.db".format(basedir)
+        f"sqlite:///{basedir}/databases/{{ name }}-prod.db"
 
 
 EXPORT_CONFIGS: list[type[BaseConfig]] = [

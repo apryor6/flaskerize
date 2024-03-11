@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, abort
 from jinja2 import TemplateNotFound
+from sqlalchemy.exc import OperationalError
 
 from .model import {{ capitalize(name) }}
 
@@ -12,7 +13,11 @@ blueprint = Blueprint('{{ name }}', __name__,
 @blueprint.route('/', defaults={'page': '{{ name }}'})
 @blueprint.route('/<page>')
 def {{ name }}(page):
-    {{ name }}_list = {{ capitalize(name) }}.query.all()
+    try:
+        {{ name }}_list = {{ capitalize(name) }}.query.all()
+    except OperationalError:
+        {{ name }}_list = []
+
     try:
         return render_template(f'{page}.html',
                                title="{{ capitalize(name) }}",

@@ -23,7 +23,8 @@ def create_app(env=None):
     app.config.from_object(config)
 
     db.init_app(app)
-    migrate.init_app(app, db, BASE_PATH / "migrations")
+    migrate_dir = f"databases/{config.CONFIG_NAME}/migrations"
+    migrate.init_app(app, db, migrate_dir)
 
     api = Api(title="{{ name }}", validate=True)
 

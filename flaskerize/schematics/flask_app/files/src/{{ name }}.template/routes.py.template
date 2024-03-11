@@ -1,7 +1,5 @@
 from flask import Blueprint, jsonify
 
-api_blueprint = Blueprint('api', __name__, url_prefix='/api')
-
 
 def register_routes(app, api):
     # Add the core application blueprints
@@ -9,14 +7,13 @@ def register_routes(app, api):
 
     # Import entity attach functions
     # from app.widget import register_routes as attach_widget
-    from .customer import register_routes as attach_customer
 
     # Attach entities
     # attach_widget(api, app)
     attach_bp(app, api)
-    attach_customer(app, api)
 
     # Initialize the api and register the api with the flask app
+    api_blueprint = Blueprint('api', __name__, url_prefix='/api')
     api.init_app(api_blueprint)
     app.register_blueprint(api_blueprint)
 
@@ -33,7 +30,6 @@ def register_routes(app, api):
             "secondary": []
         }
         items['main'].append("Status")
-        items['secondary'].append("Customer")
 
         return items
 
