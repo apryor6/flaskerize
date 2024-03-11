@@ -11,11 +11,11 @@
 			</tr>
 		</thead>
 		<tbody>
-			{{ '{% for c in customer_list -%}' }}
+			{{ '{% for r in ' + name + '_list -%}' }}
 			<tr>
-				<th scope="row">{{ '{{ c.customer_id }}' }}</th>
-				<td>{{ '{{ c.name }}' }}</td>
-				<td>{{ '{{ c.description }}' }}</td>
+				<th scope="row">{{ '{{ r.' + name + '_id }}' }}</th>
+				<td>{{ '{{ r.name }}' }}</td>
+				<td>{{ '{{ r.description }}' }}</td>
 			</tr>
 			{{ '{%- endfor %}' }}
 		</tbody>

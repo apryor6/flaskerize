@@ -24,3 +24,4 @@ def {{ name }}(page):
                                {{ name }}_list={{ name }}_list)
     except TemplateNotFound:
         abort(404)
+

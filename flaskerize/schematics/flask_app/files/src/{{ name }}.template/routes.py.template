@@ -9,7 +9,7 @@ def register_routes(app, api):
     # from app.widget import register_routes as attach_widget
 
     # Attach entities
-    # attach_widget(api, app)
+    # attach_widget(app, api)
     attach_bp(app, api)
 
     # Initialize the api and register the api with the flask app
