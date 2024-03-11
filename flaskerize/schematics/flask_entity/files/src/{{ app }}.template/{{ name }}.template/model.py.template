@@ -18,7 +18,8 @@ class {{ capitalize(name) }}(db.Model):
 
     def update(self, changes: {{ capitalize(name) }}Interface):
         for key, val in changes.items():
-            if key in vars(self):
+            if key in vars(self):  # pragma: no cover
+                # This is limited by the entity, not the input
                 setattr(self, key, val)
         return
 
