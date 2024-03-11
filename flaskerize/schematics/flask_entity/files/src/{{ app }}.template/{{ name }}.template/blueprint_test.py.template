@@ -1,0 +1,14 @@
+from {{ app }}.test.fixtures import client, app  # noqa F401
+
+
+def test_{{ name }}_list_page(app, client):  # noqa F811
+    with client:
+        resp = client.get("/{{ name }}/")
+        assert resp.status_code == 200
+        assert b'{{ capitalize(name) }} List:' in resp.data
+
+def test_{{ name }}_list_page_fail(app, client):  # noqa F811
+    with client:
+        resp = client.get("/{{ name }}/thisdoesntexist")
+        assert resp.status_code == 404
+
