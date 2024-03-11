@@ -1,0 +1,25 @@
+{{ '{% extends "base.html" %}' }}
+
+{{ '{% block content %}' }}
+<h1 class="text-start">{{ capitalize(name) }}:</h1><br>
+	<table class="table table-striped table-hover table-bordered">
+		<thead>
+			<tr>
+				<th scope="col">{{ capitalize(name) }} ID</th>
+				<th scope="col">Name</th>
+				<th scope="col">Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{ '{% for c in customer_list -%}' }}
+			<tr>
+				<th scope="row">{{ '{{ c.customer_id }}' }}</th>
+				<td>{{ '{{ c.name }}' }}</td>
+				<td>{{ '{{ c.description }}' }}</td>
+			</tr>
+			{{ '{%- endfor %}' }}
+		</tbody>
+	</table>
+
+{{ '{% endblock %}' }}
+

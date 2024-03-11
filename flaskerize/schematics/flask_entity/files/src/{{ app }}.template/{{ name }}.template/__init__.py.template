@@ -1,5 +1,7 @@
-def register_routes(app, root_api, root="/api"):
+def register_routes(app, api):
+    from .blueprint import blueprint as {{ name }}_bp
     from .controller import api as {{ name }}_api
 
-    root_api.add_namespace({{ name }}_api, path=f"{root}/{{ name }}")
+    app.register_blueprint({{ name }}_bp)
+    api.add_namespace({{ name }}_api, path="/{{ name }}")
 
