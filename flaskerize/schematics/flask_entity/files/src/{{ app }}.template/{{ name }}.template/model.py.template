@@ -1,0 +1,25 @@
+import sqlalchemy as sa
+import sqlalchemy.orm as so
+
+from {{ app }} import db
+from .interface import {{ capitalize(name) }}Interface
+
+
+class {{ capitalize(name) }}(db.Model):
+    """A Flaskerific {{ capitalize(name) }}"""
+
+    __tablename__ = "{{ name }}"
+    # Whether you add additional constraints, do not modify
+    # {{ name }}_id. Functionality and tests rely on it.
+    {{ name }}_id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    # Modifiable fields below
+    name: so.Mapped[str] = so.mapped_column(sa.String())
+    description: so.Mapped[str] = so.mapped_column(sa.String())
+
+    def update(self, changes: {{ capitalize(name) }}Interface):
+        for key, val in changes.items():
+            if key in vars(self):  # pragma: no cover
+                # This is limited by the entity, not the input
+                setattr(self, key, val)
+        return
+

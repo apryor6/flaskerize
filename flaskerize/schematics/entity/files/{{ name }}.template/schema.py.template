@@ -7,7 +7,7 @@ class {{ capitalize(name) }}Schema(Schema):
     class Meta:
         ordered = True
 
-    {{ lower(name) }}Id = fields.Number(attribute="{{ lower(name) }}_id")
+    {{ lower(name) }}_id = fields.Number(attribute="{{ lower(name) }}_id")
     name = fields.String(attribute="name")
     description = fields.String(attribute="description")
 

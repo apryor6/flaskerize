@@ -1,0 +1,6 @@
+from .test.fixtures import app, client  # noqa F401
+
+
+def test_app_creates(app):  # noqa F811
+    assert app
+

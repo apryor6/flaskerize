@@ -16,7 +16,7 @@ api = Namespace("{{ capitalize(name) }}", description="{{ capitalize(name) }} in
 class {{ capitalize(name) }}Resource(Resource):
     """{{ capitalize(name) }}s"""
 
-    @responds(schema={{ capitalize(name) }}Schema, many=True)
+    @responds(schema={{ capitalize(name) }}Schema(many=True))
     def get(self) -> List[{{ capitalize(name) }}]:
         """Get all {{ capitalize(name) }}s"""
 

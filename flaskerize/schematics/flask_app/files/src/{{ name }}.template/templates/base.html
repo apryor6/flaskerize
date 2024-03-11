@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		{% if title %}
+		<title>{{ title }} - TnT</title>
+		{% else %}
+		<title>TnT</title>
+	 	{% endif %}
+		<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+		<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+	</head>
+	<body class=".bg-secondary">
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+			<div class="container-fluid">
+				<a class="navbar-brand" href="/">
+					<img class="rounded float-left img-fluid" style="width: 32px; height: 32px" alt="{{ title }}" src="{{ url_for('static', filename='favicon.ico') }}">
+				</a>
+		   		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+		      			<span class="navbar-toggler-icon"></span>
+		    		</button>
+		    		<div class="collapse navbar-collapse" id="navbarNavDropdown">
+		      			<ul class="navbar-nav">
+						<li class="nav-item">
+							<a class="nav-link" href="/" aria-current="page" id="Home">Home</a>
+						</li>
+						{% for item in navbar_entries().main -%}
+						<li>
+							<a class="nav-link" href="/{{ item.lower() }}/" id="{{ item }}">{{ item }}</a>
+						</li>
+						{%- endfor %}
+						{% if navbar_entries().secondary -%}
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" id="otherDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Other</a>
+							<ul class="dropdown-menu" aria-labelledby="otherDropdown">
+								{% for item in navbar_entries().secondary -%}
+								<li><a class="dropdown-item" href="/{{ item.lower() }}/" id="{{ item }}">{{ item }}</a>
+								{%- endfor %}
+							</ul>
+						</li>
+						{%- endif %}
+					</ul>
+		      			<div class="navbar-nav ms-auto">
+		        			<a class="nav-link" href="/api">API Docs</a>
+		      			</div>
+		    		</div>
+		  	</div>
+		</nav>
+		{% block content %}{% endblock %}
+		<script type="text/javascript"> 
+			curr_page=document.getElementById("{{ title }}");
+			curr_page.classList.add("active");
+		</script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+	</body>
+</html>

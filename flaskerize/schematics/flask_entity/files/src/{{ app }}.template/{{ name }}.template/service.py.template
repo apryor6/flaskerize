@@ -1,0 +1,43 @@
+from typing import List
+
+from {{ app }} import db  # noqa
+from .model import {{ capitalize(name) }}
+from .interface import {{ capitalize(name) }}Interface
+
+
+class {{ capitalize(name) }}Service:
+    @staticmethod
+    def get_all() -> List[{{ capitalize(name) }}]:
+        return {{ capitalize(name) }}.query.all()
+
+    @staticmethod
+    def get_by_id({{ name }}_id: int) -> {{ capitalize(name) }}:
+        return {{ capitalize(name) }}.query.get({{ name }}_id)
+
+    @staticmethod
+    def update(
+            {{ name }}: {{ capitalize(name) }},
+            {{ name }}_change_updates: {{ capitalize(name) }}Interface) -> {{ capitalize(name) }}:
+        {{ name }}.update({{ name }}_change_updates)
+        db.session.commit()
+        return {{ name }}
+
+    @staticmethod
+    def delete_by_id({{ name }}_id: int) -> List[int]:
+        {{ name }} = {{ capitalize(name) }}.query.filter(
+            {{ capitalize(name) }}.{{ name }}_id == {{ name }}_id).first()
+        if not {{ name }}:
+            return []
+        db.session.delete({{ name }})
+        db.session.commit()
+        return [{{ name }}_id]
+
+    @staticmethod
+    def create(new_attrs: {{ capitalize(name) }}Interface) -> {{ capitalize(name) }}:
+        new_{{ name }} = {{ capitalize(name) }}(**new_attrs)
+
+        db.session.add(new_{{ name }})
+        db.session.commit()
+
+        return new_{{ name }}
+

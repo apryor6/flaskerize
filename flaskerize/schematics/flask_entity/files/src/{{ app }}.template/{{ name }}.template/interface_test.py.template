@@ -1,0 +1,35 @@
+from pytest import fixture
+
+from .model import {{ capitalize(name) }}
+from .model_test import {{ name }}  # noqa F401
+from .interface import {{ capitalize(name) }}Interface
+
+
+@fixture
+def interface() -> {{ capitalize(name) }}Interface:
+    params: {{ capitalize(name) }}Interface = {
+        "name": "interface name",
+        "description": "interface description"
+    }
+    return params
+
+
+def test_{{ capitalize(name) }}Interface_init(interface: {{ capitalize(name) }}Interface):
+    assert interface
+
+
+def test_{{ capitalize(name) }}Interface_create(interface: {{ capitalize(name) }}Interface):
+    r = {{ capitalize(name) }}(**interface)
+    assert r
+    for k, v in interface.items():
+        assert getattr(r, k) == interface[k]
+
+
+def test_{{ capitalize(name) }}Interface_update(
+        {{ name }}: {{ capitalize(name) }},  # noqa F811
+        interface: {{ capitalize(name) }}Interface):
+    {{ name }}.update(interface)
+    assert {{ name }}
+    for k, v in interface.items():
+        assert getattr({{ name }}, k) == interface[k]
+

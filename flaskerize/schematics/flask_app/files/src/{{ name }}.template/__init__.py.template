@@ -1,0 +1,34 @@
+import os
+
+from pathlib import Path as p
+
+from flask import Flask
+from flask_migrate import Migrate
+from flask_restx import Api
+from flask_sqlalchemy import SQLAlchemy
+
+BASE_PATH = p(__file__).parent
+
+db = SQLAlchemy()
+migrate = Migrate()
+
+
+def create_app(env=None):
+    from .config import config_by_name
+    from .routes import register_routes
+
+    app = Flask(__name__)
+
+    config = config_by_name[env or os.getenv("FLASK_ENV") or "test"]
+    app.config.from_object(config)
+
+    db.init_app(app)
+    migrate_dir = f"{BASE_PATH}/databases/migrations"
+    migrate.init_app(app, db, migrate_dir)
+
+    api = Api(title="{{ name }}", validate=True)
+
+    register_routes(app, api)
+
+    return app
+

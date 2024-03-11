@@ -1,0 +1,50 @@
+from pytest import fixture
+
+from .schema import {{ capitalize(name) }}Schema
+from .interface import {{ capitalize(name) }}Interface
+
+
+@fixture
+def schema_input():
+    return {
+        "name": "Schema Test",
+        "description": "Schema Description"
+    }
+
+
+@fixture
+def schema_output():
+    return {{ capitalize(name) }}Interface({
+        "name": "Schema Test",
+        "description": "Schema Description"
+    })
+
+
+@fixture
+def schema() -> {{ capitalize(name) }}Schema:
+    return {{ capitalize(name) }}Schema()
+
+
+def test_{{ capitalize(name) }}Schema_init(schema: {{ capitalize(name) }}Schema):
+    assert schema
+
+
+def test_{{ capitalize(name) }}Schema_load(
+        schema_input: dict,
+        schema_output: {{ capitalize(name) }}Interface,
+        schema: {{ capitalize(name) }}Schema):
+    params: {{ capitalize(name) }}Interface = schema.load(schema_input)
+
+    for k in schema_output:
+        assert params[k] == schema_output[k]
+
+
+def test_{{ capitalize(name) }}Schema_dump(
+        schema_output,
+        schema_input,
+        schema: {{ capitalize(name) }}Schema):
+    params = schema.dump(schema_output)
+
+    for k in schema_input:
+        assert params[k] == schema_input[k]
+

@@ -1,0 +1,87 @@
+from pytest import fixture
+from flask_sqlalchemy import SQLAlchemy
+
+from {{ app }}.test.fixtures import app, db  # noqa F401
+from .model import {{ capitalize(name) }}
+
+
+@fixture
+def {{ name }}() -> {{ capitalize(name) }}:
+    return {{ capitalize(name) }}(
+        name="model name",
+        description="model description"
+    )
+
+
+def init_dict({{ name }}: {{ capitalize(name) }}) -> dict:
+    u = {}
+    for k in {{ name }}.__dict__:
+        if k not in ('_sa_instance_state', '{{ name }}_id', 'last_checked'):
+            u[k] = {{ name }}.__dict__[k]
+    return u
+
+
+def update_dict({{ name }}: {{ capitalize(name) }}) -> dict:
+    u = dict()
+    for k in {{ name }}.__dict__:
+        exclude = ('_sa_instance_state', '{{ name }}_id', 'last_checked')
+        if k not in exclude:  # pragma: no cover - Logic based on fiction
+            if isinstance({{ name }}.__dict__[k], bool):
+                u[k] = not {{ name }}.__dict__[k]
+            elif isinstance({{ name }}.__dict__[k], str):
+                u[k] = {{ name }}.__dict__[k] + " update"
+            elif isinstance({{ name }}.__dict__[k], int):
+                u[k] = {{ name }}.__dict__[k] + 1
+            else:
+                raise
+    return u
+
+
+def test_{{ capitalize(name) }}_init({{ name }}: {{ capitalize(name) }}):
+    assert {{ name }}
+
+
+def test_{{ capitalize(name) }}_create({{ name }}: {{ capitalize(name) }}, db: SQLAlchemy):  # noqa F811
+    try:
+        db.session.add({{ name }})
+        db.session.commit()
+    except Exception:   # pragma: no cover
+        db.session.rollback()
+        raise
+
+
+def test_{{ capitalize(name) }}_retrieve({{ name }}: {{ capitalize(name) }}, db: SQLAlchemy):  # noqa F811
+    try:
+        db.session.add({{ name }})
+        db.session.commit()
+    except Exception:   # pragma: no cover
+        db.session.rollback()
+        raise
+
+    s = {{ capitalize(name) }}.query.first()
+    assert s.__dict__ == {{ name }}.__dict__
+
+
+def test_{{ capitalize(name) }}_update({{ name }}: {{ capitalize(name) }}, db: SQLAlchemy):  # noqa F811
+    r = init_dict({{ name }})
+    u = update_dict({{ name }})
+
+    for k in {{ name }}.__dict__:
+        if k not in ('_sa_instance_state', '{{ name }}_id', 'last_checked'):
+            {{ name }}.update({k: u[k]})
+
+    try:
+        db.session.add({{ name }})
+        db.session.commit()
+    except Exception:   # pragma: no cover
+        db.session.rollback()
+        raise
+
+    changed = {{ capitalize(name) }}.query.all()
+    assert len(changed) == 1
+
+    for k in changed[0].__dict__:
+        if k not in ('_sa_instance_state', '{{ name }}_id', 'last_checked'):
+            assert getattr({{ name }}, k) == u[k]
+            assert getattr({{ name }}, k) != r[k]
+
